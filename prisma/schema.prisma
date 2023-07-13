@@ -8,16 +8,17 @@ datasource db {
 }
 
 model alat {
-  ID_ALAT           String              @id @db.VarChar(10)
+  ID_ALAT           String              @id @db.VarChar(5)
   NAMA_ALAT         String?             @db.VarChar(30)
   JUMLAH_ALAT       Int
   UNIT_ALAT         String?             @db.VarChar(35)
-  STATUS_KELAYAKAN  String?             @db.VarChar(35)
+  ALAT_LAYAK        Int                 @default(0) @db.Int
+  ALAT_TIDAK_LAYAK  Int                 @default(0) @db.Int
   detail_permintaan detail_permintaan[]
 }
 
 model bahan {
-  ID_BAHAN          String              @id @db.VarChar(10)
+  ID_BAHAN          String              @id @db.VarChar(4)
   NAMA_BAHAN        String?             @db.VarChar(30)
   STOCK_BAHAN       String?             @db.VarChar(35)
   UNIT_BAHAN        String?             @db.VarChar(10)
@@ -27,8 +28,8 @@ model bahan {
 model detail_permintaan {
   ID_DETAIL_PERMINTAAN Int         @id @default(autoincrement())
   ID_PERMINTAAN        Int?
-  ID_ALAT              String?     @db.VarChar(10)
-  ID_BAHAN             String?     @db.VarChar(10)
+  ID_ALAT              String?     @db.VarChar(5)
+  ID_BAHAN             String?     @db.VarChar(4)
   JUMLAH_ALAT          String?     @db.VarChar(30)
   JUMLAH_BAHAN         String?     @db.VarChar(30)
   alat                 alat?       @relation(fields: [ID_ALAT], references: [ID_ALAT], onDelete: Restrict, onUpdate: Restrict, map: "FK_RELATIONSHIP_3")
