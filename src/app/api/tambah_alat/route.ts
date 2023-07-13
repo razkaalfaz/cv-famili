@@ -14,14 +14,17 @@ async function handler(request: NextRequest) {
   const body: RequestBody = await request.json();
 
   const maxValue = await db.alat.aggregate({
+    where: {
+      ID_ALAT: {
+        contains: body.jenisAlat,
+      },
+    },
     _max: {
       ID_ALAT: true,
     },
   });
 
   const urutan = Number(maxValue._max.ID_ALAT?.substring(2)) || 0;
-
-  console.log(urutan);
 
   function kodifikasiAlat(jumlah: number) {
     if (jumlah >= 10) {

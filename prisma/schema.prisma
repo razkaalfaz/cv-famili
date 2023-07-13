@@ -20,7 +20,7 @@ model alat {
 model bahan {
   ID_BAHAN          String              @id @db.VarChar(4)
   NAMA_BAHAN        String?             @db.VarChar(30)
-  STOCK_BAHAN       String?             @db.VarChar(35)
+  STOCK_BAHAN       Int?                @db.Int
   UNIT_BAHAN        String?             @db.VarChar(10)
   detail_permintaan detail_permintaan[]
 }
@@ -31,6 +31,7 @@ model detail_permintaan {
   ID_ALAT              String?     @db.VarChar(5)
   ID_BAHAN             String?     @db.VarChar(4)
   JUMLAH_ALAT          String?     @db.VarChar(30)
+  RAB                  Bytes       @db.Blob
   JUMLAH_BAHAN         String?     @db.VarChar(30)
   alat                 alat?       @relation(fields: [ID_ALAT], references: [ID_ALAT], onDelete: Restrict, onUpdate: Restrict, map: "FK_RELATIONSHIP_3")
   permintaan           permintaan? @relation(fields: [ID_PERMINTAAN], references: [ID_PERMINTAAN], onDelete: Restrict, onUpdate: Restrict, map: "FK_RELATIONSHIP_4")
