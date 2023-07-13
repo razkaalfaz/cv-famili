@@ -39,4 +39,4 @@ async function handler(request: NextRequest) {
   }
 }
 
-export { handler as POST };
+export { handler as PATCH };
