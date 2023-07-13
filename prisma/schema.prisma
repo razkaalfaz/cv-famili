@@ -1,0 +1,62 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model alat {
+  ID_ALAT           String              @id @db.VarChar(10)
+  NAMA_ALAT         String?             @db.VarChar(30)
+  JUMLAH_ALAT       Int
+  UNIT_ALAT         String?             @db.VarChar(35)
+  STATUS_KELAYAKAN  String?             @db.VarChar(35)
+  detail_permintaan detail_permintaan[]
+}
+
+model bahan {
+  ID_BAHAN          String              @id @db.VarChar(10)
+  NAMA_BAHAN        String?             @db.VarChar(30)
+  STOCK_BAHAN       String?             @db.VarChar(35)
+  UNIT_BAHAN        String?             @db.VarChar(10)
+  detail_permintaan detail_permintaan[]
+}
+
+model detail_permintaan {
+  ID_DETAIL_PERMINTAAN Int         @id @default(autoincrement())
+  ID_PERMINTAAN        Int?
+  ID_ALAT              String?     @db.VarChar(10)
+  ID_BAHAN             String?     @db.VarChar(10)
+  JUMLAH_ALAT          String?     @db.VarChar(30)
+  JUMLAH_BAHAN         String?     @db.VarChar(30)
+  alat                 alat?       @relation(fields: [ID_ALAT], references: [ID_ALAT], onDelete: Restrict, onUpdate: Restrict, map: "FK_RELATIONSHIP_3")
+  permintaan           permintaan? @relation(fields: [ID_PERMINTAAN], references: [ID_PERMINTAAN], onDelete: Restrict, onUpdate: Restrict, map: "FK_RELATIONSHIP_4")
+  bahan                bahan?      @relation(fields: [ID_BAHAN], references: [ID_BAHAN], onDelete: Restrict, onUpdate: Restrict, map: "FK_RELATIONSHIP_5")
+
+  @@index([ID_ALAT], map: "FK_RELATIONSHIP_3")
+  @@index([ID_PERMINTAAN], map: "FK_RELATIONSHIP_4")
+  @@index([ID_BAHAN], map: "FK_RELATIONSHIP_5")
+}
+
+model permintaan {
+  ID_PERMINTAAN     Int                 @id @default(autoincrement())
+  ID_USER           Int?
+  TGL_PERMINTAAN    DateTime?           @db.Date
+  STATUS            String?             @db.VarChar(30)
+  detail_permintaan detail_permintaan[]
+  user              user?               @relation(fields: [ID_USER], references: [ID_USER], onDelete: Restrict, onUpdate: Restrict, map: "FK_RELATIONSHIP_1")
+
+  @@index([ID_USER], map: "FK_RELATIONSHIP_1")
+}
+
+model user {
+  ID_USER    Int          @id @default(autoincrement())
+  NAME       String?      @db.VarChar(35)
+  USERNAME   String?      @db.VarChar(25)
+  PASSWORD   String?      @db.VarChar(25)
+  ROLE       String?      @db.VarChar(30)
+  REGISTER   DateTime?    @db.Date
+  permintaan permintaan[]
+}
