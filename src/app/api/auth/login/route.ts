@@ -15,9 +15,6 @@ async function handler(request: NextRequest) {
     },
   });
 
-  console.log(user);
-  console.log(body.password);
-
   if (user && user.PASSWORD === body.password) {
     const { PASSWORD, ...result } = user;
     return new NextResponse(JSON.stringify(result));

@@ -2,8 +2,8 @@ import { db } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 
 interface RequestBody {
-  ID_PERMINTAAN: number;
-  STATUS: StatusPermintaan;
+  ID_PERMINTAAN: string;
+  STATUS: keyof typeof StatusPermintaan;
 }
 
 async function handler(request: NextRequest) {

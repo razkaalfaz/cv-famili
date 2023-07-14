@@ -14,7 +14,7 @@ model alat {
   UNIT_ALAT        String?           @db.VarChar(35)
   ALAT_LAYAK       Int               @default(0)
   ALAT_TIDAK_LAYAK Int               @default(0)
-  detailpermintaan detailpermintaan?
+  detailPermintaan detailPermintaan?
 }
 
 model bahan {
@@ -22,7 +22,7 @@ model bahan {
   NAMA_BAHAN       String?           @db.VarChar(30)
   STOCK_BAHAN      Int?
   UNIT_BAHAN       String?           @db.VarChar(10)
-  detailpermintaan detailpermintaan?
+  detailPermintaan detailPermintaan?
 }
 
 model permintaan {
@@ -30,7 +30,7 @@ model permintaan {
   ID_USER          Int?
   TGL_PERMINTAAN   DateTime?          @default(now()) @db.Date
   STATUS           STATUS_PERMINTAAN? @default(PENDING)
-  detailpermintaan detailpermintaan[]
+  detailPermintaan detailPermintaan[]
   user             user?              @relation(fields: [ID_USER], references: [ID_USER], onDelete: Restrict, onUpdate: Restrict, map: "FK_RELATIONSHIP_1")
 
   @@index([ID_USER], map: "FK_RELATIONSHIP_1")
@@ -46,8 +46,8 @@ model user {
   permintaan permintaan[]
 }
 
-model detailpermintaan {
-  ID_DETAIL_PERMINTAAN String     @id
+model detailPermintaan {
+  ID_DETAIL_PERMINTAAN String     @id @default(cuid())
   ID_PERMINTAAN        String
   ID_ALAT              String?    @unique(map: "DetailPermintaan_ID_ALAT_key")
   ID_BAHAN             String?    @unique(map: "DetailPermintaan_ID_BAHAN_key")

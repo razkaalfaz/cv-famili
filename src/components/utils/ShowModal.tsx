@@ -33,6 +33,8 @@ interface ComponentProps {
   idBahan?: string | null;
   dataBahan?: Bahan | null;
   dataAlat?: Alat | null;
+  statusPermintaan?: keyof typeof StatusPermintaan | null;
+  idPermintaan?: string | null;
   setMessage: React.Dispatch<React.SetStateAction<string | null>>;
   setSuccess: React.Dispatch<React.SetStateAction<string | null>>;
 }
@@ -44,6 +46,8 @@ export default function ShowModal({
   idBahan,
   dataBahan,
   dataAlat,
+  statusPermintaan,
+  idPermintaan,
   setMessage,
   setSuccess,
 }: ComponentProps) {
@@ -74,9 +78,9 @@ export default function ShowModal({
         setIsLoading(false);
         setMessage("Gagal menambahkan data alat.");
       } else {
+        mutate("/api/list-alat");
         setIsLoading(false);
         setSuccess("Berhasil menambahkan data alat.");
-        mutate("/api/list-alat");
         hideModal();
       }
     } catch (err) {
@@ -104,6 +108,7 @@ export default function ShowModal({
         setIsLoading(false);
         setSuccess("Berhasil mengubah data alat.");
         mutate("/api/list-alat");
+        mutate("/api/semua_permintaan");
         hideModal();
       }
     } catch (err) {
@@ -173,7 +178,7 @@ export default function ShowModal({
     const requestBody = () => {
       if (idAlat) {
         return {
-          ID_USER: session?.user.USER_ID,
+          ID_USER: session?.user.ID_USER,
           ALAT: {
             ID_BARANG: idAlat,
             JUMLAH_BARANG: permintaan.jumlahPermintaan,
@@ -181,7 +186,7 @@ export default function ShowModal({
         };
       } else if (idBahan) {
         return {
-          ID_USER: session?.user.USER_ID,
+          ID_USER: session?.user.ID_USER,
           BAHAN: {
             ID_BARANG: idBahan,
             JUMLAH_BARANG: permintaan.jumlahPermintaan,
@@ -221,7 +226,7 @@ export default function ShowModal({
     setSuccess(null);
     if (idAlat) {
       try {
-        const res = await fetch("http://localhost:3000/api/hapus_bahan", {
+        const res = await fetch("http://localhost:3000/api/hapus_alat", {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ idAlat: idAlat }),
@@ -267,6 +272,41 @@ export default function ShowModal({
           mutate("/api/list_bahan");
         }
       } catch (err) {
+        console.error(err);
+      }
+    }
+  }
+  async function verifikasiPermintaan() {
+    if (statusPermintaan && idPermintaan) {
+      setIsLoading(true);
+      setMessage(null);
+      setSuccess(null);
+      try {
+        const res = await fetch(
+          "http://localhost:3000/api/verifikasi-permintaan",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              ID_PERMINTAAN: idPermintaan,
+              STATUS: statusPermintaan,
+            }),
+          }
+        );
+
+        const response = await res.json();
+
+        if (!response.ok) {
+          setIsLoading(false);
+          setMessage(response.message);
+        } else {
+          setIsLoading(false);
+          setSuccess(response.message);
+          hideModal();
+          mutate("/api/semua_permintaan");
+        }
+      } catch (err) {
+        setIsLoading(false);
         console.error(err);
       }
     }
@@ -684,6 +724,41 @@ export default function ShowModal({
           </form>
         </ModalsContainer>
       );
+
+    case "verifikasi-permintaan":
+      return (
+        <ModalsContainer
+          title={
+            statusPermintaan && statusPermintaan === "DIVERIFIKASI"
+              ? "Verifikasi Permintaan"
+              : "Persetujuan Permintaan"
+          }
+          description={
+            statusPermintaan && statusPermintaan === "DIVERIFIKASI"
+              ? "Apakah anda akan melakukan verifikasi persediaan barang terlebih dahulu?"
+              : "Apakah anda akan menyetujui permintaan ini?"
+          }
+          onClose={hideModal}
+        >
+          <Button
+            variants="PRIMARY"
+            onClick={verifikasiPermintaan}
+            fullWidth
+            disabled={isLoading}
+          >
+            {isLoading ? "Memproses..." : "Ya"}
+          </Button>
+          <Button
+            variants="SECONDARY"
+            onClick={hideModal}
+            fullWidth
+            disabled={isLoading}
+          >
+            Batal
+          </Button>
+        </ModalsContainer>
+      );
+
     default:
       return null;
   }

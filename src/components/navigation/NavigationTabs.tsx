@@ -4,7 +4,7 @@ import { NAVIGATION_TABS } from "@/lib/constants";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Button from "../button/Button";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 export default function NavigationTabs() {
   const pathname = usePathname();
@@ -13,6 +13,13 @@ export default function NavigationTabs() {
     "w-full px-2 py-2 grid place-items-center border border-gray-300 bg-opacity-95 hover:bg-sky-300 rounded-md overflow-hidden";
   const activeLinkStyles =
     baseLinkStyles + " bg-sky-300 text-neutral-800 hover:bg-opacity-100";
+
+  const { update } = useSession();
+
+  function logoutHandler() {
+    signOut();
+    update();
+  }
 
   if (pathname === "/") {
     return null;
@@ -31,7 +38,7 @@ export default function NavigationTabs() {
             {tab.name}
           </Link>
         ))}
-        <Button variants="ERROR" onClick={() => signOut()} fullWidth>
+        <Button variants="ERROR" onClick={() => logoutHandler()} fullWidth>
           Logout
         </Button>
       </div>
