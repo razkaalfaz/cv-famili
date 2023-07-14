@@ -40,7 +40,7 @@ type Permintaan = {
   ID_USER: number;
   TGL_PERMINTAAN: Date;
   STATUS: StatusPermintaan;
-  detailPermintaan: DetailPermintaan[];
+  detail_permintaan: DetailPermintaan[];
   user: User;
 };
 

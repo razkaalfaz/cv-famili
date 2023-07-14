@@ -90,7 +90,7 @@ export default function Permintaan() {
                 <div className="flex flex-col gap-2">
                   <b>Daftar barang yang di ajukan:</b>
                   <div className="flex flex-col gap-2">
-                    {permintaan.detailPermintaan.map(
+                    {permintaan.detail_permintaan.map(
                       (detailPermintaan: DetailPermintaan) => (
                         <div
                           key={detailPermintaan.ID_DETAIL_PERMINTAAN}
@@ -118,7 +118,7 @@ export default function Permintaan() {
 
                 <b>
                   Total barang yang di ajukan:{" "}
-                  {permintaan.detailPermintaan.length} jenis barang.
+                  {permintaan.detail_permintaan.length} jenis barang.
                 </b>
               </div>
 

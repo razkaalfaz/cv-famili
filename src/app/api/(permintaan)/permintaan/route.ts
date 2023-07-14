@@ -26,7 +26,7 @@ async function handler(request: NextRequest) {
         },
         create: {
           ID_PERMINTAAN: kodifikasiPermintaanAlat,
-          detailPermintaan: {
+          detail_permintaan: {
             create: {
               ID_ALAT: body.ALAT.ID_BARANG,
               JUMLAH_ALAT: body.ALAT.JUMLAH_BARANG,
@@ -35,7 +35,7 @@ async function handler(request: NextRequest) {
           ID_USER: body.ID_USER,
         },
         update: {
-          detailPermintaan: {
+          detail_permintaan: {
             upsert: {
               where: {
                 ID_ALAT: body.ALAT.ID_BARANG,
@@ -61,7 +61,7 @@ async function handler(request: NextRequest) {
         },
         create: {
           ID_PERMINTAAN: kodifikasiPermintaanAlat,
-          detailPermintaan: {
+          detail_permintaan: {
             create: {
               ID_BAHAN: body.BAHAN.ID_BARANG,
               JUMLAH_BAHAN: body.BAHAN.JUMLAH_BARANG,
@@ -70,7 +70,7 @@ async function handler(request: NextRequest) {
           ID_USER: body.ID_USER,
         },
         update: {
-          detailPermintaan: {
+          detail_permintaan: {
             upsert: {
               where: {
                 ID_BAHAN: body.BAHAN.ID_BARANG,
