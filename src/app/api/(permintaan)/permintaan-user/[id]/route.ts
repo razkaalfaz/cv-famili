@@ -14,7 +14,7 @@ async function handler(
       },
     },
     include: {
-      detailPermintaan: {
+      detail_permintaan: {
         include: {
           alat: true,
           bahan: true,

@@ -8,7 +8,7 @@ async function handler(request: NextRequest) {
 
   const semuaPermintaan = await db.permintaan.findMany({
     include: {
-      detailPermintaan: {
+      detail_permintaan: {
         include: {
           alat: true,
           bahan: true,

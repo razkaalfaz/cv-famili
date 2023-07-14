@@ -8,30 +8,30 @@ datasource db {
 }
 
 model alat {
-  ID_ALAT          String            @id @db.VarChar(5)
-  NAMA_ALAT        String?           @db.VarChar(30)
-  JUMLAH_ALAT      Int
-  UNIT_ALAT        String?           @db.VarChar(35)
-  ALAT_LAYAK       Int               @default(0)
-  ALAT_TIDAK_LAYAK Int               @default(0)
-  detailPermintaan detailPermintaan?
+  ID_ALAT           String             @id @db.VarChar(5)
+  NAMA_ALAT         String?            @db.VarChar(30)
+  JUMLAH_ALAT       Int
+  UNIT_ALAT         String?            @db.VarChar(35)
+  ALAT_LAYAK        Int                @default(0)
+  ALAT_TIDAK_LAYAK  Int                @default(0)
+  detail_permintaan detail_permintaan?
 }
 
 model bahan {
-  ID_BAHAN         String            @id @db.VarChar(4)
-  NAMA_BAHAN       String?           @db.VarChar(30)
-  STOCK_BAHAN      Int?
-  UNIT_BAHAN       String?           @db.VarChar(10)
-  detailPermintaan detailPermintaan?
+  ID_BAHAN          String             @id @db.VarChar(4)
+  NAMA_BAHAN        String?            @db.VarChar(30)
+  STOCK_BAHAN       Int?
+  UNIT_BAHAN        String?            @db.VarChar(10)
+  detail_permintaan detail_permintaan?
 }
 
 model permintaan {
-  ID_PERMINTAAN    String             @id @db.VarChar(13)
-  ID_USER          Int?
-  TGL_PERMINTAAN   DateTime?          @default(now()) @db.Date
-  STATUS           STATUS_PERMINTAAN? @default(PENDING)
-  detailPermintaan detailPermintaan[]
-  user             user?              @relation(fields: [ID_USER], references: [ID_USER], onDelete: Restrict, onUpdate: Restrict, map: "FK_RELATIONSHIP_1")
+  ID_PERMINTAAN     String              @id @db.VarChar(13)
+  ID_USER           Int?
+  TGL_PERMINTAAN    DateTime?           @default(now()) @db.Date
+  STATUS            STATUS_PERMINTAAN?  @default(PENDING)
+  detail_permintaan detail_permintaan[]
+  user              user?               @relation(fields: [ID_USER], references: [ID_USER], onDelete: Restrict, onUpdate: Restrict, map: "FK_RELATIONSHIP_1")
 
   @@index([ID_USER], map: "FK_RELATIONSHIP_1")
 }
@@ -46,7 +46,7 @@ model user {
   permintaan permintaan[]
 }
 
-model detailPermintaan {
+model detail_permintaan {
   ID_DETAIL_PERMINTAAN String     @id @default(cuid())
   ID_PERMINTAAN        String
   ID_ALAT              String?    @unique(map: "DetailPermintaan_ID_ALAT_key")
