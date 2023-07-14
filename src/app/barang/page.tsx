@@ -17,6 +17,8 @@ export default function Barang() {
 
   const { data: session, status } = useSession();
 
+  console.log(session);
+
   return (
     <div className="w-full px-8 py-8 flex flex-col gap-8">
       {message && <Snackbar message={message} variant="ERROR" />}

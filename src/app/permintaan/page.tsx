@@ -1,18 +1,44 @@
 "use client";
 
+import Button from "@/components/button/Button";
+import Snackbar from "@/components/snackbar/Snackbar";
+import ShowModal from "@/components/utils/ShowModal";
 import { fetcher } from "@/lib/helper";
 import { useSession } from "next-auth/react";
+import { useState } from "react";
 import useSWR from "swr";
 
 export default function Permintaan() {
+  const [idPermintaan, setIdPermintaan] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  const [opsiVerifikasi, setOpsiVerifikasi] = useState<
+    keyof typeof StatusPermintaan | null
+  >(null);
+  const [modalShown, setModalShown] = useState<string | null>(null);
+
   const { data: session } = useSession();
 
-  const userId = session ? session.user.USER_ID : null;
+  const userId = session ? session.user.ID_USER : null;
 
   function convertToDate(value: any) {
     const date = new Date(value);
     const dateToReturn = date.toLocaleDateString();
     return dateToReturn;
+  }
+
+  function verifikasiPermintaan(
+    idPermintaan: string,
+    opsi: keyof typeof StatusPermintaan
+  ) {
+    setIdPermintaan(idPermintaan);
+    setOpsiVerifikasi(opsi);
+    setModalShown("verifikasi-permintaan");
+  }
+
+  function hideModal() {
+    setModalShown(null);
+    setIdPermintaan(null);
   }
 
   const {
@@ -61,8 +87,8 @@ export default function Permintaan() {
                   </p>
                 </div>
 
-                <div className="flex flex-col gap-4">
-                  <b className="text-lg">Daftar barang yang di ajukan:</b>
+                <div className="flex flex-col gap-2">
+                  <b>Daftar barang yang di ajukan:</b>
                   <div className="flex flex-col gap-2">
                     {permintaan.detailPermintaan.map(
                       (detailPermintaan: DetailPermintaan) => (
@@ -71,10 +97,11 @@ export default function Permintaan() {
                           className="flex flex-col gap-4"
                         >
                           <div className="flex flex-row gap-2 items-center">
-                            <b>
+                            <p>
                               {detailPermintaan.alat?.NAMA_ALAT ||
                                 detailPermintaan.bahan?.NAMA_BAHAN}
-                            </b>
+                            </p>
+                            <div className="w-8 h-px bg-gray-500" />
                             <p>
                               Sebanyak:{" "}
                               {detailPermintaan?.JUMLAH_ALAT ||
@@ -88,11 +115,62 @@ export default function Permintaan() {
                     )}
                   </div>
                 </div>
+
+                <b>
+                  Total barang yang di ajukan:{" "}
+                  {permintaan.detailPermintaan.length} jenis barang.
+                </b>
               </div>
 
-              <b>Status permintaan: {permintaan.STATUS}</b>
+              <div className="flex flex-col items-center gap-4">
+                <b>Status permintaan: {permintaan.STATUS}</b>
+                {session?.user.ROLE === "ADMIN" && (
+                  <>
+                    <p>Permintaan dari: {permintaan.user.NAME}</p>
+                    {permintaan.STATUS === "PENDING" && (
+                      <>
+                        <Button
+                          variants="PRIMARY"
+                          fullWidth
+                          onClick={() =>
+                            verifikasiPermintaan(
+                              permintaan.ID_PERMINTAAN,
+                              "DITERIMA"
+                            )
+                          }
+                        >
+                          Setujui
+                        </Button>
+                        <Button
+                          variants="ERROR"
+                          fullWidth
+                          onClick={() =>
+                            verifikasiPermintaan(
+                              permintaan.ID_PERMINTAAN,
+                              "DIVERIFIKASI"
+                            )
+                          }
+                        >
+                          Verifikasi
+                        </Button>
+                      </>
+                    )}
+                  </>
+                )}
+              </div>
             </div>
           ))}
+
+          {message && <Snackbar variant="ERROR" message={message} />}
+          {success && <Snackbar variant="SUCCESS" message={success} />}
+          <ShowModal
+            onClose={hideModal}
+            options={modalShown}
+            setMessage={setMessage}
+            setSuccess={setSuccess}
+            idPermintaan={idPermintaan}
+            statusPermintaan={opsiVerifikasi}
+          />
         </div>
       );
     } else {

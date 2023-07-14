@@ -4,6 +4,7 @@ import Button from "@/components/button/Button";
 import TextField from "@/components/inputs/TextField";
 import Snackbar from "@/components/snackbar/Snackbar";
 import { signIn } from "next-auth/react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, FormEvent, useState } from "react";
 
@@ -24,7 +25,6 @@ export default function Home() {
     setMessage(null);
     setSuccess(null);
     setIsLoading(true);
-    console.log(user);
     return await signIn("credentials", {
       redirect: false,
       username: user?.username,
@@ -44,7 +44,15 @@ export default function Home() {
   }
 
   return (
-    <div className="w-full h-screen grid place-items-center">
+    <div className="w-full h-screen grid place-items-center relative">
+      <Image
+        src="/bg.jpg"
+        fill
+        alt="background"
+        className="object-cover -z-20"
+      />
+      <div className="w-full h-screen absolute top-0 left-0 bg-black bg-opacity-10 -z-10" />
+
       {message && <Snackbar variant="ERROR" message={message} />}
       {success && <Snackbar variant="SUCCESS" message={success} />}
       <form

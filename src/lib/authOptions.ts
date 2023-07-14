@@ -1,7 +1,7 @@
 import { NextAuthOptions } from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { db } from "./db";
-import Credentials from "next-auth/providers/credentials";
+import CredentialsProvider from "next-auth/providers/credentials";
 import { Adapter } from "next-auth/adapters";
 
 export const authOptions: NextAuthOptions = {
@@ -11,7 +11,7 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
   providers: [
-    Credentials({
+    CredentialsProvider({
       credentials: {
         username: { type: "text" },
         password: { type: "text" },
@@ -28,8 +28,6 @@ export const authOptions: NextAuthOptions = {
 
         const user = await authresponse.json();
 
-        console.log(user);
-
         if (authresponse.ok && user) {
           return user;
         } else {
@@ -41,26 +39,20 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async session({ token, session }) {
       if (token) {
-        (session.user.USER_ID = token.USER_ID),
-          (session.user.ROLE = token.ROLE);
+        session.user.ROLE = token.ROLE;
+        session.user.ID_USER = token.USER_ID;
+        session.user.USERNAME = token.USERNAME;
       }
 
       return session;
     },
-
     async jwt({ token, user }) {
-      const dbUser = await db.user.findFirst({
-        where: { ID_USER: token.USER_ID },
-      });
-
-      if (!dbUser) {
-        token.USER_ID = parseInt(user!.id);
-        token.ROLE = "USER";
-        return token;
-      } else {
-        (token.USER_ID = dbUser.ID_USER), (token.ROLE = dbUser.ROLE!);
-        return token;
+      if (user) {
+        token.ROLE = user.ROLE;
+        token.USERNAME = user.USERNAME;
+        token.USER_ID = user.ID_USER;
       }
+      return token;
     },
   },
   pages: {
