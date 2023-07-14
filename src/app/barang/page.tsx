@@ -8,11 +8,14 @@ import ShowModal from "@/components/utils/ShowModal";
 import { ROUTES } from "@/lib/constants";
 import Link from "next/link";
 import { useState } from "react";
+import { useSession } from "next-auth/react";
 
 export default function Barang() {
   const [modalShown, setModalShown] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+
+  const { data: session, status } = useSession();
 
   return (
     <div className="w-full px-8 py-8 flex flex-col gap-8">
@@ -21,24 +24,28 @@ export default function Barang() {
       <div className="w-full flex flex-col gap-4">
         <div className="w-full flex flex-row gap-4 justify-between items-center">
           <b className="text-2xl">Data Alat</b>
-          <Button
-            variants="PRIMARY"
-            onClick={() => setModalShown("tambah-alat")}
-          >
-            Tambah Alat
-          </Button>
+          {session?.user.ROLE === "ADMIN" && (
+            <Button
+              variants="PRIMARY"
+              onClick={() => setModalShown("tambah-alat")}
+            >
+              Tambah Alat
+            </Button>
+          )}
         </div>
         <ListAlat setSuccess={setSuccess} setMessage={setMessage} />
       </div>
       <div className="w-full flex flex-col gap-4">
         <div className="w-full flex flex-row gap-4 justify-between items-center">
           <b className="text-2xl">Data Bahan</b>
-          <Button
-            variants="PRIMARY"
-            onClick={() => setModalShown("tambah-bahan")}
-          >
-            Tambah Bahan
-          </Button>
+          {session?.user.ROLE === "ADMIN" && (
+            <Button
+              variants="PRIMARY"
+              onClick={() => setModalShown("tambah-bahan")}
+            >
+              Tambah Bahan
+            </Button>
+          )}
         </div>
         <ListBahan setMessage={setMessage} setSuccess={setSuccess} />
       </div>

@@ -7,6 +7,7 @@ import Button from "../button/Button";
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
 import React, { useState } from "react";
 import ShowModal from "../utils/ShowModal";
+import { useSession } from "next-auth/react";
 
 interface ComponentProps {
   setMessage: React.Dispatch<React.SetStateAction<string | null>>;
@@ -17,6 +18,8 @@ export default function ListAlat({ setMessage, setSuccess }: ComponentProps) {
   const [modalShown, setModalShown] = useState<string | null>(null);
   const [idBahan, setIdBahan] = useState<string | null>(null);
   const [bahanToEdit, setBahanToEdit] = useState<Bahan | null>(null);
+
+  const { data: session } = useSession();
 
   function editBahan(idBahan: string, bahan: Bahan) {
     setModalShown("edit-bahan");
@@ -33,6 +36,11 @@ export default function ListAlat({ setMessage, setSuccess }: ComponentProps) {
     setIdBahan(null);
     setBahanToEdit(null);
     setModalShown(null);
+  }
+
+  function ajukanBahan(idBahan: string) {
+    setIdBahan(idBahan);
+    setModalShown("ajukan-permintaan");
   }
 
   const {
@@ -86,20 +94,32 @@ export default function ListAlat({ setMessage, setSuccess }: ComponentProps) {
                     <p>{bahan.UNIT_BAHAN}</p>
                   </td>
                   <td className="border border-gray-300 px-2 py-2">
-                    <div className="w-full flex flex-row items-center justify-center gap-2">
+                    {session?.user?.ROLE === "ADMIN" && (
+                      <div className="w-full flex flex-row items-center justify-center gap-2">
+                        <Button
+                          variants="PRIMARY"
+                          onClick={() => editBahan(bahan.ID_BAHAN, bahan)}
+                        >
+                          <PencilIcon className="w-4 h-4 text-white" />
+                        </Button>
+                        <Button
+                          variants="ERROR"
+                          onClick={() => hapusBahan(bahan.ID_BAHAN)}
+                        >
+                          <TrashIcon className="w-4 h-4 text-white" />
+                        </Button>
+                      </div>
+                    )}
+
+                    {session?.user.ROLE === "USER" && (
                       <Button
                         variants="PRIMARY"
-                        onClick={() => editBahan(bahan.ID_BAHAN, bahan)}
+                        fullWidth
+                        onClick={() => ajukanBahan(bahan.ID_BAHAN)}
                       >
-                        <PencilIcon className="w-4 h-4 text-white" />
+                        Ajukan Permintaan
                       </Button>
-                      <Button
-                        variants="ERROR"
-                        onClick={() => hapusBahan(bahan.ID_BAHAN)}
-                      >
-                        <TrashIcon className="w-4 h-4 text-white" />
-                      </Button>
-                    </div>
+                    )}
                   </td>
                 </tr>
               ))}

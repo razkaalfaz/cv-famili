@@ -7,6 +7,7 @@ import Button from "../button/Button";
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 import ShowModal from "../utils/ShowModal";
+import { useSession } from "next-auth/react";
 
 interface ComponentProps {
   setSuccess: React.Dispatch<React.SetStateAction<string | null>>;
@@ -17,6 +18,8 @@ export default function ListAlat({ setSuccess, setMessage }: ComponentProps) {
   const [modalShown, setModalShown] = useState<string | null>(null);
   const [idAlat, setIdAlat] = useState<string | null>(null);
   const [alatToUpdate, setAlatToUpdate] = useState<Alat | null>(null);
+
+  const { data: session } = useSession();
 
   function hideModal() {
     setIdAlat(null);
@@ -32,6 +35,11 @@ export default function ListAlat({ setSuccess, setMessage }: ComponentProps) {
     setModalShown("edit-alat");
     setIdAlat(idAlat);
     setAlatToUpdate(alat);
+  }
+
+  function ajukanAlat(idAlat: string) {
+    setModalShown("ajukan-permintaan");
+    setIdAlat(idAlat);
   }
 
   const {
@@ -91,20 +99,32 @@ export default function ListAlat({ setSuccess, setMessage }: ComponentProps) {
                     <p>{alat.ALAT_TIDAK_LAYAK}</p>
                   </td>
                   <td className="border border-gray-300 px-2 py-2">
-                    <div className="w-full flex flex-row items-center justify-center gap-2">
+                    {session?.user?.ROLE === "ADMIN" && (
+                      <div className="w-full flex flex-row items-center justify-center gap-2">
+                        <Button
+                          variants="PRIMARY"
+                          onClick={() => editAlat(alat.ID_ALAT, alat)}
+                        >
+                          <PencilIcon className="w-4 h-4 text-white" />
+                        </Button>
+                        <Button
+                          variants="ERROR"
+                          onClick={() => hapusAlat(alat.ID_ALAT)}
+                        >
+                          <TrashIcon className="w-4 h-4 text-white" />
+                        </Button>
+                      </div>
+                    )}
+
+                    {session?.user.ROLE === "USER" && (
                       <Button
                         variants="PRIMARY"
-                        onClick={() => editAlat(alat.ID_ALAT, alat)}
+                        fullWidth
+                        onClick={() => ajukanAlat(alat.ID_ALAT)}
                       >
-                        <PencilIcon className="w-4 h-4 text-white" />
+                        Ajukan Permintaan
                       </Button>
-                      <Button
-                        variants="ERROR"
-                        onClick={() => hapusAlat(alat.ID_ALAT)}
-                      >
-                        <TrashIcon className="w-4 h-4 text-white" />
-                      </Button>
-                    </div>
+                    )}
                   </td>
                 </tr>
               ))}

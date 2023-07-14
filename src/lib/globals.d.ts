@@ -7,6 +7,11 @@ type Alat = {
   ALAT_TIDAK_LAYAK: number;
 };
 
+type PermintaanBarang = {
+  ID_BARANG: string;
+  JUMLAH_BARANG: number;
+};
+
 type Bahan = {
   ID_BAHAN: string;
   NAMA_BAHAN: string;
@@ -24,3 +29,14 @@ type Tab = {
   url: string;
   name: string;
 };
+
+type UserLogin = {
+  username?: string;
+  password?: string;
+};
+
+enum StatusPermintaan {
+  PENDING = "PENDING",
+  DIVERIFIKASI = "DIVERIFIKASI",
+  DITERIMA = "DITERIMA",
+}

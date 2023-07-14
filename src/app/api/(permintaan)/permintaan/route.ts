@@ -3,32 +3,101 @@ import { NextRequest, NextResponse } from "next/server";
 
 interface RequestBody {
   ID_USER: number;
-  ALAT: Alat[];
-  BAHAN: Bahan[];
+  ALAT: PermintaanBarang;
+  BAHAN: PermintaanBarang;
 }
 
 async function handler(request: NextRequest) {
   const body: RequestBody = await request.json();
 
-  const idAlat = body.ALAT.map((alat: Alat) => ({ ID_ALAT: alat.ID_ALAT }));
-  const idBahan = body.BAHAN.map((bahan: Bahan) => ({
-    ID_BAHAN: bahan.ID_BAHAN,
-  }));
+  const currentDate = new Date();
+  const day = currentDate.getDate();
+  const month = currentDate.getMonth();
+  const years = currentDate.getFullYear();
+  const kodifikasiPermintaanAlat = `P-${day < 10 ? `0${day}` : day}${
+    month < 10 ? `0${month}` : month
+  }${years}-${body.ID_USER}`;
 
-  const permintaan = await db.permintaan.create({
-    data: {
-      alat: {
-        connect: idAlat,
-      },
-      bahan: {
-        connect: idBahan,
-      },
-      ID_USER: body.ID_USER,
-    },
-  });
+  async function cekPermintaan() {
+    if (body.ALAT) {
+      const permintaan = await db.permintaan.upsert({
+        where: {
+          ID_PERMINTAAN: kodifikasiPermintaanAlat,
+        },
+        create: {
+          ID_PERMINTAAN: kodifikasiPermintaanAlat,
+          detailPermintaan: {
+            create: {
+              ID_ALAT: body.ALAT.ID_BARANG,
+              JUMLAH_ALAT: body.ALAT.JUMLAH_BARANG,
+            },
+          },
+          ID_USER: body.ID_USER,
+        },
+        update: {
+          detailPermintaan: {
+            upsert: {
+              where: {
+                ID_ALAT: body.ALAT.ID_BARANG,
+              },
+              create: {
+                ID_ALAT: body.ALAT.ID_BARANG,
+                JUMLAH_ALAT: body.ALAT.JUMLAH_BARANG,
+              },
+              update: {
+                ID_ALAT: body.ALAT.ID_BARANG,
+                JUMLAH_ALAT: body.ALAT.JUMLAH_BARANG,
+              },
+            },
+          },
+          ID_USER: body.ID_USER,
+        },
+      });
+      return permintaan;
+    } else if (body.BAHAN) {
+      const permintaan = await db.permintaan.upsert({
+        where: {
+          ID_PERMINTAAN: kodifikasiPermintaanAlat,
+        },
+        create: {
+          ID_PERMINTAAN: kodifikasiPermintaanAlat,
+          detailPermintaan: {
+            create: {
+              ID_BAHAN: body.BAHAN.ID_BARANG,
+              JUMLAH_BAHAN: body.BAHAN.JUMLAH_BARANG,
+            },
+          },
+          ID_USER: body.ID_USER,
+        },
+        update: {
+          detailPermintaan: {
+            upsert: {
+              where: {
+                ID_BAHAN: body.BAHAN.ID_BARANG,
+              },
+              create: {
+                ID_BAHAN: body.BAHAN.ID_BARANG,
+                JUMLAH_BAHAN: body.BAHAN.JUMLAH_BARANG,
+              },
+              update: {
+                ID_BAHAN: body.BAHAN.ID_BARANG,
+                JUMLAH_BAHAN: body.BAHAN.JUMLAH_BARANG,
+              },
+            },
+          },
+          ID_USER: body.ID_USER,
+        },
+      });
+      return permintaan;
+    } else {
+      return null;
+    }
+  }
 
-  if (permintaan) {
-    return NextResponse.json({ ok: true, result: permintaan });
+  const responsePermintaan = await cekPermintaan();
+
+  if (responsePermintaan) {
+    return NextResponse.json({ ok: true, result: responsePermintaan });
   } else {
     return NextResponse.json({ ok: false, result: null });
   }

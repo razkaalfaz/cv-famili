@@ -5,6 +5,7 @@ import Button from "../button/Button";
 import ModalsContainer from "../modal/ModalsContainer";
 import { useState } from "react";
 import { useSWRConfig } from "swr";
+import { useSession } from "next-auth/react";
 
 type Inputs = {
   alat: {
@@ -19,6 +20,9 @@ type Inputs = {
     namaBahan: string;
     stockBahan: number;
     unitBahan: string;
+  };
+  permintaan: {
+    jumlahPermintaan: number;
   };
 };
 
@@ -50,6 +54,7 @@ export default function ShowModal({
   });
 
   const { mutate } = useSWRConfig();
+  const { data: session } = useSession();
 
   const tambahAlat: SubmitHandler<Inputs> = async (data) => {
     setIsLoading(true);
@@ -153,6 +158,56 @@ export default function ShowModal({
         setIsLoading(false);
         setSuccess("Berhasil mengubah data bahan.");
         mutate("/api/list_bahan");
+        hideModal();
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  const pengajuanBarang: SubmitHandler<Inputs> = async (data) => {
+    setIsLoading(true);
+    setMessage(null);
+    setSuccess(null);
+    const permintaan = data.permintaan;
+
+    const requestBody = () => {
+      if (idAlat) {
+        return {
+          ID_USER: session?.user.USER_ID,
+          ALAT: {
+            ID_BARANG: idAlat,
+            JUMLAH_BARANG: permintaan.jumlahPermintaan,
+          },
+        };
+      } else if (idBahan) {
+        return {
+          ID_USER: session?.user.USER_ID,
+          BAHAN: {
+            ID_BARANG: idBahan,
+            JUMLAH_BARANG: permintaan.jumlahPermintaan,
+          },
+        };
+      } else {
+        return null;
+      }
+    };
+
+    try {
+      const res = await fetch("http://localhost:3000/api/permintaan", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(requestBody()),
+      });
+
+      const response = await res.json();
+
+      if (!response.ok) {
+        setIsLoading(false);
+        setMessage("Gagal mengajukan barang.");
+      } else {
+        setIsLoading(false);
+        setSuccess("Berhasil mengajukan barang.");
+        mutate("/api/semua_permintaan");
         hideModal();
       }
     } catch (err) {
@@ -593,6 +648,42 @@ export default function ShowModal({
         </ModalsContainer>
       );
 
+    case "ajukan-permintaan":
+      return (
+        <ModalsContainer
+          title="Pengajuan permintaan"
+          description="Berapa banyak jumlah barang yang akan anda ajukan?"
+          onClose={hideModal}
+        >
+          <form
+            className="w-full flex flex-col gap-4"
+            onSubmit={handleSubmit(pengajuanBarang)}
+          >
+            <div className="flex flex-col gap-2">
+              <label htmlFor="jumlah_permintaan">Jumlah barang</label>
+              <input
+                id="jumlah_permintaan"
+                type="number"
+                required
+                placeholder="1"
+                min={1}
+                className="w-full rounded-md outline-none border border-gray-300 px-2 py-2"
+                {...register("permintaan.jumlahPermintaan", {
+                  setValueAs: (v) => parseInt(v),
+                })}
+              />
+            </div>
+            <Button
+              variants="PRIMARY"
+              type="submit"
+              fullWidth
+              disabled={isLoading}
+            >
+              {isLoading ? "Mengajukan..." : "Ajukan"}
+            </Button>
+          </form>
+        </ModalsContainer>
+      );
     default:
       return null;
   }
