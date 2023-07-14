@@ -15,7 +15,7 @@ async function handler(request: NextRequest) {
   const month = currentDate.getMonth();
   const years = currentDate.getFullYear();
   const kodifikasiPermintaanAlat = `P-${day < 10 ? `0${day}` : day}${
-    month < 10 ? `0${month}` : month
+    month < 10 ? `0${month + 1}` : month
   }${years}-${body.ID_USER}`;
 
   async function cekPermintaan() {

@@ -35,6 +35,22 @@ type UserLogin = {
   password?: string;
 };
 
+type Permintaan = {
+  ID_PERMINTAAN: string;
+  ID_USER: number;
+  TGL_PERMINTAAN: Date;
+  STATUS: StatusPermintaan;
+  detailPermintaan: DetailPermintaan[];
+};
+
+type DetailPermintaan = {
+  ID_DETAIL_PERMINTAAN: string;
+  alat: Alat;
+  bahan: Bahan;
+  JUMLAH_ALAT: number;
+  JUMLAH_BAHAN: number;
+};
+
 enum StatusPermintaan {
   PENDING = "PENDING",
   DIVERIFIKASI = "DIVERIFIKASI",

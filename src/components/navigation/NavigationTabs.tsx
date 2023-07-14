@@ -18,7 +18,7 @@ export default function NavigationTabs() {
     return null;
   } else {
     return (
-      <div className="w-96 min-h-screen flex flex-col gap-4 border border-gray-300 px-4 py-4">
+      <div className="w-64 min-h-screen shrink-0 flex flex-col gap-4 border border-gray-300 px-4 py-4">
         <div className="w-full px-2 py-2 grid place-items-center font-bold text-lg">
           CV Famili
         </div>

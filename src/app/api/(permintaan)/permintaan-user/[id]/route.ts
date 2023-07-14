@@ -14,8 +14,12 @@ async function handler(
       },
     },
     include: {
-      alat: true,
-      bahan: true,
+      detailPermintaan: {
+        include: {
+          alat: true,
+          bahan: true,
+        },
+      },
     },
   });
 
