@@ -1,5 +1,6 @@
 "use client";
 
+import Loading from "@/components/indikator/Loading";
 import { fetcher, hitungJumlahAlat, hitungJumlahBahan } from "@/lib/helper";
 import { useSession } from "next-auth/react";
 import useSWR from "swr";
@@ -15,7 +16,11 @@ export default function Dashboard() {
   const { data: bahan, error: errorBahan } = useSWR("/api/list_bahan", fetcher);
 
   if (isLoading || isValidating) {
-    return "Loading...";
+    return (
+      <div className="w-full h-screen grid place-items-center">
+        <Loading />
+      </div>
+    );
   }
 
   if (errorAlat || errorBahan) {

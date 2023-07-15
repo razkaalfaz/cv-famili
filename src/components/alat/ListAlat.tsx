@@ -8,6 +8,7 @@ import { PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 import ShowModal from "../utils/ShowModal";
 import { useSession } from "next-auth/react";
+import Loading from "../indikator/Loading";
 
 interface ComponentProps {
   setSuccess: React.Dispatch<React.SetStateAction<string | null>>;
@@ -50,7 +51,11 @@ export default function ListAlat({ setSuccess, setMessage }: ComponentProps) {
   } = useSWR("/api/list-alat", fetcher);
 
   if (isLoading || isValidating) {
-    return "Loading alat...";
+    return (
+      <div className="w-full grid place-items-center">
+        <Loading />
+      </div>
+    );
   }
 
   if (error) {

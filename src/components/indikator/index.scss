@@ -1,0 +1,18 @@
+.loading {
+  &-spinner {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    @apply border-4 border-neutral-100 border-t-4 border-t-neutral-300 border-r-4 border-r-neutral-300;
+    animation: spin 2s infinite forwards;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
