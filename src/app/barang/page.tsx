@@ -45,6 +45,22 @@ export default function Barang() {
 
   return (
     <div className="w-full px-8 py-8 flex flex-col gap-8">
+      {session?.user.ROLE === "ADMIN" && (
+        <div className="w-full fixed bottom-4 right-4 flex flex-col gap-4 items-end ">
+          <button
+            className="w-48 rounded-md grid place-items-center px-2 py-2 bg-orange-700 text-white"
+            onClick={() => setModalShown("tambah-alat")}
+          >
+            Tambah Alat
+          </button>
+          <button
+            className="w-48 rounded-md grid place-items-center px-2 py-2 bg-orange-700 text-white"
+            onClick={() => setModalShown("tambah-bahan")}
+          >
+            Tambah Bahan
+          </button>
+        </div>
+      )}
       <div className="flex flex-col gap-2">
         <p className="text-2xl font-semibold">Data Barang</p>
         <p className="text-lg">
@@ -68,11 +84,20 @@ export default function Barang() {
         </div>
         {showData(dataShown)}
       </div>
+
+      <ShowModal
+        onClose={() => setModalShown(null)}
+        options={modalShown}
+        setSuccess={setSuccess}
+        setMessage={setMessage}
+      />
+
+      {message && <Snackbar message={message} variant="ERROR" />}
+      {success && <Snackbar message={success} variant="SUCCESS" />}
     </div>
 
     // <div className="w-full px-8 py-8 flex flex-col gap-8">
-    //   {message && <Snackbar message={message} variant="ERROR" />}
-    //   {success && <Snackbar message={success} variant="SUCCESS" />}
+
     //   <div className="w-full flex flex-col gap-4">
     //     <div className="w-full flex flex-row gap-4 justify-between items-center">
     //       <b className="text-2xl">Data Alat</b>
@@ -101,12 +126,7 @@ export default function Barang() {
     //     </div>
     //     <ListBahan setMessage={setMessage} setSuccess={setSuccess} />
     //   </div>
-    //   <ShowModal
-    //     onClose={() => setModalShown(null)}
-    //     options={modalShown}
-    //     setSuccess={setSuccess}
-    //     setMessage={setMessage}
-    //   />
+    //
     // </div>
   );
 }

@@ -40,9 +40,9 @@ export const VARIABEL_BAHAN = [
 
 export const NAVIGATION_TABS = [
   {
-    id: "login",
-    url: ROUTES.LANDING,
-    name: "Login",
+    id: "dashboard",
+    url: ROUTES.ADMIN.DASHBOARD,
+    name: "Dashboard",
   },
   {
     id: "list-barang",
