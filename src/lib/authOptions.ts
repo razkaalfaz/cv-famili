@@ -18,7 +18,7 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         const authresponse = await fetch(
-          "http://localhost:3000/api/auth/login",
+          process.env.NEXT_PUBLIC_API_AUTH_LOGIN!,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
