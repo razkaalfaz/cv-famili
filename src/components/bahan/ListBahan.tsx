@@ -54,7 +54,7 @@ export default function ListAlat({ setMessage, setSuccess }: ComponentProps) {
     if (searchQuery) {
       setIsLoading(true);
       try {
-        const res = await fetch("http://localhost:3000/api/cari_bahan", {
+        const res = await fetch(process.env.NEXT_PUBLIC_API_CARI_BAHAN!, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ query: searchQuery }),

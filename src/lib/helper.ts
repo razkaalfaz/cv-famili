@@ -24,3 +24,11 @@ export function hitungJumlahBahan(bahan: Bahan[]) {
 
   return { totalStock, totalJenis };
 }
+
+export function sortPermintaan(permintaan: Permintaan[]) {
+  const permintaanDiterima = permintaan.filter(
+    (permintaan: Permintaan) => permintaan.STATUS === "DITERIMA"
+  );
+
+  return permintaanDiterima;
+}

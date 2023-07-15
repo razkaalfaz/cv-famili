@@ -14,6 +14,8 @@ export default function NavigationTabs() {
   const activeLinkStyles =
     baseLinkStyles + " font-bold border-b-2 border-b-orange-700";
 
+  const { data: session } = useSession();
+
   const { update } = useSession();
 
   function logoutHandler() {
@@ -45,6 +47,18 @@ export default function NavigationTabs() {
               {tab.name}
             </Link>
           ))}
+
+          {session && session.user.ROLE === "ADMIN" && (
+            <Link
+              href="/tambah_user"
+              className={
+                pathname === "/tambah_user" ? activeLinkStyles : baseLinkStyles
+              }
+            >
+              Tambah User
+            </Link>
+          )}
+
           <Button variants="ERROR" onClick={() => logoutHandler()}>
             Logout
           </Button>

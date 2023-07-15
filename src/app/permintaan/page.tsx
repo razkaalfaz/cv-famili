@@ -3,7 +3,7 @@
 import Button from "@/components/button/Button";
 import Snackbar from "@/components/snackbar/Snackbar";
 import ShowModal from "@/components/utils/ShowModal";
-import { fetcher } from "@/lib/helper";
+import { fetcher, sortPermintaan } from "@/lib/helper";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import useSWR from "swr";
@@ -47,7 +47,7 @@ export default function Permintaan() {
     isLoading,
     isValidating,
   } = useSWR(
-    session?.user.ROLE === "ADMIN"
+    session?.user.ROLE === "ADMIN" || session?.user.ROLE === "PERALATAN"
       ? "/api/semua_permintaan"
       : "/api/permintaan-user/" + userId,
     fetcher
@@ -71,6 +71,79 @@ export default function Permintaan() {
 
   if (dataPermintaan) {
     if (dataPermintaan.result.length > 0) {
+      if (session && session.user.ROLE === "PERALATAN") {
+        const dataPermintaanDiterima = sortPermintaan(dataPermintaan.result);
+        return (
+          <div className="w-full px-8 py-8 flex flex-col gap-8">
+            {dataPermintaanDiterima.map((permintaan: Permintaan) => (
+              <div
+                key={permintaan.ID_PERMINTAAN}
+                className="w-full px-2 py-2 rounded-md border border-gray-300 overflow-hidden flex flex-row justify-between gap-8"
+              >
+                <div className="flex flex-col gap-4">
+                  <div className="flex flex-col gap-2">
+                    <b>ID Permintaan: {permintaan.ID_PERMINTAAN}</b>
+                    <p>
+                      Diajukan pada tanggal:{" "}
+                      {convertToDate(permintaan.TGL_PERMINTAAN)}
+                    </p>
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <b>Daftar barang yang di ajukan:</b>
+                    <div className="flex flex-col gap-2">
+                      {permintaan.detail_permintaan.map(
+                        (detailPermintaan: DetailPermintaan) => (
+                          <div
+                            key={detailPermintaan.ID_DETAIL_PERMINTAAN}
+                            className="flex flex-col gap-4"
+                          >
+                            <div className="flex flex-row gap-2 items-center">
+                              <p>
+                                {detailPermintaan.alat?.NAMA_ALAT ||
+                                  detailPermintaan.bahan?.NAMA_BAHAN}
+                              </p>
+                              <div className="w-8 h-px bg-gray-500" />
+                              <p>
+                                Sebanyak:{" "}
+                                {detailPermintaan?.JUMLAH_ALAT ||
+                                  detailPermintaan?.JUMLAH_BAHAN}{" "}
+                                {detailPermintaan.alat?.UNIT_ALAT ||
+                                  detailPermintaan.bahan?.UNIT_BAHAN}
+                              </p>
+                            </div>
+                          </div>
+                        )
+                      )}
+                    </div>
+                  </div>
+
+                  <b>
+                    Total barang yang di ajukan:{" "}
+                    {permintaan.detail_permintaan.length} jenis barang.
+                  </b>
+                </div>
+
+                <div className="flex flex-col items-center gap-4">
+                  <b>Status permintaan: {permintaan.STATUS}</b>
+                </div>
+              </div>
+            ))}
+
+            {message && <Snackbar variant="ERROR" message={message} />}
+            {success && <Snackbar variant="SUCCESS" message={success} />}
+            <ShowModal
+              onClose={hideModal}
+              options={modalShown}
+              setMessage={setMessage}
+              setSuccess={setSuccess}
+              idPermintaan={idPermintaan}
+              statusPermintaan={opsiVerifikasi}
+            />
+          </div>
+        );
+      }
+
       return (
         <div className="w-full px-8 py-8 flex flex-col gap-8">
           {dataPermintaan.result.map((permintaan: Permintaan) => (
@@ -124,39 +197,40 @@ export default function Permintaan() {
 
               <div className="flex flex-col items-center gap-4">
                 <b>Status permintaan: {permintaan.STATUS}</b>
-                {session?.user.ROLE === "ADMIN" && (
-                  <>
-                    <p>Permintaan dari: {permintaan.user.NAME}</p>
-                    {permintaan.STATUS === "PENDING" && (
-                      <>
-                        <Button
-                          variants="PRIMARY"
-                          fullWidth
-                          onClick={() =>
-                            verifikasiPermintaan(
-                              permintaan.ID_PERMINTAAN,
-                              "DITERIMA"
-                            )
-                          }
-                        >
-                          Setujui
-                        </Button>
-                        <Button
-                          variants="ERROR"
-                          fullWidth
-                          onClick={() =>
-                            verifikasiPermintaan(
-                              permintaan.ID_PERMINTAAN,
-                              "DIVERIFIKASI"
-                            )
-                          }
-                        >
-                          Verifikasi
-                        </Button>
-                      </>
-                    )}
-                  </>
-                )}
+                {session?.user.ROLE === "ADMIN" ||
+                  (session?.user.ROLE === "PERALATAN" && (
+                    <>
+                      <p>Permintaan dari: {permintaan.user.NAME}</p>
+                      {permintaan.STATUS === "PENDING" && (
+                        <>
+                          <Button
+                            variants="PRIMARY"
+                            fullWidth
+                            onClick={() =>
+                              verifikasiPermintaan(
+                                permintaan.ID_PERMINTAAN,
+                                "DITERIMA"
+                              )
+                            }
+                          >
+                            Setujui
+                          </Button>
+                          <Button
+                            variants="ERROR"
+                            fullWidth
+                            onClick={() =>
+                              verifikasiPermintaan(
+                                permintaan.ID_PERMINTAAN,
+                                "DIVERIFIKASI"
+                              )
+                            }
+                          >
+                            Verifikasi
+                          </Button>
+                        </>
+                      )}
+                    </>
+                  ))}
               </div>
             </div>
           ))}
