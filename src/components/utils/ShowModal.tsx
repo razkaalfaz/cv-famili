@@ -66,7 +66,7 @@ export default function ShowModal({
     setSuccess(null);
     const alat = data.alat;
     try {
-      const res = await fetch("http://localhost:3000/api/tambah_alat", {
+      const res = await fetch(process.env.NEXT_PUBLIC_API_TAMBAH_ALAT!, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(alat),
@@ -93,7 +93,7 @@ export default function ShowModal({
     setSuccess(null);
     const alat = data.alat;
     try {
-      const res = await fetch("http://localhost:3000/api/edit_alat", {
+      const res = await fetch(process.env.NEXT_PUBLIC_API_EDIT_ALAT!, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ idAlat: idAlat, ...alat }),
@@ -121,7 +121,7 @@ export default function ShowModal({
     setSuccess(null);
     const bahan = data.bahan;
     try {
-      const res = await fetch("http://localhost:3000/api/tambah_bahan", {
+      const res = await fetch(process.env.NEXT_PUBLIC_API_TAMBAH_BAHAN!, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(bahan),
@@ -148,7 +148,7 @@ export default function ShowModal({
     setSuccess(null);
     const bahan = data.bahan;
     try {
-      const res = await fetch("http://localhost:3000/api/edit_bahan", {
+      const res = await fetch(process.env.NEXT_PUBLIC_API_EDIT_BAHAN!, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ idBahan: idBahan, ...bahan }),
@@ -198,7 +198,7 @@ export default function ShowModal({
     };
 
     try {
-      const res = await fetch("http://localhost:3000/api/permintaan", {
+      const res = await fetch(process.env.NEXT_PUBLIC_API_PERMINTAAN!, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(requestBody()),
@@ -226,7 +226,7 @@ export default function ShowModal({
     setSuccess(null);
     if (idAlat) {
       try {
-        const res = await fetch("http://localhost:3000/api/hapus_alat", {
+        const res = await fetch(process.env.NEXT_PUBLIC_API_HAPUS_ALAT!, {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ idAlat: idAlat }),
@@ -254,7 +254,7 @@ export default function ShowModal({
     setSuccess(null);
     if (idBahan) {
       try {
-        const res = await fetch("http://localhost:3000/api/hapus_bahan", {
+        const res = await fetch(process.env.NEXT_PUBLIC_API_HAPUS_BAHAN!, {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ idBahan: idBahan }),
@@ -283,7 +283,7 @@ export default function ShowModal({
       setSuccess(null);
       try {
         const res = await fetch(
-          "http://localhost:3000/api/verifikasi-permintaan",
+          process.env.NEXT_PUBLIC_API_VERIFIKASI_PERMINTAAN!,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
