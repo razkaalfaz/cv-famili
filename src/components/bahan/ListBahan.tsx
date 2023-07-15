@@ -62,13 +62,13 @@ export default function ListAlat({ setMessage, setSuccess }: ComponentProps) {
     if (hasilBahan.result.length > 0) {
       return (
         <>
-          <table className="w-full">
-            <thead className="border border-gray-300">
+          <table className="w-full rounded-md overflow-hidden">
+            <thead className="border border-gray-300 bg-orange-700 text-white font-medium">
               <tr>
                 {VARIABEL_BAHAN.map((variabel: VariabelBarang) => (
                   <td
                     key={variabel.id}
-                    className="border border-gray-300 px-2 py-2"
+                    className="text-center border border-gray-300 px-2 py-2"
                   >
                     <b>{variabel.name}</b>
                   </td>
@@ -78,7 +78,7 @@ export default function ListAlat({ setMessage, setSuccess }: ComponentProps) {
             <tbody>
               {hasilBahan.result.map((bahan: Bahan, idx: number) => (
                 <tr key={bahan.ID_BAHAN}>
-                  <td className="border border-gray-300 px-2 py-2">
+                  <td className="text-center border border-gray-300 px-2 py-2">
                     <p>{idx + 1}.</p>
                   </td>
                   <td className="border border-gray-300 px-2 py-2">
@@ -87,10 +87,10 @@ export default function ListAlat({ setMessage, setSuccess }: ComponentProps) {
                   <td className="border border-gray-300 px-2 py-2">
                     <p>{bahan.NAMA_BAHAN}</p>
                   </td>
-                  <td className="border border-gray-300 px-2 py-2">
+                  <td className="text-center border border-gray-300 px-2 py-2">
                     <p>{bahan.STOCK_BAHAN}</p>
                   </td>
-                  <td className="border border-gray-300 px-2 py-2">
+                  <td className="text-center border border-gray-300 px-2 py-2">
                     <p>{bahan.UNIT_BAHAN}</p>
                   </td>
                   <td className="border border-gray-300 px-2 py-2">

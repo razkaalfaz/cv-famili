@@ -42,15 +42,6 @@ export default function ListAlat({ setSuccess, setMessage }: ComponentProps) {
     setIdAlat(idAlat);
   }
 
-  function cekJenisAlat(idAlat: string) {
-    const jenisAlat = idAlat.substring(0, 2);
-    if (jenisAlat === "AB") {
-      return "Alat Besar";
-    } else {
-      return "Alat Ringan";
-    }
-  }
-
   const {
     data: hasilAlat,
     isLoading,
@@ -69,41 +60,76 @@ export default function ListAlat({ setSuccess, setMessage }: ComponentProps) {
   if (hasilAlat) {
     if (hasilAlat.result.length > 0) {
       return (
-        <div className="w-full flex flex-col gap-8">
-          {hasilAlat.result.map((alat: Alat) => (
-            <div
-              key={alat.ID_ALAT}
-              className="w-full px-4 py-4 rounded-md border border-gray-300 overflow-hidden flex flex-row justify-between items-center"
-            >
-              <div className="flex flex-col gap-4">
-                <b className="text-sm">ID Alat: {alat.ID_ALAT}</b>
-                <p className="text-lg">{alat.NAMA_ALAT}</p>
-                <p className="text-base">
-                  Jenis alat: {cekJenisAlat(alat.ID_ALAT)}
-                </p>
-              </div>
+        <>
+          <table className="w-full rounded-md overflow-hidden">
+            <thead className="border border-gray-300 bg-orange-700 text-white font-medium">
+              <tr>
+                {VARIABEL_ALAT.map((variabel: VariabelBarang) => (
+                  <td
+                    key={variabel.id}
+                    className="text-center px-2 py-2 border border-gray-300"
+                  >
+                    <b>{variabel.name}</b>
+                  </td>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {hasilAlat.result.map((alat: Alat, idx: number) => (
+                <tr key={alat.ID_ALAT}>
+                  <td className="text-center border border-gray-300 px-2 py-2">
+                    <p>{idx + 1}.</p>
+                  </td>
+                  <td className="border border-gray-300 px-2 py-2">
+                    <p>{alat.ID_ALAT}</p>
+                  </td>
+                  <td className="border border-gray-300 px-2 py-2">
+                    <p>{alat.NAMA_ALAT}</p>
+                  </td>
+                  <td className="text-center border border-gray-300 px-2 py-2">
+                    <p>{alat.JUMLAH_ALAT}</p>
+                  </td>
+                  <td className="text-center border border-gray-300 px-2 py-2">
+                    <p>{alat.UNIT_ALAT}</p>
+                  </td>
+                  <td className="text-center border border-gray-300 px-2 py-2">
+                    <p>{alat.ALAT_LAYAK}</p>
+                  </td>
+                  <td className="text-center border border-gray-300 px-2 py-2">
+                    <p>{alat.ALAT_TIDAK_LAYAK}</p>
+                  </td>
+                  <td className="border border-gray-300 px-2 py-2">
+                    {session?.user?.ROLE === "ADMIN" && (
+                      <div className="w-full flex flex-row items-center justify-center gap-2">
+                        <Button
+                          variants="ACCENT"
+                          onClick={() => editAlat(alat.ID_ALAT, alat)}
+                        >
+                          <PencilIcon className="w-4 h-4 text-white" />
+                        </Button>
+                        <Button
+                          variants="ERROR"
+                          onClick={() => hapusAlat(alat.ID_ALAT)}
+                        >
+                          <TrashIcon className="w-4 h-4 text-white" />
+                        </Button>
+                      </div>
+                    )}
 
-              <div className="flex flex-col gap-4">
-                <Button
-                  variants="ACCENT"
-                  fullWidth
-                  onClick={() => editAlat(alat.ID_ALAT, alat)}
-                >
-                  Edit Alat
-                </Button>
-                <Button
-                  variants="ERROR"
-                  fullWidth
-                  onClick={() => hapusAlat(alat.ID_ALAT)}
-                >
-                  Hapus Alat
-                </Button>
-                <b>
-                  Jumlah alat: {alat.JUMLAH_ALAT} {alat.UNIT_ALAT}
-                </b>
-              </div>
-            </div>
-          ))}
+                    {session?.user.ROLE === "USER" && (
+                      <Button
+                        variants="ACCENT"
+                        fullWidth
+                        onClick={() => ajukanAlat(alat.ID_ALAT)}
+                      >
+                        Ajukan Permintaan
+                      </Button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
 
           <ShowModal
             onClose={hideModal}
@@ -113,7 +139,7 @@ export default function ListAlat({ setSuccess, setMessage }: ComponentProps) {
             idAlat={idAlat}
             dataAlat={alatToUpdate}
           />
-        </div>
+        </>
       );
     } else {
       return (
