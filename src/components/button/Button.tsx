@@ -4,6 +4,7 @@ type ButtonVariants = {
   PRIMARY: string;
   ERROR: string;
   SECONDARY: string;
+  ACCENT: string;
 };
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -26,6 +27,7 @@ export default function Button({
     PRIMARY: buttonBaseStyles + "bg-orange-900 text-white",
     SECONDARY: buttonBaseStyles + "bg-neutral-500 text-neutral-50",
     ERROR: buttonBaseStyles + "bg-red-950 text-white",
+    ACCENT: buttonBaseStyles + "bg-green-950 text-white",
   };
 
   return (

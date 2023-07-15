@@ -10,9 +10,9 @@ export default function NavigationTabs() {
   const pathname = usePathname();
 
   const baseLinkStyles =
-    "w-full px-2 py-2 grid place-items-center border border-gray-300 bg-opacity-95 hover:bg-sky-300 rounded-md overflow-hidden";
+    "w-full px-2 py-2 grid place-items-center border border-gray-300 bg-opacity-95 hover:bg-orange-700 hover:text-white rounded-md overflow-hidden";
   const activeLinkStyles =
-    baseLinkStyles + " bg-sky-300 text-neutral-800 hover:bg-opacity-100";
+    baseLinkStyles + " bg-orange-700 text-white hover:bg-opacity-100";
 
   const { update } = useSession();
 

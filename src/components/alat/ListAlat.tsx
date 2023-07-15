@@ -102,7 +102,7 @@ export default function ListAlat({ setSuccess, setMessage }: ComponentProps) {
                     {session?.user?.ROLE === "ADMIN" && (
                       <div className="w-full flex flex-row items-center justify-center gap-2">
                         <Button
-                          variants="PRIMARY"
+                          variants="ACCENT"
                           onClick={() => editAlat(alat.ID_ALAT, alat)}
                         >
                           <PencilIcon className="w-4 h-4 text-white" />
@@ -118,7 +118,7 @@ export default function ListAlat({ setSuccess, setMessage }: ComponentProps) {
 
                     {session?.user.ROLE === "USER" && (
                       <Button
-                        variants="PRIMARY"
+                        variants="ACCENT"
                         fullWidth
                         onClick={() => ajukanAlat(alat.ID_ALAT)}
                       >

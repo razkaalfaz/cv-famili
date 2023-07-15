@@ -3,7 +3,12 @@
 import Button from "@/components/button/Button";
 import TextField from "@/components/inputs/TextField";
 import Snackbar from "@/components/snackbar/Snackbar";
-import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
+import {
+  CheckBadgeIcon,
+  EyeIcon,
+  EyeSlashIcon,
+  ForwardIcon,
+} from "@heroicons/react/24/outline";
 import { signIn } from "next-auth/react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -130,8 +135,8 @@ export default function Home() {
           className="object-cover -z-20"
         />
         <div className="w-full h-full absolute top-0 left-0 bg-orange-700 bg-opacity-10 -z-10" />
-        <div className="w-full rounded-lg bg-black bg-opacity-30 flex flex-col gap-4 px-16 py-4">
-          <div className="w-full flex flex-col gap-2 text-white items-center">
+        <div className="w-full rounded-lg bg-black bg-opacity-30 backdrop-blur-sm flex flex-col gap-4 px-16 py-16 text-center">
+          <div className="w-full flex flex-col gap-2 text-white items-center font-bold">
             <p className="text-2xl">Temukan alat dan bahan terbaik dari</p>
             <p className="text-2xl">CV. Famili Sejahtera Utama</p>
           </div>
@@ -140,6 +145,18 @@ export default function Home() {
             kualitas terbaik untuk digunakan pada pekerjaan proyek yang anda
             kerjakan.
           </p>
+
+          <div className="w-full flex flex-row justify-around items-center text-white">
+            <div className="flex flex-row items-center justify-around gap-2 px-4 py-2 rounded-full border border-white">
+              <CheckBadgeIcon className="w-8 h-8" />
+              <p>Kualitas terbaik</p>
+            </div>
+
+            <div className="flex flex-row items-center justify-around gap-2 px-4 py-2 rounded-full border border-white">
+              <ForwardIcon className="w-8 h-8" />
+              <p>Proses cepat</p>
+            </div>
+          </div>
         </div>
       </div>
 
