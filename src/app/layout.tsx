@@ -1,10 +1,13 @@
 import NavigationTabs from "@/components/navigation/NavigationTabs";
 import "./globals.css";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Raleway } from "next/font/google";
 import AuthProvider from "@/lib/AuthProvider";
 
-const inter = Inter({ subsets: ["latin"] });
+const raleway = Raleway({
+  subsets: ["latin"],
+  weight: ["100", "300", "400", "700", "900"],
+});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -18,7 +21,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={raleway.className}>
         <AuthProvider>
           <div className="w-full flex flex-row gap-2">
             <NavigationTabs />

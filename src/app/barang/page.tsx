@@ -5,8 +5,6 @@ import ListBahan from "@/components/bahan/ListBahan";
 import Button from "@/components/button/Button";
 import Snackbar from "@/components/snackbar/Snackbar";
 import ShowModal from "@/components/utils/ShowModal";
-import { ROUTES } from "@/lib/constants";
-import Link from "next/link";
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 
@@ -16,8 +14,6 @@ export default function Barang() {
   const [success, setSuccess] = useState<string | null>(null);
 
   const { data: session, status } = useSession();
-
-  console.log(session);
 
   return (
     <div className="w-full px-8 py-8 flex flex-col gap-8">

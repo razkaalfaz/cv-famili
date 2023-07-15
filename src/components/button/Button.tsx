@@ -23,7 +23,7 @@ export default function Button({
     buttonWidth +
     "flex flex-row gap-2 items-center justify-center text-center px-2 py-2 rounded-md bg-opacity-95 hover:bg-opacity-100 disabled:bg-gray-300 disabled:text-gray-500 ";
   const buttonVariants = {
-    PRIMARY: buttonBaseStyles + "bg-green-950 text-white",
+    PRIMARY: buttonBaseStyles + "bg-orange-900 text-white",
     SECONDARY: buttonBaseStyles + "bg-neutral-500 text-neutral-50",
     ERROR: buttonBaseStyles + "bg-red-950 text-white",
   };
