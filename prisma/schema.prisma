@@ -14,6 +14,7 @@ model alat {
   UNIT_ALAT         String?
   ALAT_LAYAK        Int                 @default(0)
   ALAT_TIDAK_LAYAK  Int                 @default(0)
+  ALAT_KELUAR       Int                 @default(0)
   detail_permintaan detail_permintaan[]
 }
 
@@ -22,6 +23,7 @@ model bahan {
   NAMA_BAHAN        String?
   STOCK_BAHAN       Int?
   UNIT_BAHAN        String?
+  BAHAN_KELUAR      Int                 @default(0)
   detail_permintaan detail_permintaan[]
 }
 
@@ -29,6 +31,8 @@ model permintaan {
   ID_PERMINTAAN     String              @id
   ID_USER           Int?
   TGL_PERMINTAAN    DateTime?           @default(now())
+  ID_PENGEMBALIAN   String?
+  pengembalian      pengembalian?
   STATUS            STATUS_PERMINTAAN?  @default(PENDING)
   detail_permintaan detail_permintaan[]
   user              user?               @relation(fields: [ID_USER], references: [ID_USER], onDelete: Cascade, onUpdate: Restrict)
@@ -47,21 +51,32 @@ model user {
 }
 
 model detail_permintaan {
-  ID_DETAIL_PERMINTAAN String     @id @default(cuid())
+  ID_DETAIL_PERMINTAAN String        @id @default(cuid())
   ID_PERMINTAAN        String
   ID_ALAT              String?
   ID_BAHAN             String?
   JUMLAH_ALAT          Int?
   JUMLAH_BAHAN         Int?
-  alat                 alat?      @relation(fields: [ID_ALAT], references: [ID_ALAT], onDelete: Cascade)
-  bahan                bahan?     @relation(fields: [ID_BAHAN], references: [ID_BAHAN], onDelete: Cascade)
-  permintaan           permintaan @relation(fields: [ID_PERMINTAAN], references: [ID_PERMINTAAN], onDelete: Cascade)
+  ID_PENGEMBALIAN      String?
+  alat                 alat?         @relation(fields: [ID_ALAT], references: [ID_ALAT], onDelete: Cascade)
+  bahan                bahan?        @relation(fields: [ID_BAHAN], references: [ID_BAHAN], onDelete: Cascade)
+  permintaan           permintaan    @relation(fields: [ID_PERMINTAAN], references: [ID_PERMINTAAN], onDelete: Cascade)
+  pengembalian         pengembalian? @relation(fields: [ID_PENGEMBALIAN], references: [ID_PENGEMBALIAN], onDelete: Cascade)
 
   @@index([ID_PERMINTAAN])
+}
+
+model pengembalian {
+  ID_PENGEMBALIAN   String              @id
+  TGL_PENGEMBALIAN  DateTime            @default(now())
+  ID_PERMINTAAN     String?             @unique
+  permintaan        permintaan?         @relation(fields: [ID_PERMINTAAN], references: [ID_PERMINTAAN], onDelete: Cascade)
+  detail_permintaan detail_permintaan[]
 }
 
 enum STATUS_PERMINTAAN {
   PENDING
   DIVERIFIKASI
   DITERIMA
+  DIKEMBALIKAN
 }

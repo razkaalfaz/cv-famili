@@ -9,25 +9,88 @@ interface RequestBody {
 async function handler(request: NextRequest) {
   const body: RequestBody = await request.json();
 
-  const updateStatusPermintaan = await db.permintaan.update({
+  const permintaan = await db.permintaan.findUnique({
     where: {
       ID_PERMINTAAN: body.ID_PERMINTAAN,
     },
-    data: {
-      STATUS: body.STATUS,
+    include: {
+      detail_permintaan: {
+        include: {
+          alat: true,
+          bahan: true,
+        },
+      },
     },
   });
 
-  if (updateStatusPermintaan) {
-    return NextResponse.json({
-      ok: true,
-      message: "Status permintaan telah berhasil di ubah.",
+  if (permintaan && body.STATUS === "DITERIMA") {
+    const detailPermintaan = permintaan.detail_permintaan;
+    for (const detail of detailPermintaan) {
+      if (detail && detail.alat) {
+        await db.alat.update({
+          where: {
+            ID_ALAT: detail.alat.ID_ALAT,
+          },
+          data: {
+            JUMLAH_ALAT: {
+              decrement: detail.JUMLAH_ALAT ?? 0,
+            },
+          },
+        });
+      }
+
+      if (detail && detail.bahan) {
+        await db.bahan.update({
+          where: {
+            ID_BAHAN: detail.bahan.ID_BAHAN,
+          },
+          data: {
+            BAHAN_KELUAR: {
+              increment: detail.JUMLAH_BAHAN ?? 0,
+            },
+            STOCK_BAHAN: {
+              decrement: detail.JUMLAH_BAHAN ?? 0,
+            },
+          },
+        });
+      }
+    }
+
+    const updateStatusPermintaan = await db.permintaan.update({
+      where: {
+        ID_PERMINTAAN: body.ID_PERMINTAAN,
+      },
+      data: {
+        STATUS: "DITERIMA",
+      },
     });
+
+    if (updateStatusPermintaan) {
+      return NextResponse.json({
+        ok: true,
+        message: "Berhasil merubah status permintaan.",
+      });
+    } else {
+      return NextResponse.json({ ok: false, message: "Terjadi kesalahan..." });
+    }
   } else {
-    return NextResponse.json({
-      ok: false,
-      message: "Terjadi kesalahan ketika mengubah status permintaan.",
+    const updatePermintaan = await db.permintaan.update({
+      where: {
+        ID_PERMINTAAN: body.ID_PERMINTAAN,
+      },
+      data: {
+        STATUS: "DIVERIFIKASI",
+      },
     });
+
+    if (updatePermintaan) {
+      return NextResponse.json({
+        ok: true,
+        message: "Berhasil merubah status permintaan.",
+      });
+    } else {
+      return NextResponse.json({ ok: false, message: "Terjadi kesalahan..." });
+    }
   }
 }
 

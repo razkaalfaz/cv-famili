@@ -12,6 +12,7 @@ export default function Permintaan() {
   const [idPermintaan, setIdPermintaan] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [opsiVerifikasi, setOpsiVerifikasi] = useState<
     keyof typeof StatusPermintaan | null
   >(null);
@@ -41,10 +42,40 @@ export default function Permintaan() {
     setIdPermintaan(null);
   }
 
+  async function pengembalianBarang(permintaan: Permintaan) {
+    if (session) {
+      setIsLoading(true);
+      try {
+        const res = await fetch(
+          "http://localhost:3000/api/pengajuan_pengembalian",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              permintaan: permintaan,
+              ID_USER: session.user.ID_USER,
+            }),
+          }
+        );
+
+        const response = await res.json();
+        if (!response.ok) {
+          setIsLoading(false);
+          setMessage(response.message);
+        } else {
+          setIsLoading(false);
+          setSuccess(response.message);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  }
+
   const {
     data: dataPermintaan,
     error,
-    isLoading,
+    isLoading: loadingData,
     isValidating,
   } = useSWR(
     session?.user.ROLE === "ADMIN" || session?.user.ROLE === "PERALATAN"
@@ -53,7 +84,7 @@ export default function Permintaan() {
     fetcher
   );
 
-  if (isLoading || isValidating) {
+  if (loadingData || isValidating || isLoading) {
     return (
       <div className="w-full px-8 py-8 flex flex-col gap-8">
         <p className="text-gray-500">Loading data permintaan...</p>
@@ -205,6 +236,16 @@ export default function Permintaan() {
 
               <div className="flex flex-col items-center gap-4">
                 <b>Status permintaan: {permintaan.STATUS}</b>
+                {session?.user.ROLE === "USER" &&
+                  permintaan.STATUS === "DITERIMA" && (
+                    <Button
+                      variants="ACCENT"
+                      fullWidth
+                      onClick={() => pengembalianBarang(permintaan)}
+                    >
+                      Kembalikan Barang
+                    </Button>
+                  )}
                 {session?.user.ROLE === "ADMIN" && (
                   <>
                     <p>Permintaan dari: {permintaan.user.NAME}</p>
