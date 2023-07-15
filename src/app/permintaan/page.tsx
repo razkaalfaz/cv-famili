@@ -47,7 +47,7 @@ export default function Permintaan() {
       setIsLoading(true);
       try {
         const res = await fetch(
-          "http://localhost:3000/api/pengajuan_pengembalian",
+          process.env.NEXT_PUBLIC_API_PENGAJUAN_PENGEMBALIAN!,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
