@@ -5,14 +5,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Button from "../button/Button";
 import { signOut, useSession } from "next-auth/react";
+import Image from "next/image";
 
 export default function NavigationTabs() {
   const pathname = usePathname();
 
-  const baseLinkStyles =
-    "w-full px-2 py-2 grid place-items-center border border-gray-300 bg-opacity-95 hover:bg-orange-700 hover:text-white rounded-md overflow-hidden";
+  const baseLinkStyles = "px-2 py-2 grid place-items-center";
   const activeLinkStyles =
-    baseLinkStyles + " bg-orange-700 text-white hover:bg-opacity-100";
+    baseLinkStyles + " font-bold border-b-2 border-b-orange-700";
 
   const { update } = useSession();
 
@@ -25,22 +25,30 @@ export default function NavigationTabs() {
     return null;
   } else {
     return (
-      <div className="w-64 min-h-screen shrink-0 flex flex-col gap-4 border border-gray-300 px-4 py-4">
-        <div className="w-full px-2 py-2 grid place-items-center font-bold text-lg">
-          CV Famili
+      <div className="w-full shrink-0 flex flex-row justify-between items-center border border-gray-300 px-4 py-4">
+        <div className="flex flex-row items-center gap-4 px-2 py-2">
+          <Image src="/logo.png" width={64} height={64} alt="logo" />
+          <div className="flex flex-col">
+            <p className="text-orange-700 font-semibold">FAMILI</p>
+            <p className="text-sm">CV. Famili Sejahtera Utama</p>
+          </div>
         </div>
-        {NAVIGATION_TABS.map((tab: Tab) => (
-          <Link
-            href={tab.url}
-            key={tab.id}
-            className={pathname === tab.url ? activeLinkStyles : baseLinkStyles}
-          >
-            {tab.name}
-          </Link>
-        ))}
-        <Button variants="ERROR" onClick={() => logoutHandler()} fullWidth>
-          Logout
-        </Button>
+        <div className="flex flex-row items-center gap-4">
+          {NAVIGATION_TABS.map((tab: Tab) => (
+            <Link
+              href={tab.url}
+              key={tab.id}
+              className={
+                pathname === tab.url ? activeLinkStyles : baseLinkStyles
+              }
+            >
+              {tab.name}
+            </Link>
+          ))}
+          <Button variants="ERROR" onClick={() => logoutHandler()}>
+            Logout
+          </Button>
+        </div>
       </div>
     );
   }

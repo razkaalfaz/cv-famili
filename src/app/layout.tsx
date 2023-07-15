@@ -23,7 +23,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={raleway.className}>
         <AuthProvider>
-          <div className="w-full flex flex-row gap-2">
+          <div className="w-full flex flex-col gap-2">
             <NavigationTabs />
             {children}
           </div>
