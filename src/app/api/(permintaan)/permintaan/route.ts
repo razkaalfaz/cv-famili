@@ -20,6 +20,8 @@ async function handler(request: NextRequest) {
 
   async function cekPermintaan() {
     if (body.ALAT) {
+      const kodifikasiDetailPermintaanAlat =
+        kodifikasiPermintaanAlat + body.ALAT.ID_BARANG;
       const permintaan = await db.permintaan.upsert({
         where: {
           ID_PERMINTAAN: kodifikasiPermintaanAlat,
@@ -27,9 +29,15 @@ async function handler(request: NextRequest) {
         create: {
           ID_PERMINTAAN: kodifikasiPermintaanAlat,
           detail_permintaan: {
-            create: {
-              ID_ALAT: body.ALAT.ID_BARANG,
-              JUMLAH_ALAT: body.ALAT.JUMLAH_BARANG,
+            connectOrCreate: {
+              where: {
+                ID_DETAIL_PERMINTAAN: kodifikasiDetailPermintaanAlat,
+              },
+              create: {
+                ID_DETAIL_PERMINTAAN: kodifikasiDetailPermintaanAlat,
+                ID_ALAT: body.ALAT.ID_BARANG,
+                JUMLAH_ALAT: body.ALAT.JUMLAH_BARANG,
+              },
             },
           },
           ID_USER: body.ID_USER,
@@ -38,14 +46,14 @@ async function handler(request: NextRequest) {
           detail_permintaan: {
             upsert: {
               where: {
-                ID_ALAT: body.ALAT.ID_BARANG,
+                ID_DETAIL_PERMINTAAN: kodifikasiDetailPermintaanAlat,
               },
               create: {
+                ID_DETAIL_PERMINTAAN: kodifikasiDetailPermintaanAlat,
                 ID_ALAT: body.ALAT.ID_BARANG,
                 JUMLAH_ALAT: body.ALAT.JUMLAH_BARANG,
               },
               update: {
-                ID_ALAT: body.ALAT.ID_BARANG,
                 JUMLAH_ALAT: body.ALAT.JUMLAH_BARANG,
               },
             },
@@ -55,6 +63,8 @@ async function handler(request: NextRequest) {
       });
       return permintaan;
     } else if (body.BAHAN) {
+      const kodifikasiDetailPermintaanBahan =
+        kodifikasiPermintaanAlat + body.BAHAN.ID_BARANG;
       const permintaan = await db.permintaan.upsert({
         where: {
           ID_PERMINTAAN: kodifikasiPermintaanAlat,
@@ -62,9 +72,15 @@ async function handler(request: NextRequest) {
         create: {
           ID_PERMINTAAN: kodifikasiPermintaanAlat,
           detail_permintaan: {
-            create: {
-              ID_BAHAN: body.BAHAN.ID_BARANG,
-              JUMLAH_BAHAN: body.BAHAN.JUMLAH_BARANG,
+            connectOrCreate: {
+              where: {
+                ID_DETAIL_PERMINTAAN: kodifikasiDetailPermintaanBahan,
+              },
+              create: {
+                ID_DETAIL_PERMINTAAN: kodifikasiDetailPermintaanBahan,
+                ID_BAHAN: body.BAHAN.ID_BARANG,
+                JUMLAH_BAHAN: body.BAHAN.JUMLAH_BARANG,
+              },
             },
           },
           ID_USER: body.ID_USER,
@@ -73,14 +89,14 @@ async function handler(request: NextRequest) {
           detail_permintaan: {
             upsert: {
               where: {
-                ID_BAHAN: body.BAHAN.ID_BARANG,
+                ID_DETAIL_PERMINTAAN: kodifikasiDetailPermintaanBahan,
               },
               create: {
+                ID_DETAIL_PERMINTAAN: kodifikasiDetailPermintaanBahan,
                 ID_BAHAN: body.BAHAN.ID_BARANG,
                 JUMLAH_BAHAN: body.BAHAN.JUMLAH_BARANG,
               },
               update: {
-                ID_BAHAN: body.BAHAN.ID_BARANG,
                 JUMLAH_BAHAN: body.BAHAN.JUMLAH_BARANG,
               },
             },
