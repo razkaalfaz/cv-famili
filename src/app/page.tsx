@@ -43,7 +43,7 @@ export default function Home() {
       } else {
         setSuccess("Berhasil masuk, mengarahkan ke halaman dashboard...");
         setTimeout(() => {
-          router.push("/barang");
+          router.push("/dashboard");
           setIsLoading(false);
         }, 3000);
       }

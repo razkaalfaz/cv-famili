@@ -122,7 +122,7 @@ export default function TambahUser() {
           >
             <option value="">Pilih role user...</option>
             <option value="PERALATAN">Petugas Peralatan</option>
-            <option value="USER">User</option>
+            <option value="USER">Kepala Proyek</option>
           </select>
         </div>
         <Button variants="PRIMARY" disabled={isLoading} fullWidth>
