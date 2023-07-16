@@ -2,7 +2,10 @@ export const ROUTES = {
   LANDING: "/",
   ADMIN: {
     DASHBOARD: "/dashboard",
-    USERS: "/users",
+    USERS: {
+      LIST: "/users",
+      ADD: "/tambah_user",
+    },
     PERMINTAAN: "/permintaan",
   },
   BARANG: {
@@ -53,5 +56,28 @@ export const NAVIGATION_TABS = [
     id: "permintaan",
     url: ROUTES.ADMIN.PERMINTAAN,
     name: "Permintaan",
+  },
+];
+
+export const USERS_TABLE_VARIABLES = [
+  {
+    id: "number",
+    name: "No.",
+  },
+  {
+    id: "name",
+    name: "Nama",
+  },
+  {
+    id: "username",
+    name: "Username",
+  },
+  {
+    id: "role",
+    name: "Role",
+  },
+  {
+    id: "aksi",
+    name: "Aksi",
   },
 ];

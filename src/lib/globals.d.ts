@@ -47,6 +47,8 @@ type Permintaan = {
 type User = {
   ID_USER: number;
   NAME: string;
+  ROLE: string;
+  USERNAME: string;
 };
 
 type DetailPermintaan = {

@@ -35,6 +35,7 @@ interface ComponentProps {
   dataAlat?: Alat | null;
   statusPermintaan?: keyof typeof StatusPermintaan | null;
   idPermintaan?: string | null;
+  idUser?: number | null;
   setMessage: React.Dispatch<React.SetStateAction<string | null>>;
   setSuccess: React.Dispatch<React.SetStateAction<string | null>>;
 }
@@ -48,6 +49,7 @@ export default function ShowModal({
   dataAlat,
   statusPermintaan,
   idPermintaan,
+  idUser,
   setMessage,
   setSuccess,
 }: ComponentProps) {
@@ -307,6 +309,34 @@ export default function ShowModal({
         }
       } catch (err) {
         setIsLoading(false);
+        console.error(err);
+      }
+    }
+  }
+  async function hapusUser() {
+    if (idUser) {
+      setIsLoading(true);
+      setMessage(null);
+      setSuccess(null);
+      try {
+        const res = await fetch(process.env.NEXT_PUBLIC_API_HAPUS_USER!, {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ID_USER: idUser }),
+        });
+
+        const response = await res.json();
+
+        if (!response.ok) {
+          setIsLoading(false);
+          setMessage(response.message);
+        } else {
+          setIsLoading(false);
+          setSuccess(response.message);
+          mutate("/api/list-user");
+          hideModal();
+        }
+      } catch (err) {
         console.error(err);
       }
     }
@@ -747,6 +777,32 @@ export default function ShowModal({
             disabled={isLoading}
           >
             {isLoading ? "Memproses..." : "Ya"}
+          </Button>
+          <Button
+            variants="SECONDARY"
+            onClick={hideModal}
+            fullWidth
+            disabled={isLoading}
+          >
+            Batal
+          </Button>
+        </ModalsContainer>
+      );
+
+    case "hapus-user":
+      return (
+        <ModalsContainer
+          title="Hapus User"
+          description="Apakah anda yakin akan menghapus user ini?"
+          onClose={hideModal}
+        >
+          <Button
+            variants="ERROR"
+            onClick={hapusUser}
+            fullWidth
+            disabled={isLoading}
+          >
+            {isLoading ? "Menghapus..." : "Hapus"}
           </Button>
           <Button
             variants="SECONDARY"
