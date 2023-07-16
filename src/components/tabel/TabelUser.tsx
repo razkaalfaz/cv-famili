@@ -86,7 +86,7 @@ export default function TabelUser() {
                       {user.USERNAME}
                     </td>
                     <td className="text-center border border-gray-300 px-2 py-2">
-                      {user.ROLE}
+                      {user.ROLE === "USER" ? "KEPALA PROYEK" : user.ROLE}
                     </td>
                     <td className="grid place-items-center border border-gray-300 px-2 py-2">
                       <Button
