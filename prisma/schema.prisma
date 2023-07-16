@@ -70,7 +70,7 @@ model pengembalian {
   ID_PENGEMBALIAN   String              @id
   TGL_PENGEMBALIAN  DateTime            @default(now())
   ID_PERMINTAAN     String?             @unique
-  permintaan        permintaan?         @relation(fields: [ID_PERMINTAAN], references: [ID_PERMINTAAN], onDelete: Cascade)
+  permintaan        permintaan?         @relation(fields: [ID_PERMINTAAN], references: [ID_PERMINTAAN])
   detail_permintaan detail_permintaan[]
 }
 
@@ -78,5 +78,6 @@ enum STATUS_PERMINTAAN {
   PENDING
   DIVERIFIKASI
   DITERIMA
+  PENGEMBALIAN
   DIKEMBALIKAN
 }

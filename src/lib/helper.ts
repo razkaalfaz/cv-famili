@@ -27,7 +27,8 @@ export function hitungJumlahBahan(bahan: Bahan[]) {
 
 export function sortPermintaan(permintaan: Permintaan[]) {
   const permintaanDiterima = permintaan.filter(
-    (permintaan: Permintaan) => permintaan.STATUS === "DITERIMA"
+    (permintaan: Permintaan) =>
+      permintaan.STATUS !== "PENDING" || "DIVERIFIKASI"
   );
 
   return permintaanDiterima;

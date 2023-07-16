@@ -341,6 +341,37 @@ export default function ShowModal({
       }
     }
   }
+  async function pengajuanPengembalian() {
+    if (idPermintaan) {
+      setIsLoading(true);
+      setMessage(null);
+      setSuccess(null);
+
+      try {
+        const res = await fetch(
+          process.env.NEXT_PUBLIC_API_PENGAJUAN_PENGEMBALIAN!,
+          {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ ID_PERMINTAAN: idPermintaan }),
+          }
+        );
+
+        const response = await res.json();
+        if (!response.ok) {
+          setIsLoading(false);
+          setMessage(response.message);
+        } else {
+          setIsLoading(false);
+          setSuccess(response.message);
+          mutate("/api/semua_permintaan");
+          hideModal();
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  }
 
   function hideModal() {
     reset();
@@ -803,6 +834,32 @@ export default function ShowModal({
             disabled={isLoading}
           >
             {isLoading ? "Menghapus..." : "Hapus"}
+          </Button>
+          <Button
+            variants="SECONDARY"
+            onClick={hideModal}
+            fullWidth
+            disabled={isLoading}
+          >
+            Batal
+          </Button>
+        </ModalsContainer>
+      );
+
+    case "pengajuan-pengembalian":
+      return (
+        <ModalsContainer
+          title="Pengembalian"
+          description="Apakah anda yakin akan melakukan pengajuan pengembalian?"
+          onClose={hideModal}
+        >
+          <Button
+            variants="ACCENT"
+            onClick={pengajuanPengembalian}
+            fullWidth
+            disabled={isLoading}
+          >
+            {isLoading ? "Memproses..." : "Ya"}
           </Button>
           <Button
             variants="SECONDARY"

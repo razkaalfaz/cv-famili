@@ -6,7 +6,7 @@ import ShowModal from "@/components/utils/ShowModal";
 import { fetcher, sortPermintaan } from "@/lib/helper";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
-import useSWR from "swr";
+import useSWR, { useSWRConfig } from "swr";
 
 export default function Permintaan() {
   const [idPermintaan, setIdPermintaan] = useState<string | null>(null);
@@ -19,6 +19,7 @@ export default function Permintaan() {
   const [modalShown, setModalShown] = useState<string | null>(null);
 
   const { data: session } = useSession();
+  const { mutate } = useSWRConfig();
 
   const userId = session ? session.user.ID_USER : null;
 
@@ -42,33 +43,39 @@ export default function Permintaan() {
     setIdPermintaan(null);
   }
 
-  async function pengembalianBarang(permintaan: Permintaan) {
-    if (session) {
-      setIsLoading(true);
-      try {
-        const res = await fetch(
-          process.env.NEXT_PUBLIC_API_PENGAJUAN_PENGEMBALIAN!,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              permintaan: permintaan,
-              ID_USER: session.user.ID_USER,
-            }),
-          }
-        );
+  function pengembalianBarang(ID_PERMINTAAN: string) {
+    setModalShown("pengajuan-pengembalian");
+    setIdPermintaan(ID_PERMINTAAN);
+  }
 
-        const response = await res.json();
-        if (!response.ok) {
-          setIsLoading(false);
-          setMessage(response.message);
-        } else {
-          setIsLoading(false);
-          setSuccess(response.message);
+  async function verifikasiPengembalian(
+    permintaan: Permintaan,
+    ID_USER: number
+  ) {
+    try {
+      const res = await fetch(
+        process.env.NEXT_PUBLIC_API_VERIFIKASI_PENGEMBALIAN!,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            permintaan: permintaan,
+            ID_USER: ID_USER,
+          }),
         }
-      } catch (err) {
-        console.error(err);
+      );
+
+      const response = await res.json();
+      if (!response.ok) {
+        setIsLoading(false);
+        setMessage(response.message);
+      } else {
+        setIsLoading(false);
+        setSuccess(response.message);
+        mutate("/api/semua_permintaan");
       }
+    } catch (err) {
+      console.error(err);
     }
   }
 
@@ -84,7 +91,7 @@ export default function Permintaan() {
     fetcher
   );
 
-  if (loadingData || isValidating || isLoading) {
+  if (loadingData || isValidating) {
     return (
       <div className="w-full px-8 py-8 flex flex-col gap-8">
         <p className="text-gray-500">Loading data permintaan...</p>
@@ -158,6 +165,19 @@ export default function Permintaan() {
 
                   <div className="flex flex-col items-center gap-4">
                     <b>Status permintaan: {permintaan.STATUS}</b>
+
+                    {permintaan.STATUS === "PENGEMBALIAN" && (
+                      <Button
+                        variants="ACCENT"
+                        fullWidth
+                        disabled={isLoading}
+                        onClick={() =>
+                          verifikasiPengembalian(permintaan, permintaan.ID_USER)
+                        }
+                      >
+                        {isLoading ? "Memproses..." : "Verifikasi Pengembalian"}
+                      </Button>
+                    )}
                   </div>
                 </div>
               ))}
@@ -236,16 +256,20 @@ export default function Permintaan() {
 
               <div className="flex flex-col items-center gap-4">
                 <b>Status permintaan: {permintaan.STATUS}</b>
+
                 {session?.user.ROLE === "USER" &&
                   permintaan.STATUS === "DITERIMA" && (
                     <Button
                       variants="ACCENT"
                       fullWidth
-                      onClick={() => pengembalianBarang(permintaan)}
+                      onClick={() =>
+                        pengembalianBarang(permintaan.ID_PERMINTAAN)
+                      }
                     >
                       Kembalikan Barang
                     </Button>
                   )}
+
                 {session?.user.ROLE === "ADMIN" && (
                   <>
                     <p>Permintaan dari: {permintaan.user.NAME}</p>

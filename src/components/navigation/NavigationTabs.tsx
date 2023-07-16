@@ -50,12 +50,12 @@ export default function NavigationTabs() {
 
           {session && session.user.ROLE === "ADMIN" && (
             <Link
-              href="/tambah_user"
+              href="/users"
               className={
-                pathname === "/tambah_user" ? activeLinkStyles : baseLinkStyles
+                pathname === "/users" ? activeLinkStyles : baseLinkStyles
               }
             >
-              Tambah User
+              Users
             </Link>
           )}
 
