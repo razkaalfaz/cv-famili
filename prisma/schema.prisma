@@ -32,6 +32,10 @@ model permintaan {
   ID_USER           Int?
   TGL_PERMINTAAN    DateTime?           @default(now())
   ID_PENGEMBALIAN   String?
+  TGL_PENGGUNAAN    DateTime?
+  TGL_PENGEMBALIAN  DateTime?
+  NAMA_PROYEK       String
+  LOKASI_PROYEK     String
   pengembalian      pengembalian?
   STATUS            STATUS_PERMINTAAN?  @default(PENDING)
   detail_permintaan detail_permintaan[]
@@ -77,6 +81,8 @@ model pengembalian {
 enum STATUS_PERMINTAAN {
   PENDING
   DIVERIFIKASI
+  DIKIRIM
+  DITOLAK
   DITERIMA
   PENGEMBALIAN
   DIKEMBALIKAN
