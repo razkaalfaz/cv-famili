@@ -36,6 +36,7 @@ model permintaan {
   TGL_PENGEMBALIAN  DateTime?
   NAMA_PROYEK       String
   LOKASI_PROYEK     String
+  KETERANGAN        String?
   pengembalian      pengembalian?
   STATUS            STATUS_PERMINTAAN?  @default(PENDING)
   detail_permintaan detail_permintaan[]

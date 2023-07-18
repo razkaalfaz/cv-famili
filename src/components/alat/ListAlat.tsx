@@ -28,6 +28,11 @@ export default function ListAlat({ setSuccess, setMessage }: ComponentProps) {
   const [searchQuery, setSearchQuery] = useState<string | null>(null);
   const [hasilPencarian, setHasilPencarian] = useState<Alat[] | null>(null);
 
+  const variabelUmum = VARIABEL_ALAT.filter(
+    (variabel) => variabel.id !== "aksi"
+  );
+  const variabelAdmin = VARIABEL_ALAT;
+
   const { data: session } = useSession();
 
   function hideModal() {
@@ -85,6 +90,10 @@ export default function ListAlat({ setSuccess, setMessage }: ComponentProps) {
     isValidating,
   } = useSWR("/api/list-alat", fetcher);
 
+  function variabelTabel() {
+    return session?.user.ROLE === "ADMIN" ? variabelAdmin : variabelUmum;
+  }
+
   if (hasilAlatLoading || isValidating || isLoading) {
     return (
       <div className="w-full grid place-items-center">
@@ -118,7 +127,7 @@ export default function ListAlat({ setSuccess, setMessage }: ComponentProps) {
           <table className="w-full rounded-md overflow-hidden">
             <thead className="border border-gray-300 bg-orange-700 text-white font-medium">
               <tr>
-                {VARIABEL_ALAT.map((variabel: VariabelBarang) => (
+                {variabelTabel().map((variabel: VariabelBarang) => (
                   <td
                     key={variabel.id}
                     className="text-center px-2 py-2 border border-gray-300"
@@ -152,8 +161,8 @@ export default function ListAlat({ setSuccess, setMessage }: ComponentProps) {
                   <td className="text-center border border-gray-300 px-2 py-2">
                     <p>{alat.ALAT_TIDAK_LAYAK}</p>
                   </td>
-                  <td className="border border-gray-300 px-2 py-2">
-                    {session?.user?.ROLE === "ADMIN" && (
+                  {session?.user?.ROLE === "ADMIN" && (
+                    <td className="border border-gray-300 px-2 py-2">
                       <div className="w-full flex flex-row items-center justify-center gap-2">
                         <Button
                           variants="ACCENT"
@@ -168,18 +177,8 @@ export default function ListAlat({ setSuccess, setMessage }: ComponentProps) {
                           <TrashIcon className="w-4 h-4 text-white" />
                         </Button>
                       </div>
-                    )}
-
-                    {session?.user.ROLE === "USER" && (
-                      <Button
-                        variants="ACCENT"
-                        fullWidth
-                        onClick={() => ajukanAlat(alat.ID_ALAT)}
-                      >
-                        Ajukan Permintaan
-                      </Button>
-                    )}
-                  </td>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>

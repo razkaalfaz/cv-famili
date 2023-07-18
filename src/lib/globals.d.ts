@@ -38,10 +38,15 @@ type UserLogin = {
 type Permintaan = {
   ID_PERMINTAAN: string;
   ID_USER: number;
+  NAMA_PROYEK: string;
+  LOKASI_PROYEK: string;
   TGL_PERMINTAAN: Date;
+  TGL_PENGGUNAAN: Date;
+  TGL_PENGEMBALIAN: Date;
   STATUS: StatusPermintaan;
   detail_permintaan: DetailPermintaan[];
   user: User;
+  KETERANGAN: string | null;
 };
 
 type User = {
@@ -59,10 +64,18 @@ type DetailPermintaan = {
   JUMLAH_BAHAN: number;
 };
 
+type BarangPermintaan = {
+  ID_BARANG: string;
+  NAMA_BARANG: string;
+  UNIT_BARANG: string;
+};
+
 enum StatusPermintaan {
   PENDING = "PENDING",
   DIVERIFIKASI = "DIVERIFIKASI",
   DITERIMA = "DITERIMA",
   DIKEMBALIKAN = "DIKEMBALIKAN",
   PENGEMBALIAN = "PENGEMBALIAN",
+  DITOLAK = "DITOLAK",
+  DIKIRIM = "DIKIRIM",
 }

@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 interface RequestBody {
   ID_PERMINTAAN: string;
   STATUS: keyof typeof StatusPermintaan;
+  KETERANGAN: string | null;
 }
 
 async function handler(request: NextRequest) {
@@ -23,7 +24,7 @@ async function handler(request: NextRequest) {
     },
   });
 
-  if (permintaan && body.STATUS === "DITERIMA") {
+  if (permintaan && body.STATUS === "DIKIRIM") {
     const detailPermintaan = permintaan.detail_permintaan;
     for (const detail of detailPermintaan) {
       if (detail && detail.alat) {
@@ -32,6 +33,9 @@ async function handler(request: NextRequest) {
             ID_ALAT: detail.alat.ID_ALAT,
           },
           data: {
+            ALAT_KELUAR: {
+              increment: detail.JUMLAH_ALAT ?? 0,
+            },
             JUMLAH_ALAT: {
               decrement: detail.JUMLAH_ALAT ?? 0,
             },
@@ -61,7 +65,8 @@ async function handler(request: NextRequest) {
         ID_PERMINTAAN: body.ID_PERMINTAAN,
       },
       data: {
-        STATUS: "DITERIMA",
+        STATUS: "DIKIRIM",
+        KETERANGAN: body.KETERANGAN,
       },
     });
 
@@ -73,13 +78,35 @@ async function handler(request: NextRequest) {
     } else {
       return NextResponse.json({ ok: false, message: "Terjadi kesalahan..." });
     }
+  } else if (permintaan && body.STATUS === "DITOLAK") {
+    const tolakPermintaan = await db.permintaan.update({
+      where: {
+        ID_PERMINTAAN: body.ID_PERMINTAAN,
+      },
+      data: {
+        STATUS: "DITOLAK",
+        KETERANGAN: body.KETERANGAN,
+      },
+    });
+
+    if (tolakPermintaan) {
+      return NextResponse.json({
+        ok: true,
+        message: "Berhasil merubah status permintaan.",
+      });
+    } else {
+      return NextResponse.json({
+        ok: false,
+        message: "Terjadi kesalahan...",
+      });
+    }
   } else {
     const updatePermintaan = await db.permintaan.update({
       where: {
         ID_PERMINTAAN: body.ID_PERMINTAAN,
       },
       data: {
-        STATUS: "DIVERIFIKASI",
+        STATUS: body.STATUS,
       },
     });
 

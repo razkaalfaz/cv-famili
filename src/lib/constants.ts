@@ -82,8 +82,65 @@ export const USERS_TABLE_VARIABLES = [
   },
 ];
 
+export const VARIABEL_PERMINTAAN = [
+  {
+    id: "number",
+    name: "No.",
+  },
+  {
+    id: "idPermintaan",
+    name: "ID Permintaan",
+  },
+  {
+    id: "namaProyek",
+    name: "Nama Proyek",
+  },
+  {
+    id: "lokasiProyek",
+    name: "Lokasi Proyek",
+  },
+  {
+    id: "alat",
+    name: "Alat",
+  },
+  {
+    id: "bahan",
+    name: "Bahan",
+  },
+  {
+    id: "tgl_penggunaan",
+    name: "Tanggal Penggunaan",
+  },
+  {
+    id: "tgl_pengembalian",
+    name: "Tanggal Pengembalian",
+  },
+  {
+    id: "status",
+    name: "Status Permintaan",
+  },
+  {
+    id: "aksi",
+    name: "Aksi",
+  },
+];
+
 export const CAROUSEL_ASSETS = [
   "/carousel-1.jpg",
   "/carousel-2.jpg",
   "/carousel-3.jpg",
+];
+
+export const VARIABEL_PILIHAN_ALAT = [
+  { id: "checkbox", name: "" },
+  { id: "id_alat", name: "ID Alat" },
+  { id: "nama_alat", name: "Nama Alat" },
+  { id: "jumlah_alat", name: "Jumlah Alat Tersedia" },
+];
+
+export const VARIABEL_PILIHAN_BAHAN = [
+  { id: "checkbox", name: "" },
+  { id: "id_bahan", name: "ID Bahan" },
+  { id: "nama_banahn", name: "Nama Bahan" },
+  { id: "stock_bahan", name: "Jumlah Bahan Tersedia" },
 ];

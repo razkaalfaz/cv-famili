@@ -23,6 +23,7 @@ type Inputs = {
   };
   permintaan: {
     jumlahPermintaan: number;
+    keterangan: string | null;
   };
 };
 
@@ -33,6 +34,7 @@ interface ComponentProps {
   idBahan?: string | null;
   dataBahan?: Bahan | null;
   dataAlat?: Alat | null;
+  dataPermintaan?: Permintaan | null;
   statusPermintaan?: keyof typeof StatusPermintaan | null;
   idPermintaan?: string | null;
   idUser?: number | null;
@@ -50,6 +52,7 @@ export default function ShowModal({
   statusPermintaan,
   idPermintaan,
   idUser,
+  dataPermintaan,
   setMessage,
   setSuccess,
 }: ComponentProps) {
@@ -221,6 +224,42 @@ export default function ShowModal({
       console.error(err);
     }
   };
+  const berikanCatatanPermintaan: SubmitHandler<Inputs> = async (data) => {
+    if (statusPermintaan && idPermintaan) {
+      setIsLoading(true);
+      setMessage(null);
+      setSuccess(null);
+      try {
+        const res = await fetch(
+          process.env.NEXT_PUBLIC_API_VERIFIKASI_PERMINTAAN!,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              ID_PERMINTAAN: idPermintaan,
+              STATUS: statusPermintaan,
+              KETERANGAN: data.permintaan.keterangan,
+            }),
+          }
+        );
+
+        const response = await res.json();
+
+        if (!response.ok) {
+          setIsLoading(false);
+          setMessage(response.message);
+        } else {
+          setIsLoading(false);
+          setSuccess(response.message);
+          hideModal();
+          mutate("/api/semua_permintaan");
+        }
+      } catch (err) {
+        setIsLoading(false);
+        console.error(err);
+      }
+    }
+  };
 
   async function hapusAlat() {
     setIsLoading(true);
@@ -278,6 +317,34 @@ export default function ShowModal({
       }
     }
   }
+  async function hapusUser() {
+    if (idUser) {
+      setIsLoading(true);
+      setMessage(null);
+      setSuccess(null);
+      try {
+        const res = await fetch(process.env.NEXT_PUBLIC_API_HAPUS_USER!, {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ID_USER: idUser }),
+        });
+
+        const response = await res.json();
+
+        if (!response.ok) {
+          setIsLoading(false);
+          setMessage(response.message);
+        } else {
+          setIsLoading(false);
+          setSuccess(response.message);
+          mutate("/api/list-user");
+          hideModal();
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  }
   async function verifikasiPermintaan() {
     if (statusPermintaan && idPermintaan) {
       setIsLoading(true);
@@ -313,34 +380,6 @@ export default function ShowModal({
       }
     }
   }
-  async function hapusUser() {
-    if (idUser) {
-      setIsLoading(true);
-      setMessage(null);
-      setSuccess(null);
-      try {
-        const res = await fetch(process.env.NEXT_PUBLIC_API_HAPUS_USER!, {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ID_USER: idUser }),
-        });
-
-        const response = await res.json();
-
-        if (!response.ok) {
-          setIsLoading(false);
-          setMessage(response.message);
-        } else {
-          setIsLoading(false);
-          setSuccess(response.message);
-          mutate("/api/list-user");
-          hideModal();
-        }
-      } catch (err) {
-        console.error(err);
-      }
-    }
-  }
   async function pengajuanPengembalian() {
     if (idPermintaan) {
       setIsLoading(true);
@@ -366,6 +405,68 @@ export default function ShowModal({
           setSuccess(response.message);
           mutate("/api/semua_permintaan");
           hideModal();
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  }
+  async function verifikasiPengembalian() {
+    if (dataPermintaan) {
+      setIsLoading(true);
+      setMessage(null);
+      setSuccess(null);
+
+      try {
+        const res = await fetch(
+          process.env.NEXT_PUBLIC_API_VERIFIKASI_PENGEMBALIAN!,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              permintaan: dataPermintaan,
+              ID_USER: dataPermintaan.ID_USER,
+            }),
+          }
+        );
+
+        const response = await res.json();
+        if (!response.ok) {
+          setIsLoading(false);
+          setMessage(response.message);
+        } else {
+          setIsLoading(false);
+          setSuccess(response.message);
+          hideModal();
+          mutate("/api/semua_permintaan");
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  }
+  async function hapusPermintaan() {
+    if (idPermintaan) {
+      setIsLoading(true);
+      setMessage(null);
+      setSuccess(null);
+      try {
+        const res = await fetch(process.env.NEXT_PUBLIC_API_HAPUS_PERMINTAAN!, {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ID_PERMINTAAN: idPermintaan }),
+        });
+
+        const response = await res.json();
+
+        if (!response.ok) {
+          setIsLoading(false);
+          setMessage(response.message);
+        } else {
+          setIsLoading(false);
+          setSuccess(response.message);
+          hideModal();
+          mutate("/api/semua_permintaan");
         }
       } catch (err) {
         console.error(err);
@@ -792,31 +893,133 @@ export default function ShowModal({
           title={
             statusPermintaan && statusPermintaan === "DIVERIFIKASI"
               ? "Verifikasi Permintaan"
-              : "Persetujuan Permintaan"
+              : statusPermintaan === "DIKIRIM"
+              ? "Kirim Barang"
+              : statusPermintaan === "DITOLAK"
+              ? "Tolak Permintaan"
+              : statusPermintaan === "PENGEMBALIAN"
+              ? "Kembalikan Barang"
+              : statusPermintaan === "DITERIMA"
+              ? "Barang Diterima"
+              : "Barang Dikembalikan"
           }
           description={
             statusPermintaan && statusPermintaan === "DIVERIFIKASI"
-              ? "Apakah anda akan melakukan verifikasi persediaan barang terlebih dahulu?"
-              : "Apakah anda akan menyetujui permintaan ini?"
+              ? "Apakah anda akan mengirimkan permintaan ini kepada tugas peralatan?"
+              : statusPermintaan === "DIKIRIM"
+              ? "Apakah anda akan mengirim permintaan barang ini?"
+              : statusPermintaan === "DITOLAK"
+              ? "Apakah anda akan menolak permintaan barang ini?"
+              : statusPermintaan === "PENGEMBALIAN"
+              ? "Apakah anda akan mengembalikan barang ini?"
+              : statusPermintaan === "DITERIMA"
+              ? "Apakah barang yang anda ajukan telah diterima?"
+              : "Apakah barang yang diajukan oleh kepala proyek sudah anda terima?"
           }
           onClose={hideModal}
         >
-          <Button
-            variants="PRIMARY"
-            onClick={verifikasiPermintaan}
-            fullWidth
-            disabled={isLoading}
+          {statusPermintaan === "DIKIRIM" && (
+            <form
+              className="flex flex-col gap-4"
+              onSubmit={handleSubmit(berikanCatatanPermintaan)}
+            >
+              <div className="flex flex-col gap-2">
+                <label htmlFor="keterangan" className="text-gray-500">
+                  Keterangan Pengiriman
+                </label>
+                <textarea
+                  id="keterangan"
+                  rows={4}
+                  placeholder="Kosongkan bila tidak ada catatan"
+                  className="w-full rounded-md outline-none border border-gray-300 px-2 py-2"
+                  {...register("permintaan.keterangan")}
+                />
+              </div>
+
+              <Button
+                variants="ACCENT"
+                fullWidth
+                type="submit"
+                disabled={isLoading}
+              >
+                {isLoading ? "Memproses..." : "Simpan"}
+              </Button>
+              <Button
+                variants="SECONDARY"
+                fullWidth
+                type="button"
+                disabled={isLoading}
+                onClick={() => hideModal()}
+              >
+                Batal
+              </Button>
+            </form>
+          )}
+          {statusPermintaan !== "DIKIRIM" && (
+            <>
+              <Button
+                variants="PRIMARY"
+                fullWidth
+                disabled={isLoading}
+                onClick={() => verifikasiPermintaan()}
+              >
+                {isLoading ? "Memproses..." : "Ya"}
+              </Button>
+              <Button
+                type="button"
+                variants="SECONDARY"
+                onClick={hideModal}
+                fullWidth
+                disabled={isLoading}
+              >
+                Batal
+              </Button>
+            </>
+          )}
+        </ModalsContainer>
+      );
+
+    case "tolak-permintaan":
+      return (
+        <ModalsContainer
+          title="Tolak permintaan"
+          description="Berikan keterangan kepada kepala proyek, mengenai alasan penolakan permintaan barang tersebut."
+          onClose={hideModal}
+        >
+          <form
+            className="flex flex-col gap-4"
+            onSubmit={handleSubmit(berikanCatatanPermintaan)}
           >
-            {isLoading ? "Memproses..." : "Ya"}
-          </Button>
-          <Button
-            variants="SECONDARY"
-            onClick={hideModal}
-            fullWidth
-            disabled={isLoading}
-          >
-            Batal
-          </Button>
+            <div className="flex flex-col gap-2">
+              <label htmlFor="keterangan" className="text-gray-500">
+                Keterangan
+              </label>
+              <textarea
+                id="keterangan"
+                rows={4}
+                required
+                placeholder="Permintaan ini ditolak karena..."
+                className="w-full rounded-md outline-none border border-gray-300 px-2 py-2"
+                {...register("permintaan.keterangan")}
+              />
+            </div>
+            <Button
+              type="submit"
+              variants="PRIMARY"
+              fullWidth
+              disabled={isLoading}
+            >
+              {isLoading ? "Memproses..." : "Kirim Keterangan"}
+            </Button>
+            <Button
+              type="button"
+              variants="SECONDARY"
+              fullWidth
+              onClick={hideModal}
+            >
+              Batalkan
+            </Button>
+          </form>
         </ModalsContainer>
       );
 
@@ -869,6 +1072,62 @@ export default function ShowModal({
           >
             Batal
           </Button>
+        </ModalsContainer>
+      );
+
+    case "verifikasi-pengembalian":
+      return (
+        <ModalsContainer
+          title="Verifikasi Pengembalian"
+          description="Apakah pengembalian barang sudah sesuai dengan pengajuan permintaan?"
+          onClose={hideModal}
+        >
+          <div className="w-full flex flex-col gap-2">
+            <Button
+              variants="ACCENT"
+              fullWidth
+              disabled={isLoading}
+              onClick={() => verifikasiPengembalian()}
+            >
+              {isLoading ? "Memproses..." : "Ya"}
+            </Button>
+            <Button
+              variants="SECONDARY"
+              fullWidth
+              disabled={isLoading}
+              onClick={() => hideModal()}
+            >
+              Batal
+            </Button>
+          </div>
+        </ModalsContainer>
+      );
+
+    case "hapus-permintaan":
+      return (
+        <ModalsContainer
+          title="Hapus Permintaan"
+          description="Apakah anda yakin akan menghapus permintaan ini?"
+          onClose={hideModal}
+        >
+          <div className="flex flex-col gap-2 w-full">
+            <Button
+              variants="PRIMARY"
+              fullWidth
+              disabled={isLoading}
+              onClick={() => hapusPermintaan()}
+            >
+              {isLoading ? "Memproses..." : "Ya"}
+            </Button>
+            <Button
+              variants="SECONDARY"
+              fullWidth
+              disabled={isLoading}
+              onClick={() => hideModal}
+            >
+              Batal
+            </Button>
+          </div>
         </ModalsContainer>
       );
 
