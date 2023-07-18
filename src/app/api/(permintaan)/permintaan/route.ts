@@ -3,118 +3,131 @@ import { NextRequest, NextResponse } from "next/server";
 
 interface RequestBody {
   ID_USER: number;
-  ALAT: PermintaanBarang;
-  BAHAN: PermintaanBarang;
+  BARANG: BarangPermintaan[];
+  NAMA_PROYEK: string;
+  LOKASI_PROYEK: string;
+  TGL_PENGGUNAAN: Date;
+  TGL_PENGEMBALIAN: Date;
+  JUMLAH_BARANG: { ID_BARANG: string; JUMLAH: number };
 }
 
 async function handler(request: NextRequest) {
   const body: RequestBody = await request.json();
 
-  const currentDate = new Date();
-  const day = currentDate.getDate();
-  const month = currentDate.getMonth();
-  const years = currentDate.getFullYear();
-  const kodifikasiPermintaanAlat = `P-${day < 10 ? `0${day}` : day}${
-    month < 10 ? `0${month + 1}` : month
-  }${years}-${body.ID_USER}`;
+  try {
+    const currentDate = new Date();
+    const day = currentDate.getDate();
+    const month = currentDate.getMonth();
+    const years = currentDate.getFullYear();
+    const kodifikasiPermintaan = `P-${day < 10 ? `0${day}` : day}${
+      month < 10 ? `0${month + 1}` : month
+    }${years}-${body.ID_USER}`;
+    const kodifikasiDetailPermintaan = (ID_BARANG: string) =>
+      kodifikasiPermintaan + "-" + ID_BARANG;
 
-  async function cekPermintaan() {
-    if (body.ALAT) {
-      const kodifikasiDetailPermintaan =
-        kodifikasiPermintaanAlat + "-" + body.ALAT.ID_BARANG;
-      const permintaan = await db.permintaan.upsert({
+    const alat = body.BARANG.filter(
+      (barang) => barang.ID_BARANG.substring(0, 1) === "A"
+    );
+    const bahan = body.BARANG.filter(
+      (barang) => barang.ID_BARANG.substring(0, 1) === "B"
+    );
+
+    const barang = alat.concat(bahan);
+
+    const cekDetailPermintaan = async (ID_BARANG: string) => {
+      const dataDetailPermintaan = await db.detail_permintaan.findMany({
         where: {
-          ID_PERMINTAAN: kodifikasiPermintaanAlat,
-        },
-        create: {
-          ID_PERMINTAAN: kodifikasiPermintaanAlat,
-          detail_permintaan: {
-            connectOrCreate: {
-              where: {
-                ID_DETAIL_PERMINTAAN: kodifikasiDetailPermintaan,
-              },
-              create: {
-                ID_DETAIL_PERMINTAAN: kodifikasiDetailPermintaan,
-                ID_ALAT: body.ALAT.ID_BARANG,
-                JUMLAH_ALAT: body.ALAT.JUMLAH_BARANG,
-              },
+          OR: [
+            {
+              ID_ALAT: ID_BARANG,
             },
-          },
-          ID_USER: body.ID_USER,
-        },
-        update: {
-          detail_permintaan: {
-            upsert: {
-              where: {
-                ID_DETAIL_PERMINTAAN: kodifikasiDetailPermintaan,
-              },
-              create: {
-                ID_DETAIL_PERMINTAAN: kodifikasiDetailPermintaan,
-                ID_ALAT: body.ALAT.ID_BARANG,
-                JUMLAH_ALAT: body.ALAT.JUMLAH_BARANG,
-              },
-              update: {
-                JUMLAH_ALAT: body.ALAT.JUMLAH_BARANG,
-              },
+            {
+              ID_BAHAN: ID_BARANG,
             },
-          },
+          ],
         },
       });
 
-      return permintaan;
-    } else if (body.BAHAN) {
-      const kodifikasiDetailPermintaan =
-        kodifikasiPermintaanAlat + "-" + body.BAHAN.ID_BARANG;
-      const permintaan = await db.permintaan.upsert({
+      const urutan = dataDetailPermintaan.length;
+
+      return kodifikasiDetailPermintaan(ID_BARANG) + "-" + (urutan + 1);
+    };
+
+    const barangPromise = barang.map(async (barang) => {
+      const idPermintaan = await cekDetailPermintaan(barang.ID_BARANG);
+
+      return {
+        ID_DETAIL_PERMINTAAN: idPermintaan,
+        ID_ALAT:
+          barang.ID_BARANG.substring(0, 1) === "A" ? barang.ID_BARANG : null,
+        JUMLAH_ALAT:
+          barang.ID_BARANG.substring(0, 1) === "A"
+            ? parseInt(
+                body.JUMLAH_BARANG[
+                  barang.ID_BARANG as keyof typeof body.JUMLAH_BARANG
+                ].toString()
+              )
+            : null,
+        ID_BAHAN:
+          barang.ID_BARANG.substring(0, 1) === "B" ? barang.ID_BARANG : null,
+        JUMLAH_BAHAN:
+          barang.ID_BARANG.substring(0, 1) === "B"
+            ? parseInt(
+                body.JUMLAH_BARANG[
+                  barang.ID_BARANG as keyof typeof body.JUMLAH_BARANG
+                ].toString()
+              )
+            : null,
+      };
+    });
+
+    const cekPermintaan = async () => {
+      const dataPermintaan = await db.permintaan.findMany({
         where: {
-          ID_PERMINTAAN: kodifikasiPermintaanAlat,
-        },
-        create: {
-          ID_PERMINTAAN: kodifikasiPermintaanAlat,
-          detail_permintaan: {
-            connectOrCreate: {
-              where: {
-                ID_DETAIL_PERMINTAAN: kodifikasiDetailPermintaan,
-              },
-              create: {
-                ID_DETAIL_PERMINTAAN: kodifikasiDetailPermintaan,
-                ID_BAHAN: body.BAHAN.ID_BARANG,
-                JUMLAH_ALAT: body.BAHAN.JUMLAH_BARANG,
-              },
-            },
-          },
           ID_USER: body.ID_USER,
         },
-        update: {
-          detail_permintaan: {
-            upsert: {
-              where: {
-                ID_DETAIL_PERMINTAAN: kodifikasiDetailPermintaan,
-              },
-              create: {
-                ID_DETAIL_PERMINTAAN: kodifikasiDetailPermintaan,
-                ID_BAHAN: body.BAHAN.ID_BARANG,
-                JUMLAH_BAHAN: body.BAHAN.JUMLAH_BARANG,
-              },
-              update: {
-                JUMLAH_BAHAN: body.BAHAN.JUMLAH_BARANG,
+      });
+
+      const urutan = dataPermintaan.length;
+
+      const getBarang = Promise.all(barangPromise).then((res) => {
+        return res;
+      });
+
+      const value = await getBarang;
+
+      if ((alat && alat.length > 0) || (bahan && bahan.length > 0)) {
+        const ajukanBarang = await db.permintaan.create({
+          data: {
+            ID_PERMINTAAN: kodifikasiPermintaan + "-" + (urutan + 1),
+            ID_USER: body.ID_USER,
+            NAMA_PROYEK: body.NAMA_PROYEK,
+            LOKASI_PROYEK: body.LOKASI_PROYEK,
+            TGL_PENGGUNAAN: new Date(body.TGL_PENGGUNAAN),
+            TGL_PENGEMBALIAN: new Date(body.TGL_PENGEMBALIAN),
+            detail_permintaan: {
+              createMany: {
+                data: value,
               },
             },
           },
-        },
-      });
-      return permintaan;
+        });
+
+        return ajukanBarang;
+      } else {
+        return null;
+      }
+    };
+
+    const responsePermintaan = await cekPermintaan();
+
+    if (responsePermintaan) {
+      return NextResponse.json({ ok: true, result: responsePermintaan });
     } else {
-      return null;
+      return NextResponse.json({ ok: false, result: null });
     }
-  }
-
-  const responsePermintaan = await cekPermintaan();
-
-  if (responsePermintaan) {
-    return NextResponse.json({ ok: true, result: responsePermintaan });
-  } else {
-    return NextResponse.json({ ok: false, result: null });
+  } catch (err) {
+    console.error(err);
   }
 }
 

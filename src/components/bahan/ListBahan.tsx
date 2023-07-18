@@ -27,6 +27,11 @@ export default function ListAlat({ setMessage, setSuccess }: ComponentProps) {
 
   const { data: session } = useSession();
 
+  const variabelUmum = VARIABEL_BAHAN.filter(
+    (variabel) => variabel.id !== "aksi"
+  );
+  const variabelAdmin = VARIABEL_BAHAN;
+
   function editBahan(idBahan: string, bahan: Bahan) {
     setModalShown("edit-bahan");
     setIdBahan(idBahan);
@@ -76,6 +81,10 @@ export default function ListAlat({ setMessage, setSuccess }: ComponentProps) {
     }
   }
 
+  function variabelTabel() {
+    return session?.user.ROLE === "ADMIN" ? variabelAdmin : variabelUmum;
+  }
+
   const {
     data: hasilBahan,
     isLoading: hasilBahanLoading,
@@ -116,7 +125,7 @@ export default function ListAlat({ setMessage, setSuccess }: ComponentProps) {
           <table className="w-full rounded-md overflow-hidden">
             <thead className="border border-gray-300 bg-orange-700 text-white font-medium">
               <tr>
-                {VARIABEL_BAHAN.map((variabel: VariabelBarang) => (
+                {variabelTabel().map((variabel: VariabelBarang) => (
                   <td
                     key={variabel.id}
                     className="text-center border border-gray-300 px-2 py-2"
@@ -144,8 +153,8 @@ export default function ListAlat({ setMessage, setSuccess }: ComponentProps) {
                   <td className="text-center border border-gray-300 px-2 py-2">
                     <p>{bahan.UNIT_BAHAN}</p>
                   </td>
-                  <td className="border border-gray-300 px-2 py-2">
-                    {session?.user?.ROLE === "ADMIN" && (
+                  {session?.user?.ROLE === "ADMIN" && (
+                    <td className="border border-gray-300 px-2 py-2">
                       <div className="w-full flex flex-row items-center justify-center gap-2">
                         <Button
                           variants="ACCENT"
@@ -160,18 +169,8 @@ export default function ListAlat({ setMessage, setSuccess }: ComponentProps) {
                           <TrashIcon className="w-4 h-4 text-white" />
                         </Button>
                       </div>
-                    )}
-
-                    {session?.user.ROLE === "USER" && (
-                      <Button
-                        variants="ACCENT"
-                        fullWidth
-                        onClick={() => ajukanBahan(bahan.ID_BAHAN)}
-                      >
-                        Ajukan Permintaan
-                      </Button>
-                    )}
-                  </td>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>

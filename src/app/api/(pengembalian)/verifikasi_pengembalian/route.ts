@@ -47,9 +47,20 @@ async function handler(request: NextRequest) {
     }
   }
 
+  const currentDataPengembalian = await db.pengembalian.findMany({
+    where: {
+      permintaan: {
+        ID_USER: {
+          equals: parseInt(body.ID_USER),
+        },
+      },
+    },
+  });
+
   const pengembalian = await db.pengembalian.create({
     data: {
-      ID_PENGEMBALIAN: kodifikasiPengembalian,
+      ID_PENGEMBALIAN:
+        kodifikasiPengembalian + "-" + (currentDataPengembalian.length + 1),
       ID_PERMINTAAN: body.permintaan.ID_PERMINTAAN,
     },
   });
