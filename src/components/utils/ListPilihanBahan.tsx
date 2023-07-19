@@ -1,7 +1,7 @@
 "use client";
 
 import { VARIABEL_PILIHAN_ALAT } from "@/lib/constants";
-import { useRef } from "react";
+import { useCallback, useRef } from "react";
 
 interface ComponentProps {
   bahan: Bahan[];
@@ -9,17 +9,34 @@ interface ComponentProps {
     event: React.ChangeEvent<HTMLInputElement>,
     item: BarangPermintaan
   ) => void;
+  selectedBahan: BarangPermintaan[];
 }
 
 export default function ListPilihanAlat({
   bahan,
   onCheckboxClicked,
+  selectedBahan,
 }: ComponentProps) {
   const inputRef = useRef<Array<HTMLInputElement | null>>([]);
 
   const handleInputClick = (index: number) => {
     inputRef.current[index]?.click();
   };
+
+  const checkSelectedBahan = useCallback(
+    (idBahan: string) => {
+      var checked = false;
+      for (var i = 0; i < (selectedBahan.length ?? 0); i++) {
+        if (selectedBahan[i].ID_BARANG === idBahan) {
+          checked = true;
+          break;
+        }
+      }
+
+      return checked;
+    },
+    [selectedBahan]
+  );
 
   return (
     <div className="w-full flex flex-row items-center flex-wrap gap-8">
@@ -52,6 +69,8 @@ export default function ListPilihanAlat({
                   id={dataBahan.ID_BAHAN}
                   ref={(ref) => (inputRef.current[index] = ref)}
                   value={dataBahan.ID_BAHAN}
+                  checked={checkSelectedBahan(dataBahan.ID_BAHAN)}
+                  disabled={checkSelectedBahan(dataBahan.ID_BAHAN)}
                   onChange={(event) =>
                     onCheckboxClicked(event, {
                       ID_BARANG: event.target.value,

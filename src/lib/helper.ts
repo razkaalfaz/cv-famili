@@ -33,3 +33,24 @@ export function sortPermintaan(permintaan: Permintaan[]) {
 
   return permintaanDiterima;
 }
+
+export function decimalNumber(input: number) {
+  if (input < 10) {
+    return `0${input}`;
+  } else {
+    return input;
+  }
+}
+
+export function dateToString(input: string) {
+  const currentDate = new Date(input);
+  const date = currentDate.getDate();
+  const month = currentDate.getMonth();
+  const years = currentDate.getFullYear();
+
+  const dateToReturn = `${years}-${decimalNumber(month + 1)}-${decimalNumber(
+    date
+  )}`;
+
+  return dateToReturn;
+}
