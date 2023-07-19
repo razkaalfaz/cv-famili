@@ -163,9 +163,16 @@ export default function Permintaan() {
                             <div className="flex flex-row items-center gap-2">
                               {permintaan.STATUS === "PENDING" && (
                                 <>
-                                  <Button variants="ACCENT">
+                                  <Link
+                                    href={
+                                      "/permintaan/edit/" +
+                                      permintaan.ID_PERMINTAAN
+                                    }
+                                    target="__blank"
+                                    className="px-2 py-2 grid place-items-center bg-green-950 text-white rounded-md"
+                                  >
                                     <PencilIcon className="w-4 h-4 text-white" />
-                                  </Button>
+                                  </Link>
                                   <Button
                                     variants="ERROR"
                                     onClick={() =>

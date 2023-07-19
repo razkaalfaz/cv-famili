@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import ListPilihanAlat from "./ListPilihanAlat";
 import ListPilihanBahan from "./ListPilihanBahan";
@@ -8,6 +8,9 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Button from "../button/Button";
 import Snackbar from "../snackbar/Snackbar";
+import { dateToString } from "@/lib/helper";
+import { useSWRConfig } from "swr";
+import { TrashIcon } from "@heroicons/react/24/solid";
 
 type Input = {
   alat: {
@@ -31,11 +34,13 @@ interface ItemQuantities {
 interface ComponentProps {
   dataAlat: Alat[];
   dataBahan: Bahan[];
+  dataPermintaan?: Permintaan | null;
 }
 
 export default function FormPermintaan({
   dataAlat,
   dataBahan,
+  dataPermintaan,
 }: ComponentProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -43,6 +48,9 @@ export default function FormPermintaan({
   const [selectedItems, setSelectedItems] = useState<BarangPermintaan[]>([]);
   const [itemQuantities, setItemQuantities] = useState<ItemQuantities>({});
   const [jenisAlat, setJenisAlat] = useState<string>("all");
+  const [uncheckedItems, setUncheckedItems] = useState<string[]>([]);
+
+  console.log(uncheckedItems);
 
   const inputStyles =
     "w-full rounded-md outline-none border border-gray-300 overflow-hidden px-2 py-2";
@@ -53,6 +61,8 @@ export default function FormPermintaan({
   const activeButtonStyles = baseButtonStyles + " bg-orange-500 text-white";
 
   const router = useRouter();
+
+  const { mutate } = useSWRConfig();
 
   const handleItemChange = (
     event: ChangeEvent<HTMLInputElement>,
@@ -68,6 +78,10 @@ export default function FormPermintaan({
           UNIT_BARANG: item.UNIT_BARANG,
         },
       ]);
+      const updatedItems = uncheckedItems.filter(
+        (currentItem) => currentItem !== item.ID_BARANG
+      );
+      setUncheckedItems(updatedItems);
     } else {
       const updatedItems = selectedItems.filter(
         (selectedItem) => selectedItem.ID_BARANG !== item.ID_BARANG
@@ -84,10 +98,24 @@ export default function FormPermintaan({
     setItemQuantities({ ...itemQuantities, [itemId]: value });
   };
 
+  const hapusBarang = (ID_BARANG: string) => {
+    const updatedItems = selectedItems.filter(
+      (item) => item.ID_BARANG !== ID_BARANG
+    );
+    setSelectedItems(updatedItems);
+    var currentQuantities = itemQuantities;
+    delete currentQuantities[ID_BARANG];
+
+    setItemQuantities(currentQuantities);
+    if (!uncheckedItems.includes(ID_BARANG)) {
+      setUncheckedItems((prev) => [...prev, ID_BARANG]);
+    }
+  };
+
   const renderItemInputs = () => {
     return selectedItems.map((item) => (
       <div key={item.ID_BARANG}>
-        <label className="w-full flex flex-row">
+        <label className="w-full flex flex-row gap-4 items-center">
           <div className="w-2/12">{item.NAMA_BARANG}:</div>
           <div className="w-5/6 rounded-md outline-none border border-gray-300 overflow-hidden px-2 py-2 flex flex-row items-center gap-4">
             <input
@@ -101,6 +129,14 @@ export default function FormPermintaan({
             />
             <p className="text-gray-500">{item.UNIT_BARANG}</p>
           </div>
+          {dataPermintaan && (
+            <div
+              className="px-2 py-2 rounded-md grid place-items-center text-white bg-red-950 overflow-hidden cursor-pointer"
+              onClick={() => hapusBarang(item.ID_BARANG)}
+            >
+              <TrashIcon className="w-4 h-4" />
+            </div>
+          )}
         </label>
       </div>
     ));
@@ -119,6 +155,7 @@ export default function FormPermintaan({
       case "AB":
         return (
           <ListPilihanAlat
+            selectedAlat={selectedItems}
             alat={alatBerat}
             onCheckboxClicked={handleItemChange}
           />
@@ -127,6 +164,7 @@ export default function FormPermintaan({
       case "AR":
         return (
           <ListPilihanAlat
+            selectedAlat={selectedItems}
             alat={alatRingan}
             onCheckboxClicked={handleItemChange}
           />
@@ -135,6 +173,7 @@ export default function FormPermintaan({
       case "all":
         return (
           <ListPilihanAlat
+            selectedAlat={selectedItems}
             alat={dataAlat}
             onCheckboxClicked={handleItemChange}
           />
@@ -158,48 +197,160 @@ export default function FormPermintaan({
 
     if (session) {
       setIsLoading(true);
-      try {
-        const res = await fetch(process.env.NEXT_PUBLIC_API_PERMINTAAN!, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            ID_USER: session.user.ID_USER,
-            NAMA_PROYEK: namaProyek,
-            LOKASI_PROYEK: lokasiProyek,
-            TGL_PENGGUNAAN: tanggalPenggunaan,
-            TGL_PENGEMBALIAN: tanggalPengembalian,
-            BARANG: selectedItems,
-            JUMLAH_BARANG: itemQuantities,
-          }),
-        });
+      if (dataPermintaan === null || dataPermintaan === undefined) {
+        try {
+          const res = await fetch(process.env.NEXT_PUBLIC_API_PERMINTAAN!, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              ID_USER: session.user.ID_USER,
+              NAMA_PROYEK: namaProyek,
+              LOKASI_PROYEK: lokasiProyek,
+              TGL_PENGGUNAAN: tanggalPenggunaan,
+              TGL_PENGEMBALIAN: tanggalPengembalian,
+              BARANG: selectedItems,
+              JUMLAH_BARANG: itemQuantities,
+            }),
+          });
 
-        const response = await res.json();
-        if (!response.ok) {
-          setIsLoading(false);
-          if (!response.result) {
-            setMessage(
-              "Tidak ada barang yang di pilih, harap pilih salah satu untuk lanjut."
-            );
+          const response = await res.json();
+          if (!response.ok) {
+            setIsLoading(false);
+            if (!response.result) {
+              setMessage(
+                "Tidak ada barang yang di pilih, harap pilih salah satu untuk lanjut."
+              );
+            } else {
+              setMessage("Terjadi kesalahan ketika melakukan permintaan...");
+            }
           } else {
-            setMessage("Terjadi kesalahan ketika melakukan permintaan...");
+            setIsLoading(false);
+            setSuccess("Berhasil mengajukan permintaan.");
+            setSelectedItems([]);
+            setItemQuantities({});
+            reset();
+            setTimeout(() => {
+              router.push("/permintaan");
+            }, 3000);
           }
-        } else {
+        } catch (err) {
           setIsLoading(false);
-          setSuccess("Berhasil mengajukan permintaan.");
-          setSelectedItems([]);
-          setItemQuantities({});
-          reset();
-          setTimeout(() => {
-            router.push("/permintaan");
-          }, 3000);
+          setMessage("Terjadi kesalahan...");
+          console.error(err);
         }
-      } catch (err) {
-        setIsLoading(false);
-        setMessage("Terjadi kesalahan...");
-        console.error(err);
+      } else {
+        try {
+          const res = await fetch(
+            process.env.NEXT_PUBLIC_API_EDIT_PERMINTAAN!,
+            {
+              method: "PATCH",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                PERMINTAAN: dataPermintaan,
+                NAMA_PROYEK: namaProyek ?? dataPermintaan.NAMA_PROYEK,
+                LOKASI_PROYEK: lokasiProyek ?? dataPermintaan.LOKASI_PROYEK,
+                TGL_PENGGUNAAN:
+                  tanggalPenggunaan ?? dataPermintaan.TGL_PENGGUNAAN,
+                TGL_PENGEMBALIAN:
+                  tanggalPengembalian ?? dataPermintaan.TGL_PENGEMBALIAN,
+                BARANG: selectedItems,
+                JUMLAH_BARANG: itemQuantities,
+                DELETED_BARANG: uncheckedItems ?? [],
+              }),
+            }
+          );
+
+          const response = await res.json();
+          if (!response.ok) {
+            setIsLoading(false);
+            if (!response.result) {
+              setMessage(
+                "Tidak ada barang yang di pilih, harap pilih salah satu untuk lanjut."
+              );
+            } else {
+              setMessage("Terjadi kesalahan ketika melakukan permintaan...");
+            }
+          } else {
+            setIsLoading(false);
+            setSuccess("Berhasil megubah data permintaan.");
+            setSelectedItems([]);
+            setItemQuantities({});
+            mutate("/api/get-permintaan/" + dataPermintaan.ID_PERMINTAAN);
+            reset();
+            setTimeout(() => {
+              router.push("/permintaan");
+            }, 3000);
+          }
+        } catch (err) {
+          setIsLoading(false);
+          setMessage("Terjadi kesalahan...");
+          console.error(err);
+        }
       }
     }
   };
+
+  useEffect(() => {
+    if (dataPermintaan) {
+      const currentAlat = dataPermintaan?.detail_permintaan?.map(
+        (permintaan) => permintaan.alat
+      );
+
+      const currentBahan = dataPermintaan?.detail_permintaan?.map(
+        (permintaan) => permintaan.bahan
+      );
+
+      if (currentAlat) {
+        currentAlat
+          .filter((permintaan) => permintaan !== null)
+          .forEach((alat) => {
+            setSelectedItems((prev) => [
+              ...prev,
+              {
+                ID_BARANG: alat.ID_ALAT,
+                NAMA_BARANG: alat.NAMA_ALAT,
+                UNIT_BARANG: alat.UNIT_ALAT,
+              },
+            ]);
+          });
+
+        dataPermintaan?.detail_permintaan
+          ?.filter((detailPermintaan) => detailPermintaan?.JUMLAH_ALAT !== null)
+          .forEach((detail) => {
+            setItemQuantities((prev) => ({
+              ...prev,
+              [detail?.alat?.ID_ALAT]: detail.JUMLAH_ALAT.toString(),
+            }));
+          });
+      }
+
+      if (currentBahan) {
+        currentBahan
+          .filter((permintaan) => permintaan !== null)
+          .forEach((bahan) => {
+            setSelectedItems((prev) => [
+              ...prev,
+              {
+                ID_BARANG: bahan.ID_BAHAN,
+                NAMA_BARANG: bahan.NAMA_BAHAN,
+                UNIT_BARANG: bahan.UNIT_BAHAN,
+              },
+            ]);
+          });
+
+        dataPermintaan?.detail_permintaan
+          ?.filter(
+            (detailPermintaan) => detailPermintaan?.JUMLAH_BAHAN !== null
+          )
+          .forEach((detail) => {
+            setItemQuantities((prev) => ({
+              ...prev,
+              [detail?.bahan?.ID_BAHAN]: detail.JUMLAH_BAHAN.toString(),
+            }));
+          });
+      }
+    }
+  }, [dataPermintaan]);
 
   return (
     <form
@@ -217,6 +368,7 @@ export default function FormPermintaan({
           placeholder="Nama proyek..."
           id="nama_proyek"
           className={inputStyles}
+          defaultValue={dataPermintaan?.NAMA_PROYEK ?? ""}
           required
         />
       </div>
@@ -232,6 +384,7 @@ export default function FormPermintaan({
           placeholder="Jl..."
           id="lokasi_proyek"
           className={inputStyles}
+          defaultValue={dataPermintaan?.LOKASI_PROYEK ?? ""}
           required
         />
       </div>
@@ -249,6 +402,9 @@ export default function FormPermintaan({
           type="date"
           id="tgl_penggunaan"
           className={inputStyles}
+          defaultValue={
+            dateToString(dataPermintaan?.TGL_PENGGUNAAN?.toString() ?? "") ?? ""
+          }
           required
         />
       </div>
@@ -266,6 +422,10 @@ export default function FormPermintaan({
           type="date"
           id="tgl_pengembalian"
           className={inputStyles}
+          defaultValue={
+            dateToString(dataPermintaan?.TGL_PENGEMBALIAN?.toString() ?? "") ??
+            ""
+          }
           required
         />
       </div>
@@ -314,6 +474,7 @@ export default function FormPermintaan({
           <ListPilihanBahan
             bahan={dataBahan}
             onCheckboxClicked={handleItemChange}
+            selectedBahan={selectedItems}
           />
         </div>
       </div>
