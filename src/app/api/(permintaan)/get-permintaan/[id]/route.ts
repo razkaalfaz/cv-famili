@@ -20,6 +20,7 @@ async function handler(
           bahan: true,
         },
       },
+      user: true,
     },
   });
 
