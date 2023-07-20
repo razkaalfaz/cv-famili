@@ -105,7 +105,9 @@ export default function ListPermintaan({ dataPermintaan }: ComponentProps) {
                       {convertToDate(permintaan.TGL_PENGEMBALIAN)}
                     </td>
                     <td className="px-2 py-2 border border-gray-300 text-center">
-                      {permintaan.STATUS}
+                      {permintaan.STATUS === "DITERIMA"
+                        ? "SEDANG DIGUNAKAN"
+                        : permintaan.STATUS}
                     </td>
                     <td className="px-2 py-2 border border-gray-300 text-center">
                       <Link
