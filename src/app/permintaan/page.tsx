@@ -4,7 +4,7 @@ import Button from "@/components/button/Button";
 import Snackbar from "@/components/snackbar/Snackbar";
 import ShowModal from "@/components/utils/ShowModal";
 import { VARIABEL_PERMINTAAN } from "@/lib/constants";
-import { fetcher, sortPermintaan } from "@/lib/helper";
+import { decimalNumber, fetcher, sortPermintaan } from "@/lib/helper";
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
@@ -18,20 +18,23 @@ export default function Permintaan() {
   );
   const [message, setMessage] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
   const [opsiVerifikasi, setOpsiVerifikasi] = useState<
     keyof typeof StatusPermintaan | null
   >(null);
   const [modalShown, setModalShown] = useState<string | null>(null);
 
   const { data: session } = useSession();
-  const { mutate } = useSWRConfig();
 
   const userId = session ? session.user.ID_USER : null;
 
   function convertToDate(value: any) {
     const date = new Date(value);
-    const dateToReturn = date.toLocaleDateString();
+    const day = date.getDate();
+    const month = date.getMonth();
+    const years = date.getFullYear();
+    const dateToReturn = `${decimalNumber(day)}/${decimalNumber(
+      month + 1
+    )}/${years}`;
     return dateToReturn;
   }
 
@@ -42,6 +45,11 @@ export default function Permintaan() {
     setIdPermintaan(idPermintaan);
     setOpsiVerifikasi(opsi);
     setModalShown("verifikasi-permintaan");
+  }
+
+  function tambahWaktuPengembalian(permintaan: Permintaan) {
+    setDataPengembalian(permintaan);
+    setModalShown("extend-pengembalian");
   }
 
   function tolakPermintaan(idPermintaan: string) {
@@ -202,14 +210,28 @@ export default function Permintaan() {
                                 </Button>
                               )}
                               {permintaan.STATUS === "DITERIMA" && (
-                                <Button
-                                  variants="PRIMARY"
-                                  onClick={() =>
-                                    pengembalianBarang(permintaan.ID_PERMINTAAN)
-                                  }
-                                >
-                                  Kembalikan Barang
-                                </Button>
+                                <div className="flex flex-col gap-2">
+                                  <Button
+                                    variants="ACCENT"
+                                    onClick={() =>
+                                      tambahWaktuPengembalian(permintaan)
+                                    }
+                                    fullWidth
+                                  >
+                                    Perpanjang Waktu Pengembalian
+                                  </Button>
+                                  <Button
+                                    variants="PRIMARY"
+                                    onClick={() =>
+                                      pengembalianBarang(
+                                        permintaan.ID_PERMINTAAN
+                                      )
+                                    }
+                                    fullWidth
+                                  >
+                                    Kembalikan Barang
+                                  </Button>
+                                </div>
                               )}
                               {permintaan.STATUS === "PENGEMBALIAN" && (
                                 <p className="text-gray-500">
@@ -397,6 +419,7 @@ export default function Permintaan() {
     data: dataPermintaan,
     error,
     isLoading: loadingData,
+    isValidating,
   } = useSWR(
     session?.user.ROLE === "ADMIN" || session?.user.ROLE === "PERALATAN"
       ? "/api/semua_permintaan"
@@ -404,7 +427,7 @@ export default function Permintaan() {
     fetcher
   );
 
-  if (loadingData) {
+  if (loadingData || isValidating) {
     return (
       <div className="w-full px-8 py-8 flex flex-col gap-8">
         <p className="text-gray-500">Loading data permintaan...</p>
