@@ -49,14 +49,27 @@ export default function NavigationTabs() {
           ))}
 
           {session && session.user.ROLE === "ADMIN" && (
-            <Link
-              href="/users"
-              className={
-                pathname === "/users" ? activeLinkStyles : baseLinkStyles
-              }
-            >
-              Users
-            </Link>
+            <div className="flex flex-row items-center gap-4">
+              <Link
+                href="/users"
+                className={
+                  pathname === "/users" ? activeLinkStyles : baseLinkStyles
+                }
+              >
+                Users
+              </Link>
+
+              <Link
+                href="/permintaan/laporan"
+                className={
+                  pathname === "/permintaan/laporan"
+                    ? activeLinkStyles
+                    : baseLinkStyles
+                }
+              >
+                Laporan
+              </Link>
+            </div>
           )}
 
           <Button variants="ERROR" onClick={() => logoutHandler()}>

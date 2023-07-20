@@ -6,6 +6,7 @@ import ModalsContainer from "../modal/ModalsContainer";
 import { useState } from "react";
 import { useSWRConfig } from "swr";
 import { useSession } from "next-auth/react";
+import { dateToString } from "@/lib/helper";
 
 type Inputs = {
   alat: {
@@ -24,6 +25,7 @@ type Inputs = {
   permintaan: {
     jumlahPermintaan: number;
     keterangan: string | null;
+    tgl_pengembalian: string;
   };
 };
 
@@ -260,6 +262,37 @@ export default function ShowModal({
       }
     }
   };
+  const updateWaktuPengembalian: SubmitHandler<Inputs> = async (data) => {
+    if (dataPermintaan) {
+      try {
+        setIsLoading(true);
+        setMessage(null);
+        setSuccess(null);
+        const res = await fetch(process.env.NEXT_PUBLIC_API_TAMBAH_WAKTU!, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ID_PERMINTAAN: dataPermintaan.ID_PERMINTAAN,
+            TGL_PENGEMBALIAN: data.permintaan.tgl_pengembalian,
+          }),
+        });
+
+        const response = await res.json();
+
+        if (!response.ok) {
+          setIsLoading(false);
+          setMessage(response.message);
+        } else {
+          setIsLoading(false);
+          setSuccess(response.message);
+          hideModal();
+          mutate("/api/permintaan-user/" + dataPermintaan.ID_USER);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  };
 
   async function hapusAlat() {
     setIsLoading(true);
@@ -446,7 +479,7 @@ export default function ShowModal({
     }
   }
   async function hapusPermintaan() {
-    if (idPermintaan) {
+    if (dataPermintaan) {
       setIsLoading(true);
       setMessage(null);
       setSuccess(null);
@@ -454,7 +487,7 @@ export default function ShowModal({
         const res = await fetch(process.env.NEXT_PUBLIC_API_HAPUS_PERMINTAAN!, {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ID_PERMINTAAN: idPermintaan }),
+          body: JSON.stringify({ ID_PERMINTAAN: dataPermintaan.ID_PERMINTAAN }),
         });
 
         const response = await res.json();
@@ -466,7 +499,7 @@ export default function ShowModal({
           setIsLoading(false);
           setSuccess(response.message);
           hideModal();
-          mutate("/api/semua_permintaan");
+          mutate("/api/permintaan-user/" + dataPermintaan.ID_USER);
         }
       } catch (err) {
         console.error(err);
@@ -1128,6 +1161,42 @@ export default function ShowModal({
               Batal
             </Button>
           </div>
+        </ModalsContainer>
+      );
+
+    case "extend-pengembalian":
+      return (
+        <ModalsContainer
+          title="Perpanjang Waktu Pengembalian"
+          description="Harap isi input dibawah ini dengan tanggal pengembalian baru yang anda ajukan."
+          onClose={hideModal}
+        >
+          <form
+            className="w-full flex flex-col gap-4"
+            onSubmit={handleSubmit(updateWaktuPengembalian)}
+          >
+            <div className="flex flex-col gap-2">
+              <label htmlFor="tgl_pengembalian">Tanggal Pengembalian</label>
+              <input
+                id="tgl_pengembalian"
+                type="date"
+                required
+                defaultValue={dateToString(
+                  dataPermintaan?.TGL_PENGEMBALIAN.toString() ?? ""
+                )}
+                className="w-full rounded-md outline-none border border-gray-300 px-2 py-2"
+                {...register("permintaan.tgl_pengembalian")}
+              />
+            </div>
+            <Button
+              variants="PRIMARY"
+              type="submit"
+              fullWidth
+              disabled={isLoading}
+            >
+              {isLoading ? "Menyimpan..." : "Simpan"}
+            </Button>
+          </form>
         </ModalsContainer>
       );
 

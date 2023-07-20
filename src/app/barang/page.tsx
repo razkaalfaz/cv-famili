@@ -46,7 +46,7 @@ export default function Barang() {
 
   return (
     <div className="w-full px-8 py-8 flex flex-col gap-8">
-      {session?.user.ROLE === "ADMIN" && (
+      {session?.user.ROLE !== "USER" && (
         <div className="w-full fixed bottom-4 right-4 flex flex-col gap-4 items-end ">
           <button
             className="w-48 rounded-md grid place-items-center px-2 py-2 bg-orange-700 text-white"
