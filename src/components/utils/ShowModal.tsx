@@ -479,7 +479,7 @@ export default function ShowModal({
     }
   }
   async function hapusPermintaan() {
-    if (idPermintaan) {
+    if (dataPermintaan) {
       setIsLoading(true);
       setMessage(null);
       setSuccess(null);
@@ -487,7 +487,7 @@ export default function ShowModal({
         const res = await fetch(process.env.NEXT_PUBLIC_API_HAPUS_PERMINTAAN!, {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ID_PERMINTAAN: idPermintaan }),
+          body: JSON.stringify({ ID_PERMINTAAN: dataPermintaan.ID_PERMINTAAN }),
         });
 
         const response = await res.json();
@@ -499,7 +499,7 @@ export default function ShowModal({
           setIsLoading(false);
           setSuccess(response.message);
           hideModal();
-          mutate("/api/semua_permintaan");
+          mutate("/api/permintaan-user/" + dataPermintaan.ID_USER);
         }
       } catch (err) {
         console.error(err);

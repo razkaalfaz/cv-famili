@@ -129,14 +129,12 @@ export default function FormPermintaan({
             />
             <p className="text-gray-500">{item.UNIT_BARANG}</p>
           </div>
-          {dataPermintaan && (
-            <div
-              className="px-2 py-2 rounded-md grid place-items-center text-white bg-red-950 overflow-hidden cursor-pointer"
-              onClick={() => hapusBarang(item.ID_BARANG)}
-            >
-              <TrashIcon className="w-4 h-4" />
-            </div>
-          )}
+          <div
+            className="px-2 py-2 rounded-md grid place-items-center text-white bg-red-950 overflow-hidden cursor-pointer"
+            onClick={() => hapusBarang(item.ID_BARANG)}
+          >
+            <TrashIcon className="w-4 h-4" />
+          </div>
         </label>
       </div>
     ));

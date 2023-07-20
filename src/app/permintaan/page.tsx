@@ -9,13 +9,12 @@ import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useState } from "react";
-import useSWR, { useSWRConfig } from "swr";
+import useSWR from "swr";
 
 export default function Permintaan() {
   const [idPermintaan, setIdPermintaan] = useState<string | null>(null);
-  const [dataPengembalian, setDataPengembalian] = useState<Permintaan | null>(
-    null
-  );
+  const [permintaanToUpdate, setPermintaanToUpdate] =
+    useState<Permintaan | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [opsiVerifikasi, setOpsiVerifikasi] = useState<
@@ -48,7 +47,7 @@ export default function Permintaan() {
   }
 
   function tambahWaktuPengembalian(permintaan: Permintaan) {
-    setDataPengembalian(permintaan);
+    setPermintaanToUpdate(permintaan);
     setModalShown("extend-pengembalian");
   }
 
@@ -69,12 +68,12 @@ export default function Permintaan() {
   }
 
   async function verifikasiPengembalian(permintaan: Permintaan) {
-    setDataPengembalian(permintaan);
+    setPermintaanToUpdate(permintaan);
     setModalShown("verifikasi-pengembalian");
   }
 
-  function hapusPermintaan(ID_PERMINTAAN: string) {
-    setIdPermintaan(ID_PERMINTAAN);
+  function hapusPermintaan(permintaan: Permintaan) {
+    setPermintaanToUpdate(permintaan);
     setModalShown("hapus-permintaan");
   }
 
@@ -91,6 +90,9 @@ export default function Permintaan() {
                 >
                   {permintaan.KETERANGAN && (
                     <b>Catatan: {permintaan.KETERANGAN}</b>
+                  )}
+                  {permintaan?.user?.NAME && (
+                    <b>Permintaan dari: {permintaan?.user?.NAME}</b>
                   )}
                   <table className="w-full">
                     <thead>
@@ -183,9 +185,7 @@ export default function Permintaan() {
                                   </Link>
                                   <Button
                                     variants="ERROR"
-                                    onClick={() =>
-                                      hapusPermintaan(permintaan.ID_PERMINTAAN)
-                                    }
+                                    onClick={() => hapusPermintaan(permintaan)}
                                   >
                                     <TrashIcon className="w-4 h-4 text-white" />
                                   </Button>
@@ -401,7 +401,7 @@ export default function Permintaan() {
               setSuccess={setSuccess}
               idPermintaan={idPermintaan}
               statusPermintaan={opsiVerifikasi}
-              dataPermintaan={dataPengembalian}
+              dataPermintaan={permintaanToUpdate}
             />
           </div>
         );
