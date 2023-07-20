@@ -13,8 +13,6 @@ type Inputs = {
     namaAlat: string;
     jumlahAlat: number;
     unitAlat: string;
-    alatLayak: number;
-    alatTidakLayak: number;
     jenisAlat: string;
   };
   bahan: {
@@ -572,34 +570,6 @@ export default function ShowModal({
                 <option value="AR">Alat Ringan</option>
               </select>
             </div>
-            <div className="flex flex-col gap-2">
-              <label htmlFor="alat_layak">Jumlah Alat Layak</label>
-              <input
-                id="alat_layak"
-                type="number"
-                required
-                placeholder="1"
-                min={0}
-                className="w-full rounded-md outline-none border border-gray-300 px-2 py-2"
-                {...register("alat.alatLayak", {
-                  setValueAs: (v) => parseInt(v),
-                })}
-              />
-            </div>
-            <div className="flex flex-col gap-2">
-              <label htmlFor="alat_tidak_layak">Jumlah Alat Tidak Layak</label>
-              <input
-                id="alat_tidak_layak"
-                type="number"
-                required
-                placeholder="1"
-                min={0}
-                className="w-full rounded-md outline-none border border-gray-300 px-2 py-2"
-                {...register("alat.alatTidakLayak", {
-                  setValueAs: (v) => parseInt(v),
-                })}
-              />
-            </div>
 
             <Button
               variants="PRIMARY"
@@ -690,39 +660,6 @@ export default function ShowModal({
                   {...register("alat.unitAlat")}
                 />
               </div>
-              <div className="flex flex-col gap-2">
-                <label htmlFor="alat_layak">Jumlah Alat Layak</label>
-                <input
-                  id="alat_layak"
-                  type="number"
-                  defaultValue={dataAlat.ALAT_LAYAK}
-                  required
-                  placeholder="1"
-                  min={0}
-                  className="w-full rounded-md outline-none border border-gray-300 px-2 py-2"
-                  {...register("alat.alatLayak", {
-                    setValueAs: (v) => parseInt(v),
-                  })}
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <label htmlFor="alat_tidak_layak">
-                  Jumlah Alat Tidak Layak
-                </label>
-                <input
-                  id="alat_tidak_layak"
-                  type="number"
-                  required
-                  defaultValue={dataAlat.ALAT_TIDAK_LAYAK}
-                  placeholder="1"
-                  min={0}
-                  className="w-full rounded-md outline-none border border-gray-300 px-2 py-2"
-                  {...register("alat.alatTidakLayak", {
-                    setValueAs: (v) => parseInt(v),
-                  })}
-                />
-              </div>
-
               <Button
                 variants="PRIMARY"
                 type="submit"

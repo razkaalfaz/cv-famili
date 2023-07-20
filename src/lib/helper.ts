@@ -9,13 +9,11 @@ export function hitungJumlahAlat(alat: Alat[]) {
     (alat: Alat) => alat?.ID_ALAT.substring(0, 2) === "AR"
   );
 
-  const alatLayak = alat?.reduce((a, b) => a + b.ALAT_LAYAK, 0);
-
   const alatTidakLayak = alat?.reduce((a, b) => a + b.ALAT_TIDAK_LAYAK, 0);
 
   const totalAlat = alat?.reduce((a, b) => a + b.JUMLAH_ALAT, 0);
 
-  return { alatBesar, alatRingan, alatLayak, alatTidakLayak, totalAlat };
+  return { alatBesar, alatRingan, alatTidakLayak, totalAlat };
 }
 
 export function hitungJumlahBahan(bahan: Bahan[]) {

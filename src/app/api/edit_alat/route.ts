@@ -5,7 +5,6 @@ interface RequestBody {
   namaAlat: string;
   jumlahAlat: number;
   unitAlat: string;
-  alatLayak: number;
   alatTidakLayak: number;
   idAlat: string;
 }
@@ -20,7 +19,6 @@ async function handler(request: NextRequest) {
     data: {
       NAMA_ALAT: body.namaAlat,
       JUMLAH_ALAT: body.jumlahAlat,
-      ALAT_LAYAK: body.alatLayak,
       ALAT_TIDAK_LAYAK: body.alatTidakLayak,
       UNIT_ALAT: body.unitAlat,
     },

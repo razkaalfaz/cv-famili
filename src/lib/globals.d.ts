@@ -3,7 +3,6 @@ type Alat = {
   NAMA_ALAT: string;
   JUMLAH_ALAT: number;
   UNIT_ALAT: string;
-  ALAT_LAYAK: number;
   ALAT_TIDAK_LAYAK: number;
 };
 
@@ -49,6 +48,16 @@ type Permintaan = {
   KETERANGAN: string | null;
 };
 
+type Perbaikan = {
+  ID_PERBAIKAN: string;
+  KETERANGAN: string;
+  TGL_PERBAIKAN: string;
+  ID_ALAT: string;
+  alat: Alat;
+  JUMLAH_ALAT: number;
+  STATUS: StatusPerbaikan;
+};
+
 type User = {
   ID_USER: number;
   NAME: string;
@@ -78,4 +87,11 @@ enum StatusPermintaan {
   PENGEMBALIAN = "PENGEMBALIAN",
   DITOLAK = "DITOLAK",
   DIKIRIM = "DIKIRIM",
+}
+
+enum StatusPerbaikan {
+  PENDING = "PENDING",
+  DIAJUKAN = "DIAJUKAN",
+  DITOLAK = "DITOLAK",
+  DIPERBAIKI = "DIPERBAIKI",
 }

@@ -2,7 +2,6 @@
 
 import ListAlat from "@/components/alat/ListAlat";
 import ListBahan from "@/components/bahan/ListBahan";
-import Button from "@/components/button/Button";
 import Snackbar from "@/components/snackbar/Snackbar";
 import ShowModal from "@/components/utils/ShowModal";
 import { useState } from "react";
