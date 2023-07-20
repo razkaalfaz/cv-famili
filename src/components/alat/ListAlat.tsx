@@ -30,7 +30,7 @@ export default function ListAlat({ setSuccess, setMessage }: ComponentProps) {
 
   const variabelUmum = VARIABEL_ALAT.filter(
     (variabel) => variabel.id !== "aksi"
-  );
+  ).filter((variabel) => variabel.id !== "jumlah_alat_tidak_layak");
   const variabelAdmin = VARIABEL_ALAT;
 
   const { data: session } = useSession();
@@ -49,11 +49,6 @@ export default function ListAlat({ setSuccess, setMessage }: ComponentProps) {
     setModalShown("edit-alat");
     setIdAlat(idAlat);
     setAlatToUpdate(alat);
-  }
-
-  function ajukanAlat(idAlat: string) {
-    setModalShown("ajukan-permintaan");
-    setIdAlat(idAlat);
   }
 
   async function cariAlat(event: FormEvent<HTMLFormElement>) {
@@ -155,29 +150,28 @@ export default function ListAlat({ setSuccess, setMessage }: ComponentProps) {
                   <td className="text-center border border-gray-300 px-2 py-2">
                     <p>{alat.UNIT_ALAT}</p>
                   </td>
-                  <td className="text-center border border-gray-300 px-2 py-2">
-                    <p>{alat.ALAT_LAYAK}</p>
-                  </td>
-                  <td className="text-center border border-gray-300 px-2 py-2">
-                    <p>{alat.ALAT_TIDAK_LAYAK}</p>
-                  </td>
                   {session?.user?.ROLE === "ADMIN" && (
-                    <td className="border border-gray-300 px-2 py-2">
-                      <div className="w-full flex flex-row items-center justify-center gap-2">
-                        <Button
-                          variants="ACCENT"
-                          onClick={() => editAlat(alat.ID_ALAT, alat)}
-                        >
-                          <PencilIcon className="w-4 h-4 text-white" />
-                        </Button>
-                        <Button
-                          variants="ERROR"
-                          onClick={() => hapusAlat(alat.ID_ALAT)}
-                        >
-                          <TrashIcon className="w-4 h-4 text-white" />
-                        </Button>
-                      </div>
-                    </td>
+                    <>
+                      <td className="text-center border border-gray-300 px-2 py-2">
+                        <p>{alat.ALAT_TIDAK_LAYAK}</p>
+                      </td>
+                      <td className="border border-gray-300 px-2 py-2">
+                        <div className="w-full flex flex-row items-center justify-center gap-2">
+                          <Button
+                            variants="ACCENT"
+                            onClick={() => editAlat(alat.ID_ALAT, alat)}
+                          >
+                            <PencilIcon className="w-4 h-4 text-white" />
+                          </Button>
+                          <Button
+                            variants="ERROR"
+                            onClick={() => hapusAlat(alat.ID_ALAT)}
+                          >
+                            <TrashIcon className="w-4 h-4 text-white" />
+                          </Button>
+                        </div>
+                      </td>
+                    </>
                   )}
                 </tr>
               ))}
@@ -253,29 +247,28 @@ export default function ListAlat({ setSuccess, setMessage }: ComponentProps) {
                   <td className="text-center border border-gray-300 px-2 py-2">
                     <p>{alat.UNIT_ALAT}</p>
                   </td>
-                  <td className="text-center border border-gray-300 px-2 py-2">
-                    <p>{alat.ALAT_LAYAK}</p>
-                  </td>
-                  <td className="text-center border border-gray-300 px-2 py-2">
-                    <p>{alat.ALAT_TIDAK_LAYAK}</p>
-                  </td>
                   {session?.user?.ROLE === "ADMIN" && (
-                    <td className="border border-gray-300 px-2 py-2">
-                      <div className="w-full flex flex-row items-center justify-center gap-2">
-                        <Button
-                          variants="ACCENT"
-                          onClick={() => editAlat(alat.ID_ALAT, alat)}
-                        >
-                          <PencilIcon className="w-4 h-4 text-white" />
-                        </Button>
-                        <Button
-                          variants="ERROR"
-                          onClick={() => hapusAlat(alat.ID_ALAT)}
-                        >
-                          <TrashIcon className="w-4 h-4 text-white" />
-                        </Button>
-                      </div>
-                    </td>
+                    <>
+                      <td className="text-center border border-gray-300 px-2 py-2">
+                        <p>{alat.ALAT_TIDAK_LAYAK}</p>
+                      </td>
+                      <td className="border border-gray-300 px-2 py-2">
+                        <div className="w-full flex flex-row items-center justify-center gap-2">
+                          <Button
+                            variants="ACCENT"
+                            onClick={() => editAlat(alat.ID_ALAT, alat)}
+                          >
+                            <PencilIcon className="w-4 h-4 text-white" />
+                          </Button>
+                          <Button
+                            variants="ERROR"
+                            onClick={() => hapusAlat(alat.ID_ALAT)}
+                          >
+                            <TrashIcon className="w-4 h-4 text-white" />
+                          </Button>
+                        </div>
+                      </td>
+                    </>
                   )}
                 </tr>
               ))}

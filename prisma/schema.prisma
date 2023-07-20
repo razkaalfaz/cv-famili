@@ -12,10 +12,21 @@ model alat {
   NAMA_ALAT         String?
   JUMLAH_ALAT       Int
   UNIT_ALAT         String?
-  ALAT_LAYAK        Int                 @default(0)
-  ALAT_TIDAK_LAYAK  Int                 @default(0)
+  ALAT_TIDAK_LAYAK  Int?                @default(0)
   ALAT_KELUAR       Int                 @default(0)
   detail_permintaan detail_permintaan[]
+  perbaikan         perbaikan[]
+}
+
+model perbaikan {
+  ID_PERBAIKAN  String           @id
+  ID_ALAT       String?          @unique
+  JUMLAH_ALAT   Int
+  KETERANGAN    String
+  CATATAN       String?
+  TGL_PERBAIKAN String?
+  STATUS        STATUS_PERBAIKAN @default(PENDING)
+  alat          alat?            @relation(fields: [ID_ALAT], references: [ID_ALAT], onDelete: Cascade)
 }
 
 model bahan {
@@ -87,4 +98,11 @@ enum STATUS_PERMINTAAN {
   DITERIMA
   PENGEMBALIAN
   DIKEMBALIKAN
+}
+
+enum STATUS_PERBAIKAN {
+  PENDING
+  DIAJUKAN
+  DITOLAK
+  DIPERBAIKI
 }

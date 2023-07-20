@@ -27,7 +27,6 @@ export const VARIABEL_ALAT = [
   { id: "nama_alat", name: "Nama Alat" },
   { id: "jumlah_alat", name: "Jumlah Alat" },
   { id: "unit_alat", name: "Unit Alat" },
-  { id: "jumlah_alat_layak", name: "Jumlah Alat Layak" },
   { id: "jumlah_alat_tidak_layak", name: "Jumlah Alat Tidak Layak" },
   { id: "aksi", name: "Aksi" },
 ];
