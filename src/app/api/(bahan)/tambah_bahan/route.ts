@@ -10,13 +10,7 @@ interface RequestBody {
 async function handler(request: NextRequest) {
   const body: RequestBody = await request.json();
 
-  const maxValue = await db.bahan.aggregate({
-    _max: {
-      ID_BAHAN: true,
-    },
-  });
-
-  const urutan = Number(maxValue._max.ID_BAHAN?.substring(1)) || 0;
+  const currentBahan = await db.bahan.findMany()
 
   function kodifikasiBahan(jumlah: number) {
     const prefix = "B";
@@ -31,7 +25,7 @@ async function handler(request: NextRequest) {
 
   const bahanBaru = await db.bahan.create({
     data: {
-      ID_BAHAN: kodifikasiBahan(urutan),
+      ID_BAHAN: kodifikasiBahan(currentBahan.length + 1),
       NAMA_BAHAN: body.namaBahan,
       STOCK_BAHAN: body.stockBahan,
       UNIT_BAHAN: body.unitBahan,
