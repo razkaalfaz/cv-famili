@@ -23,21 +23,27 @@ async function handler(request: NextRequest) {
     },
   });
 
-  const urutan = Number(maxValue._max.ID_ALAT?.substring(2)) || 0;
+  const urutan =
+    maxValue._max.ID_ALAT?.substring(
+      maxValue._max.ID_ALAT.length,
+      maxValue._max.ID_ALAT.length - 3
+    ) || "0";
+
+  console.log(kodifikasiAlat(parseInt(urutan) + 1));
 
   function kodifikasiAlat(jumlah: number) {
-    if (jumlah >= 10) {
+    if (jumlah > 9) {
       return `${body.jenisAlat}0${jumlah}`;
     } else if (jumlah >= 100) {
       return `${body.jenisAlat}${jumlah}`;
     } else {
-      return `${body.jenisAlat}00${jumlah + 1}`;
+      return `${body.jenisAlat}00${jumlah}`;
     }
   }
 
   const alatBaru = await db.alat.create({
     data: {
-      ID_ALAT: kodifikasiAlat(urutan),
+      ID_ALAT: kodifikasiAlat(parseInt(urutan) + 1),
       JUMLAH_ALAT: body.jumlahAlat,
       NAMA_ALAT: body.namaAlat,
       UNIT_ALAT: body.unitAlat,
