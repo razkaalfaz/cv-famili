@@ -24,7 +24,7 @@ model perbaikan {
   JUMLAH_ALAT   Int
   KETERANGAN    String
   CATATAN       String?
-  TGL_PERBAIKAN String?
+  TGL_PENGAJUAN DateTime         @default(now())
   STATUS        STATUS_PERBAIKAN @default(PENDING)
   alat          alat?            @relation(fields: [ID_ALAT], references: [ID_ALAT], onDelete: Cascade)
 }
