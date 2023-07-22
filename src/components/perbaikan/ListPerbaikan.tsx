@@ -63,7 +63,7 @@ export default function ListPerbaikan() {
                 <td className={tdStyle + " text-center"}>
                   {perbaikan.JUMLAH_ALAT}
                 </td>
-                <td className={tdStyle}>
+                <td className={tdStyle + " text-center"}>
                   {convertToDate(perbaikan.TGL_PENGAJUAN)}
                 </td>
                 <td className={tdStyle}>

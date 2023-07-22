@@ -2,7 +2,7 @@
 
 import Loading from "@/components/indikator/Loading";
 import GeneratePDF from "@/components/pdf/GeneratePDF";
-import { fetcher } from "@/lib/helper";
+import { decimalNumber, fetcher } from "@/lib/helper";
 import { Open_Sans } from "next/font/google";
 import Image from "next/image";
 import { useRef } from "react";
@@ -23,6 +23,17 @@ export default function DetailPerbaikan({
     fetcher
   );
   const ref = useRef<HTMLDivElement | null>(null);
+
+  function convertToDate(value: any) {
+    const date = new Date(value);
+    const day = date.getDate();
+    const month = date.getMonth();
+    const years = date.getFullYear();
+    const dateToReturn = `${decimalNumber(day)}/${decimalNumber(
+      month + 1
+    )}/${years}`;
+    return dateToReturn;
+  }
 
   if (isLoading) {
     return (
@@ -64,6 +75,11 @@ export default function DetailPerbaikan({
                   <td className="font-bold">ID Perbaikan</td>
                   <td>:</td>
                   <td>{perbaikan.ID_PERBAIKAN}</td>
+                </tr>
+                <tr>
+                  <td className="font-bold">Tanggal Pengajuan</td>
+                  <td>:</td>
+                  <td>{convertToDate(perbaikan.TGL_PENGAJUAN)}</td>
                 </tr>
               </tbody>
             </table>
