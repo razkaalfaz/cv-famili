@@ -51,7 +51,7 @@ type Permintaan = {
 type Perbaikan = {
   ID_PERBAIKAN: string;
   KETERANGAN: string;
-  TGL_PERBAIKAN: string;
+  TGL_PENGAJUAN: string;
   ID_ALAT: string;
   alat: Alat;
   JUMLAH_ALAT: number;

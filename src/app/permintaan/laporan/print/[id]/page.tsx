@@ -78,9 +78,9 @@ export default function Print({ params }: { params: { id: string } }) {
                   <td>{permintaan.ID_PERMINTAAN}</td>
                 </tr>
                 <tr>
-                  <td className="font-bold">Tanggal Permintaan</td>
+                  <td className="font-bold">Tanggal Penggunaan</td>
                   <td>:</td>
-                  <td>{convertToDate(permintaan.TGL_PERMINTAAN)}</td>
+                  <td>{convertToDate(permintaan.TGL_PENGGUNAAN)}</td>
                 </tr>
                 <tr>
                   <td className="font-bold">Nama Pengaju</td>
