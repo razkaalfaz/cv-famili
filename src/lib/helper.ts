@@ -63,3 +63,11 @@ export function convertToDate(value: any) {
   )}/${years}`;
   return dateToReturn;
 }
+
+export function idPrefixMaker(value: number) {
+  return value <= 9
+    ? `00${value}`
+    : value <= 99 && value >= 9
+    ? `0${value}`
+    : `${value}`;
+}
