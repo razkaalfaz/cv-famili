@@ -1,9 +1,15 @@
+import Link from "next/link";
+
 interface ComponentProps {
   dataTransportasi: Transportasi[];
+  showAksi?: boolean;
+  showPermintaan?: boolean;
 }
 
 export default function TabelTransportasi({
   dataTransportasi,
+  showAksi = false,
+  showPermintaan = false,
 }: ComponentProps) {
   const tableDataStyles = "px-2 py-2 border border-gray-300";
   const tableDataCenteredStyles = tableDataStyles + " text-center";
@@ -35,6 +41,18 @@ export default function TabelTransportasi({
           <td className="px-2 py-2 border border-gray-300 bg-orange-500 text-white font-bold text-center">
             Status Ketersediaan
           </td>
+
+          {showAksi && (
+            <td className="px-2 py-2 border border-gray-300 bg-orange-500 text-white font-bold text-center">
+              Aksi
+            </td>
+          )}
+
+          {showPermintaan && (
+            <td className="px-2 py-2 border border-gray-300 bg-orange-500 text-white font-bold text-center">
+              Dipakai untuk
+            </td>
+          )}
         </tr>
       </thead>
 
@@ -57,6 +75,24 @@ export default function TabelTransportasi({
                   <td className={tableDataCenteredStyles}>
                     {statusChecker(transportasi.STATUS)}
                   </td>
+                  {showAksi && (
+                    <td className={tableDataCenteredStyles}>
+                      <Link
+                        href={
+                          "/transportasi/detail/" + transportasi.ID_TRANSPORTASI
+                        }
+                        className="px-2 py-2 bg-orange-500 text-white rounded-md grid place-items-center"
+                      >
+                        Detail
+                      </Link>
+                    </td>
+                  )}
+
+                  {showPermintaan && (
+                    <td className={tableDataCenteredStyles}>
+                      Pengiriman permintaan {transportasi.ID_PERMINTAAN}
+                    </td>
+                  )}
                 </tr>
               )
             )}
