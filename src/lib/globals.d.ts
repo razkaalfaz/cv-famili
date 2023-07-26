@@ -46,6 +46,7 @@ type Permintaan = {
   detail_permintaan: DetailPermintaan[];
   user: User;
   KETERANGAN: string | null;
+  transportasi: Transportasi | null;
 };
 
 type Perbaikan = {
