@@ -79,6 +79,15 @@ type BarangPermintaan = {
   UNIT_BARANG: string;
 };
 
+type PengajuanAlatBaru = {
+  ID_PENGAJUAN: string;
+  NAMA_ALAT: string;
+  JUMLAH_ALAT: number;
+  DESKRIPSI: string;
+  TGL_PENGAJUAN: Date;
+  user: User;
+};
+
 enum StatusPermintaan {
   PENDING = "PENDING",
   DIVERIFIKASI = "DIVERIFIKASI",
