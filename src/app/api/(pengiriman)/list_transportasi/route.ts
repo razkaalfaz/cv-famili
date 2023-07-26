@@ -3,25 +3,13 @@ import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 async function handler(request: NextRequest) {
+  const transportasi = await db.transportasi.findMany();
   const headersList = headers();
   const date = headersList.get("date");
 
-  const semuaPermintaan = await db.permintaan.findMany({
-    include: {
-      detail_permintaan: {
-        include: {
-          alat: true,
-          bahan: true,
-        },
-      },
-      user: true,
-      transportasi: true,
-    },
-  });
-
-  if (semuaPermintaan) {
+  if (transportasi) {
     return NextResponse.json(
-      { ok: true, result: semuaPermintaan },
+      { ok: true, result: transportasi },
       { headers: { date: date ?? Date.now().toLocaleString() } }
     );
   } else {

@@ -46,6 +46,7 @@ type Permintaan = {
   detail_permintaan: DetailPermintaan[];
   user: User;
   KETERANGAN: string | null;
+  transportasi: Transportasi | null;
 };
 
 type Perbaikan = {
@@ -88,6 +89,22 @@ type PengajuanAlatBaru = {
   user: User;
 };
 
+type Transportasi = {
+  ID_TRANSPORTASI: string;
+  ID_ARMADA: string;
+  NAMA_TRANSPORTASI: string;
+  ID_PERMINTAAN: string | null;
+  STATUS: StatusTransportasi;
+  permintaan: Permintaan | null;
+  armada: Armada;
+};
+
+type Armada = {
+  ID_ARMADA: string;
+  NAMA_ARMADA: string;
+  transportasi: Transportasi[];
+};
+
 enum StatusPermintaan {
   PENDING = "PENDING",
   DIVERIFIKASI = "DIVERIFIKASI",
@@ -103,4 +120,9 @@ enum StatusPerbaikan {
   DIAJUKAN = "DIAJUKAN",
   DITOLAK = "DITOLAK",
   DIPERBAIKI = "DIPERBAIKI",
+}
+
+enum StatusTransportasi {
+  TERSEDIA = "TERSEDIA",
+  DIPAKAI = "DIPAKAI",
 }

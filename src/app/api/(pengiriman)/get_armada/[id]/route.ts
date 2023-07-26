@@ -2,30 +2,32 @@ import { db } from "@/lib/db";
 import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
-async function handler(request: NextRequest) {
+async function handler(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   const headersList = headers();
   const date = headersList.get("date");
 
-  const semuaPermintaan = await db.permintaan.findMany({
+  const armada = await db.armada.findFirst({
+    where: {
+      ID_ARMADA: params.id,
+    },
     include: {
-      detail_permintaan: {
-        include: {
-          alat: true,
-          bahan: true,
-        },
-      },
-      user: true,
       transportasi: true,
     },
   });
 
-  if (semuaPermintaan) {
+  if (armada) {
     return NextResponse.json(
-      { ok: true, result: semuaPermintaan },
+      { ok: true, result: armada },
       { headers: { date: date ?? Date.now().toLocaleString() } }
     );
   } else {
-    return NextResponse.json({ ok: false, result: null });
+    return NextResponse.json(
+      { ok: false, result: null },
+      { headers: { date: date ?? Date.now().toLocaleString() } }
+    );
   }
 }
 

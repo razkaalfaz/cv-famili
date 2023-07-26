@@ -3,25 +3,17 @@ import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 async function handler(request: NextRequest) {
-  const headersList = headers();
-  const date = headersList.get("date");
-
-  const semuaPermintaan = await db.permintaan.findMany({
+  const armada = await db.armada.findMany({
     include: {
-      detail_permintaan: {
-        include: {
-          alat: true,
-          bahan: true,
-        },
-      },
-      user: true,
       transportasi: true,
     },
   });
+  const headersList = headers();
+  const date = headersList.get("date");
 
-  if (semuaPermintaan) {
+  if (armada) {
     return NextResponse.json(
-      { ok: true, result: semuaPermintaan },
+      { ok: true, result: armada },
       { headers: { date: date ?? Date.now().toLocaleString() } }
     );
   } else {

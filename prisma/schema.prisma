@@ -49,6 +49,7 @@ model permintaan {
   TGL_PENGEMBALIAN  DateTime?
   TGL_PENGGUNAAN    DateTime?
   KETERANGAN        String?
+  transportasi      transportasi?
   detail_permintaan detail_permintaan[]
   pengembalian      pengembalian?
   user              user?               @relation(fields: [ID_USER], references: [ID_USER], onDelete: Cascade, onUpdate: Restrict)
@@ -101,6 +102,22 @@ model pengajuan_alat_baru {
   user          user     @relation(fields: [ID_USER], references: [ID_USER], onDelete: Cascade)
 }
 
+model armada {
+  ID_ARMADA    String         @id
+  NAMA_ARMADA  String
+  transportasi transportasi[]
+}
+
+model transportasi {
+  ID_TRANSPORTASI   String              @id
+  NAMA_TRANSPORTASI String
+  ID_PERMINTAAN     String?             @unique
+  ID_ARMADA         String
+  STATUS            STATUS_TRANSPORTASI @default(TERSEDIA)
+  armada            armada?             @relation(fields: [ID_ARMADA], references: [ID_ARMADA], onDelete: Cascade)
+  permintaan        permintaan?         @relation(fields: [ID_PERMINTAAN], references: [ID_PERMINTAAN], onDelete: Cascade)
+}
+
 enum STATUS_PERMINTAAN {
   PENDING
   DIVERIFIKASI
@@ -116,4 +133,9 @@ enum STATUS_PERBAIKAN {
   DIAJUKAN
   DITOLAK
   DIPERBAIKI
+}
+
+enum STATUS_TRANSPORTASI {
+  TERSEDIA
+  DIPAKAI
 }

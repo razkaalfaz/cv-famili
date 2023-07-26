@@ -161,6 +161,16 @@ export const ADMIN_DROPDOWN_TABS = {
       url: "/users",
       name: "Data User",
     },
+    {
+      id: "armada",
+      url: "/armada",
+      name: "Data Armada",
+    },
+    {
+      id: "transportasi",
+      url: "/transportasi",
+      name: "Data Transportasi",
+    },
   ] as Tab[],
   LAPORAN: [
     {
@@ -192,6 +202,16 @@ export const PERALATAN_DROPDOWN_TABS = {
       id: "permintaan",
       url: "/permintaan",
       name: "Data Permintaan",
+    },
+    {
+      id: "armada",
+      url: "/armada",
+      name: "Data Armada",
+    },
+    {
+      id: "transportasi",
+      url: "/transportasi",
+      name: "Data Transportasi",
     },
   ] as Tab[],
   PENGAJUAN: [

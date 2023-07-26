@@ -2,7 +2,9 @@
 
 import Button from "@/components/button/Button";
 import Snackbar from "@/components/snackbar/Snackbar";
+import KirimPesanan from "@/components/utils/KirimPesanan";
 import ShowModal from "@/components/utils/ShowModal";
+import TerimaPesanan from "@/components/utils/TerimaPesanan";
 import { VARIABEL_PERMINTAAN } from "@/lib/constants";
 import { decimalNumber, fetcher, sortPermintaan } from "@/lib/helper";
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
@@ -21,6 +23,8 @@ export default function Permintaan() {
     keyof typeof StatusPermintaan | null
   >(null);
   const [modalShown, setModalShown] = useState<string | null>(null);
+  const [isKirim, setIsKirim] = useState(false);
+  const [isTerima, setIsTerima] = useState(false);
 
   const { data: session } = useSession();
 
@@ -75,6 +79,25 @@ export default function Permintaan() {
   function hapusPermintaan(permintaan: Permintaan) {
     setPermintaanToUpdate(permintaan);
     setModalShown("hapus-permintaan");
+  }
+
+  function kirimPermintaan(permintaan: Permintaan) {
+    setPermintaanToUpdate(permintaan);
+    setIsKirim(true);
+  }
+
+  function terimaPermintaan(permintaan: Permintaan) {
+    setPermintaanToUpdate(permintaan);
+    setIsTerima(true);
+  }
+
+  function onCloseKirim() {
+    setPermintaanToUpdate(null);
+    setIsKirim(false);
+  }
+  function onCloseTerima() {
+    setPermintaanToUpdate(null);
+    setIsTerima(false);
   }
 
   function renderDataPermintaan() {
@@ -199,12 +222,7 @@ export default function Permintaan() {
                               {permintaan.STATUS === "DIKIRIM" && (
                                 <Button
                                   variants="ACCENT"
-                                  onClick={() =>
-                                    verifikasiPermintaan(
-                                      permintaan.ID_PERMINTAAN,
-                                      "DITERIMA"
-                                    )
-                                  }
+                                  onClick={() => terimaPermintaan(permintaan)}
                                 >
                                   Barang Diterima
                                 </Button>
@@ -325,12 +343,7 @@ export default function Permintaan() {
                                   <Button
                                     fullWidth
                                     variants="ACCENT"
-                                    onClick={() =>
-                                      verifikasiPermintaan(
-                                        permintaan.ID_PERMINTAAN,
-                                        "DIKIRIM"
-                                      )
-                                    }
+                                    onClick={() => kirimPermintaan(permintaan)}
                                   >
                                     Kirim
                                   </Button>
@@ -402,6 +415,20 @@ export default function Permintaan() {
               idPermintaan={idPermintaan}
               statusPermintaan={opsiVerifikasi}
               dataPermintaan={permintaanToUpdate}
+            />
+            <KirimPesanan
+              isOpen={isKirim}
+              onClose={onCloseKirim}
+              permintaan={permintaanToUpdate}
+              setMessage={setMessage}
+              setSuccess={setSuccess}
+            />
+            <TerimaPesanan
+              isOpen={isTerima}
+              setMessage={setMessage}
+              permintaan={permintaanToUpdate}
+              onClose={onCloseTerima}
+              setSuccess={setSuccess}
             />
           </div>
         );
