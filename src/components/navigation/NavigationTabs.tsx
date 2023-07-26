@@ -1,11 +1,16 @@
 "use client";
 
-import { NAVIGATION_TABS } from "@/lib/constants";
+import {
+  ADMIN_DROPDOWN_TABS,
+  NAVIGATION_TABS,
+  PERALATAN_DROPDOWN_TABS,
+} from "@/lib/constants";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Button from "../button/Button";
 import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
+import Dropdown from "./dropdown/Dropdown";
 
 export default function NavigationTabs() {
   const pathname = usePathname();
@@ -35,84 +40,77 @@ export default function NavigationTabs() {
             <p className="text-sm">CV. Famili Sejahtera Utama</p>
           </div>
         </div>
-        <div className="flex flex-row items-center gap-4">
-          {NAVIGATION_TABS.map((tab: Tab) => (
+        {session && session.user.ROLE === "USER" && (
+          <div className="flex flex-row items-center gap-4">
+            {NAVIGATION_TABS.map((tab: Tab) => (
+              <Link
+                href={tab.url}
+                key={tab.id}
+                className={
+                  pathname === tab.url ? activeLinkStyles : baseLinkStyles
+                }
+              >
+                {tab.name}
+              </Link>
+            ))}
+
+            <Button variants="ERROR" onClick={() => logoutHandler()}>
+              Logout
+            </Button>
+          </div>
+        )}
+
+        {session && session.user.ROLE === "ADMIN" && (
+          <div className="flex flex-row items-center gap-4">
             <Link
-              href={tab.url}
-              key={tab.id}
               className={
-                pathname === tab.url ? activeLinkStyles : baseLinkStyles
+                pathname === "/dashboard" ? activeLinkStyles : baseLinkStyles
               }
+              href="/dashboard"
             >
-              {tab.name}
+              Dashboard
             </Link>
-          ))}
 
-          {session && session.user.ROLE === "ADMIN" && (
-            <div className="flex flex-row items-center gap-4">
-              <Link
-                href="/users"
-                className={
-                  pathname === "/users" ? activeLinkStyles : baseLinkStyles
-                }
-              >
-                Users
-              </Link>
+            <Dropdown
+              dropdownName="Data"
+              dropdownData={ADMIN_DROPDOWN_TABS.DATA}
+            />
+            <Dropdown
+              dropdownName="Laporan"
+              dropdownData={ADMIN_DROPDOWN_TABS.LAPORAN}
+            />
 
-              <Link
-                href="/permintaan/laporan"
-                className={
-                  pathname === "/permintaan/laporan"
-                    ? activeLinkStyles
-                    : baseLinkStyles
-                }
-              >
-                Laporan
-              </Link>
+            <Button variants="ERROR" onClick={() => logoutHandler()}>
+              Logout
+            </Button>
+          </div>
+        )}
 
-              <Link
-                href="/laporan-perbaikan"
-                className={
-                  pathname === "/laporan-perbaikan"
-                    ? activeLinkStyles
-                    : baseLinkStyles
-                }
-              >
-                Laporan Perbaikan
-              </Link>
-            </div>
-          )}
+        {session && session.user.ROLE === "PERALATAN" && (
+          <div className="flex flex-row items-center gap-4">
+            <Link
+              className={
+                pathname === "/dashboard" ? activeLinkStyles : baseLinkStyles
+              }
+              href="/dashboard"
+            >
+              Dashboard
+            </Link>
 
-          {session && session.user.ROLE === "PERALATAN" && (
-            <>
-              <Link
-                href="/pengajuan_perbaikan"
-                className={
-                  pathname === "/pengajuan_perbaikan"
-                    ? activeLinkStyles
-                    : baseLinkStyles
-                }
-              >
-                Pengajuan Perbaikan
-              </Link>
+            <Dropdown
+              dropdownName="Data"
+              dropdownData={PERALATAN_DROPDOWN_TABS.DATA}
+            />
+            <Dropdown
+              dropdownName="Pengajuan"
+              dropdownData={PERALATAN_DROPDOWN_TABS.PENGAJUAN}
+            />
 
-              <Link
-                href="/pengajuan_alat_baru"
-                className={
-                  pathname === "/pengajuan_alat_baru"
-                    ? activeLinkStyles
-                    : baseLinkStyles
-                }
-              >
-                Pengajuan Alat
-              </Link>
-            </>
-          )}
-
-          <Button variants="ERROR" onClick={() => logoutHandler()}>
-            Logout
-          </Button>
-        </div>
+            <Button variants="ERROR" onClick={() => logoutHandler()}>
+              Logout
+            </Button>
+          </div>
+        )}
       </div>
     );
   }

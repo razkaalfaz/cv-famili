@@ -143,3 +143,67 @@ export const VARIABEL_PILIHAN_BAHAN = [
   { id: "nama_banahn", name: "Nama Bahan" },
   { id: "stock_bahan", name: "Jumlah Bahan Tersedia" },
 ];
+
+export const ADMIN_DROPDOWN_TABS = {
+  DATA: [
+    {
+      id: "barang",
+      url: "/barang",
+      name: "Data Barang",
+    },
+    {
+      id: "permintaan",
+      url: "/permintaan",
+      name: "Data Permintaan",
+    },
+    {
+      id: "users",
+      url: "/users",
+      name: "Data User",
+    },
+  ] as Tab[],
+  LAPORAN: [
+    {
+      id: "lap_permintaan",
+      url: "/permintaan/laporan",
+      name: "Laporan Permintaan",
+    },
+    {
+      id: "lap_perbaikan",
+      url: "/laporan-perbaikan",
+      name: "Laporan Perbaikan",
+    },
+    {
+      id: "lap_pengajuan_alat",
+      url: "/laporan_pengajuan_alat",
+      name: "Laporan Pengajuan Alat Baru",
+    },
+  ] as Tab[],
+};
+
+export const PERALATAN_DROPDOWN_TABS = {
+  DATA: [
+    {
+      id: "barang",
+      url: "/barang",
+      name: "Data Barang",
+    },
+    {
+      id: "permintaan",
+      url: "/permintaan",
+      name: "Data Permintaan",
+    },
+  ] as Tab[],
+  PENGAJUAN: [
+    {
+      id: "pengajuan-perbaikan",
+      url: "/pengajuan_perbaikan",
+      name: "Pengajuan Perbaikan",
+    },
+    {
+      id: "pengajuan-alat-baru",
+      url: "/pengajuan_alat_baru",
+      name: "Pengajuan Alat Baru",
+    },
+  ] as Tab[],
+};
