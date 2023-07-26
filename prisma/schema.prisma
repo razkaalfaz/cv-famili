@@ -15,17 +15,17 @@ model alat {
   ALAT_TIDAK_LAYAK  Int?                @default(0)
   ALAT_KELUAR       Int                 @default(0)
   detail_permintaan detail_permintaan[]
-  perbaikan         perbaikan[]
+  perbaikan         perbaikan?
 }
 
 model perbaikan {
-  ID_PERBAIKAN  String           @id
   ID_ALAT       String?          @unique
-  JUMLAH_ALAT   Int
   KETERANGAN    String
   CATATAN       String?
-  TGL_PENGAJUAN DateTime         @default(now())
   STATUS        STATUS_PERBAIKAN @default(PENDING)
+  ID_PERBAIKAN  String           @id
+  JUMLAH_ALAT   Int
+  TGL_PENGAJUAN DateTime         @default(now())
   alat          alat?            @relation(fields: [ID_ALAT], references: [ID_ALAT], onDelete: Cascade)
 }
 
@@ -42,42 +42,43 @@ model permintaan {
   ID_PERMINTAAN     String              @id
   ID_USER           Int?
   TGL_PERMINTAAN    DateTime?           @default(now())
-  ID_PENGEMBALIAN   String?
-  TGL_PENGGUNAAN    DateTime?
-  TGL_PENGEMBALIAN  DateTime?
-  NAMA_PROYEK       String
-  LOKASI_PROYEK     String
-  KETERANGAN        String?
-  pengembalian      pengembalian?
   STATUS            STATUS_PERMINTAAN?  @default(PENDING)
+  ID_PENGEMBALIAN   String?
+  LOKASI_PROYEK     String
+  NAMA_PROYEK       String
+  TGL_PENGEMBALIAN  DateTime?
+  TGL_PENGGUNAAN    DateTime?
+  KETERANGAN        String?
   detail_permintaan detail_permintaan[]
+  pengembalian      pengembalian?
   user              user?               @relation(fields: [ID_USER], references: [ID_USER], onDelete: Cascade, onUpdate: Restrict)
 
   @@index([ID_USER])
 }
 
 model user {
-  ID_USER    Int          @id @default(autoincrement())
-  NAME       String?
-  USERNAME   String?
-  PASSWORD   String?
-  ROLE       String?
-  REGISTER   DateTime?    @default(now())
-  permintaan permintaan[]
+  ID_USER             Int                   @id @default(autoincrement())
+  NAME                String?
+  USERNAME            String?
+  PASSWORD            String?
+  ROLE                String?
+  REGISTER            DateTime?             @default(now())
+  permintaan          permintaan[]
+  pengajuan_alat_baru pengajuan_alat_baru[]
 }
 
 model detail_permintaan {
   ID_DETAIL_PERMINTAAN String        @id @default(cuid())
   ID_PERMINTAAN        String
-  ID_ALAT              String?
-  ID_BAHAN             String?
   JUMLAH_ALAT          Int?
   JUMLAH_BAHAN         Int?
   ID_PENGEMBALIAN      String?
+  ID_ALAT              String?
+  ID_BAHAN             String?
   alat                 alat?         @relation(fields: [ID_ALAT], references: [ID_ALAT], onDelete: Cascade)
   bahan                bahan?        @relation(fields: [ID_BAHAN], references: [ID_BAHAN], onDelete: Cascade)
-  permintaan           permintaan    @relation(fields: [ID_PERMINTAAN], references: [ID_PERMINTAAN], onDelete: Cascade)
   pengembalian         pengembalian? @relation(fields: [ID_PENGEMBALIAN], references: [ID_PENGEMBALIAN], onDelete: Cascade)
+  permintaan           permintaan    @relation(fields: [ID_PERMINTAAN], references: [ID_PERMINTAAN], onDelete: Cascade)
 
   @@index([ID_PERMINTAAN])
 }
@@ -86,18 +87,28 @@ model pengembalian {
   ID_PENGEMBALIAN   String              @id
   TGL_PENGEMBALIAN  DateTime            @default(now())
   ID_PERMINTAAN     String?             @unique
-  permintaan        permintaan?         @relation(fields: [ID_PERMINTAAN], references: [ID_PERMINTAAN])
   detail_permintaan detail_permintaan[]
+  permintaan        permintaan?         @relation(fields: [ID_PERMINTAAN], references: [ID_PERMINTAAN])
+}
+
+model pengajuan_alat_baru {
+  ID_PENGAJUAN  String   @id
+  NAMA_ALAT     String
+  JUMLAH_ALAT   Int
+  DESKRIPSI     String
+  TGL_PENGAJUAN DateTime @default(now())
+  ID_USER       Int
+  user          user     @relation(fields: [ID_USER], references: [ID_USER], onDelete: Cascade)
 }
 
 enum STATUS_PERMINTAAN {
   PENDING
   DIVERIFIKASI
+  DITERIMA
+  DIKEMBALIKAN
+  PENGEMBALIAN
   DIKIRIM
   DITOLAK
-  DITERIMA
-  PENGEMBALIAN
-  DIKEMBALIKAN
 }
 
 enum STATUS_PERBAIKAN {

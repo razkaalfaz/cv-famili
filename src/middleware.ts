@@ -11,5 +11,6 @@ export const config = {
     "/permintaan/:path*",
     "/tambah_user",
     "/users",
+    "/pengajuan_alat_baru",
   ],
 };

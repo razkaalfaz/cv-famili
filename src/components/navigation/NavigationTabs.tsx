@@ -84,16 +84,29 @@ export default function NavigationTabs() {
           )}
 
           {session && session.user.ROLE === "PERALATAN" && (
-            <Link
-              href="/pengajuan_perbaikan"
-              className={
-                pathname === "/pengajuan_perbaikan"
-                  ? activeLinkStyles
-                  : baseLinkStyles
-              }
-            >
-              Pengajuan Perbaikan
-            </Link>
+            <>
+              <Link
+                href="/pengajuan_perbaikan"
+                className={
+                  pathname === "/pengajuan_perbaikan"
+                    ? activeLinkStyles
+                    : baseLinkStyles
+                }
+              >
+                Pengajuan Perbaikan
+              </Link>
+
+              <Link
+                href="/pengajuan_alat_baru"
+                className={
+                  pathname === "/pengajuan_alat_baru"
+                    ? activeLinkStyles
+                    : baseLinkStyles
+                }
+              >
+                Pengajuan Alat
+              </Link>
+            </>
           )}
 
           <Button variants="ERROR" onClick={() => logoutHandler()}>
