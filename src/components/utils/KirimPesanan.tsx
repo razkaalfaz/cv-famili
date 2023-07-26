@@ -56,9 +56,9 @@ export default function KirimPesanan({
       const selectedArmada = dataArmada.find(
         (armada) => armada.ID_ARMADA === selectedArmadaId
       );
-      const transportationsData = selectedArmada?.transportasi;
+      const allTransportationsData = selectedArmada?.transportasi;
 
-      setDataTransportasi(transportationsData ?? null);
+      setDataTransportasi(allTransportationsData ?? null);
     }
   }
 
@@ -175,14 +175,16 @@ export default function KirimPesanan({
                     Loading transportasi...
                   </option>
                 )}
-                {dataTransportasi.map((transportasi: Transportasi) => (
-                  <option
-                    key={transportasi.ID_TRANSPORTASI}
-                    value={transportasi.ID_TRANSPORTASI}
-                  >
-                    {transportasi.NAMA_TRANSPORTASI}
-                  </option>
-                ))}
+                {dataTransportasi
+                  .filter((transportasi) => transportasi.STATUS === "TERSEDIA")
+                  .map((transportasi: Transportasi) => (
+                    <option
+                      key={transportasi.ID_TRANSPORTASI}
+                      value={transportasi.ID_TRANSPORTASI}
+                    >
+                      {transportasi.NAMA_TRANSPORTASI}
+                    </option>
+                  ))}
               </select>
             </div>
           )}
