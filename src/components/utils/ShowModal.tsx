@@ -26,6 +26,9 @@ type Inputs = {
     keterangan: string | null;
     tgl_pengembalian: string;
   };
+  armada: {
+    namaArmada: string;
+  };
 };
 
 interface ComponentProps {
@@ -290,6 +293,33 @@ export default function ShowModal({
       } catch (err) {
         console.error(err);
       }
+    }
+  };
+  const tambahArmada: SubmitHandler<Inputs> = async (data) => {
+    try {
+      setIsLoading(true);
+      setMessage(null);
+      setSuccess(null);
+
+      const res = await fetch(process.env.NEXT_PUBLIC_API_TAMBAH_ARMADA!, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ NAMA_ARMADA: data.armada.namaArmada }),
+      });
+
+      const response = await res.json();
+
+      if (!response.ok) {
+        setIsLoading(false);
+        setMessage(response.message);
+      } else {
+        setIsLoading(false);
+        setSuccess(response.message);
+        mutate("/api/list_armada");
+        hideModal();
+      }
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -1152,6 +1182,41 @@ export default function ShowModal({
               disabled={isLoading}
             >
               {isLoading ? "Menyimpan..." : "Simpan"}
+            </Button>
+          </form>
+        </ModalsContainer>
+      );
+
+    case "tambah-armada":
+      return (
+        <ModalsContainer
+          title="Tambah Armada"
+          description="Silahkan berikan nama untuk armada yang akan di tambahkan."
+          onClose={hideModal}
+        >
+          <form
+            className="w-full flex flex-col gap-4"
+            onSubmit={handleSubmit(tambahArmada)}
+          >
+            <div className="flex flex-col gap-2">
+              <label htmlFor="nama_armada">Nama Armada</label>
+              <input
+                id="nama_armada"
+                type="text"
+                required
+                placeholder="Nama armada..."
+                className="w-full rounded-md outline-none border border-gray-300 px-2 py-2"
+                {...register("armada.namaArmada")}
+              />
+            </div>
+
+            <Button
+              variants="ACCENT"
+              type="submit"
+              disabled={isLoading}
+              fullWidth
+            >
+              {isLoading ? "Memproses..." : "Simpan"}
             </Button>
           </form>
         </ModalsContainer>
