@@ -52,3 +52,14 @@ export function dateToString(input: string) {
 
   return dateToReturn;
 }
+
+export function convertToDate(value: any) {
+  const date = new Date(value);
+  const day = date.getDate();
+  const month = date.getMonth();
+  const years = date.getFullYear();
+  const dateToReturn = `${decimalNumber(day)}/${decimalNumber(
+    month + 1
+  )}/${years}`;
+  return dateToReturn;
+}

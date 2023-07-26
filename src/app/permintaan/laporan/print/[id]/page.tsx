@@ -16,6 +16,8 @@ export default function Print({ params }: { params: { id: string } }) {
   const ref = useRef<HTMLDivElement | null>(null);
   const { data } = useSWR("/api/get-permintaan/" + params.id, fetcher);
 
+  const currentDate = new Date();
+
   function convertToDate(value: any) {
     const date = new Date(value);
     const day = date.getDate();
@@ -24,6 +26,33 @@ export default function Print({ params }: { params: { id: string } }) {
     const dateToReturn = `${decimalNumber(day)}/${decimalNumber(
       month + 1
     )}/${years}`;
+    return dateToReturn;
+  }
+
+  function convertToDateString(value: any) {
+    const date = new Date(value);
+
+    const bulan = [
+      "Januari",
+      "Februari",
+      "Maret",
+      "April",
+      "Mei",
+      "Juni",
+      "Juli",
+      "Agustus",
+      "September",
+      "Oktober",
+      "November",
+      "Desember",
+    ];
+
+    const tanggal = date.getDate();
+    const month = date.getMonth();
+    const tahun = date.getFullYear();
+
+    const dateToReturn = `${decimalNumber(tanggal)} ${bulan[month]} ${tahun}`;
+
     return dateToReturn;
   }
 
@@ -87,6 +116,11 @@ export default function Print({ params }: { params: { id: string } }) {
                   <td>:</td>
                   <td>{permintaan.user.NAME}</td>
                 </tr>
+                <tr>
+                  <td className="font-bold">Lokasi Proyek</td>
+                  <td>:</td>
+                  <td>{permintaan.LOKASI_PROYEK}</td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -130,6 +164,35 @@ export default function Print({ params }: { params: { id: string } }) {
                     </tr>
                   )
                 )}
+              </tbody>
+            </table>
+          </div>
+
+          <p className="text-justify">
+            Laporan ini telah melalui proses evaluasi dan analisis yang teliti
+            untuk memastikan keakuratan dan kelayakan dari setiap permintaan
+            barang. Setiap item yang dimasukkan dalam laporan ini memiliki
+            justifikasi yang jelas dan sesuai dengan kegiatan operasional{" "}
+            {permintaan.NAMA_PROYEK} yang berlokasi di{" "}
+            {permintaan.LOKASI_PROYEK}.
+          </p>
+
+          <div className="w-full flex justify-end items-end">
+            <table>
+              <thead>
+                <tr>
+                  <td className="font-bold">
+                    Sukabumi, {convertToDateString(currentDate.toDateString())}
+                  </td>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className="py-14"></td>
+                </tr>
+                <tr>
+                  <td className="font-bold text-center">Admin</td>
+                </tr>
               </tbody>
             </table>
           </div>
