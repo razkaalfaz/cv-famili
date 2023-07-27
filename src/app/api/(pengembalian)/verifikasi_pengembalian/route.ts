@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { decimalNumber } from "@/lib/helper";
 import { NextRequest, NextResponse } from "next/server";
 
 interface RequestBody {
@@ -47,7 +48,7 @@ async function handler(request: NextRequest) {
     }
   }
 
-  const currentDataPengembalian = await db.pengembalian.findMany({
+  const dataPengembalian = await db.pengembalian.aggregate({
     where: {
       permintaan: {
         ID_USER: {
@@ -55,12 +56,19 @@ async function handler(request: NextRequest) {
         },
       },
     },
+    _max: {
+      ID_PENGEMBALIAN: true,
+    },
   });
+  const maxValue = dataPengembalian._max.ID_PENGEMBALIAN;
+  const urutan = Number(
+    maxValue?.substring(maxValue.length - 2, maxValue.length)
+  );
 
   const pengembalian = await db.pengembalian.create({
     data: {
       ID_PENGEMBALIAN:
-        kodifikasiPengembalian + "-" + (currentDataPengembalian.length + 1),
+        kodifikasiPengembalian + "-" + decimalNumber(urutan ? urutan + 1 : 1),
       ID_PERMINTAAN: body.permintaan.ID_PERMINTAAN,
     },
   });

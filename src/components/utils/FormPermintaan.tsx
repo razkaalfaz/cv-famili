@@ -50,8 +50,6 @@ export default function FormPermintaan({
   const [jenisAlat, setJenisAlat] = useState<string>("all");
   const [uncheckedItems, setUncheckedItems] = useState<string[]>([]);
 
-  console.log(uncheckedItems);
-
   const inputStyles =
     "w-full rounded-md outline-none border border-gray-300 overflow-hidden px-2 py-2";
   const inputContainerStyles = "w-full flex flex-col gap-1";
@@ -113,31 +111,44 @@ export default function FormPermintaan({
   };
 
   const renderItemInputs = () => {
-    return selectedItems.map((item) => (
-      <div key={item.ID_BARANG}>
-        <label className="w-full flex flex-row gap-4 items-center">
-          <div className="w-2/12">{item.NAMA_BARANG}:</div>
-          <div className="w-5/6 rounded-md outline-none border border-gray-300 overflow-hidden px-2 py-2 flex flex-row items-center gap-4">
-            <input
-              disabled={isLoading}
-              type="number"
-              min="1"
-              value={itemQuantities[item.ID_BARANG] || ""}
-              className="w-full h-full"
-              onChange={(e) => handleQuantityChange(e, item.ID_BARANG)}
-              required
-            />
-            <p className="text-gray-500">{item.UNIT_BARANG}</p>
-          </div>
-          <div
-            className="px-2 py-2 rounded-md grid place-items-center text-white bg-red-950 overflow-hidden cursor-pointer"
-            onClick={() => hapusBarang(item.ID_BARANG)}
-          >
-            <TrashIcon className="w-4 h-4" />
-          </div>
-        </label>
-      </div>
-    ));
+    return selectedItems.map((item) => {
+      const itemData =
+        dataAlat.find((alat) => alat.ID_ALAT === item.ID_BARANG) ||
+        dataBahan.find((bahan) => bahan.ID_BAHAN === item.ID_BARANG);
+      let itemAlat = itemData as Alat;
+      let itemBahan = itemData as Bahan;
+      const maxValue = itemAlat.JUMLAH_ALAT
+        ? itemAlat.JUMLAH_ALAT
+        : itemBahan.STOCK_BAHAN
+        ? itemBahan.STOCK_BAHAN
+        : null;
+      return (
+        <div key={item.ID_BARANG}>
+          <label className="w-full flex flex-row gap-4 items-center">
+            <div className="w-2/12">{item.NAMA_BARANG}:</div>
+            <div className="w-5/6 rounded-md outline-none border border-gray-300 overflow-hidden px-2 py-2 flex flex-row items-center gap-4">
+              <input
+                disabled={isLoading}
+                type="number"
+                min="1"
+                value={itemQuantities[item.ID_BARANG] || ""}
+                max={maxValue ? maxValue : undefined}
+                className="w-full h-full"
+                onChange={(e) => handleQuantityChange(e, item.ID_BARANG)}
+                required
+              />
+              <p className="text-gray-500">{item.UNIT_BARANG}</p>
+            </div>
+            <div
+              className="px-2 py-2 rounded-md grid place-items-center text-white bg-red-950 overflow-hidden cursor-pointer"
+              onClick={() => hapusBarang(item.ID_BARANG)}
+            >
+              <TrashIcon className="w-4 h-4" />
+            </div>
+          </label>
+        </div>
+      );
+    });
   };
 
   const renderAlat = (alat: Alat[], jenis: string) => {
