@@ -71,3 +71,12 @@ export function idPrefixMaker(value: number) {
     ? `0${value}`
     : `${value}`;
 }
+
+export function dateFormatMaker() {
+  const currentDate = new Date();
+  const day = decimalNumber(currentDate.getDate());
+  const month = decimalNumber(currentDate.getMonth() + 1);
+  const years = currentDate.getFullYear();
+  const dateFormat = `${day}${month}${years}`;
+  return dateFormat;
+}

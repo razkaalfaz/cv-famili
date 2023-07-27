@@ -29,6 +29,9 @@ type Inputs = {
   armada: {
     namaArmada: string;
   };
+  pengembalian: {
+    catatan: string;
+  };
 };
 
 interface ComponentProps {
@@ -442,8 +445,8 @@ export default function ShowModal({
       }
     }
   }
-  async function pengajuanPengembalian() {
-    if (idPermintaan) {
+  const pengajuanPengembalian: SubmitHandler<Inputs> = async (data) => {
+    if (idPermintaan && session) {
       setIsLoading(true);
       setMessage(null);
       setSuccess(null);
@@ -454,7 +457,11 @@ export default function ShowModal({
           {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ ID_PERMINTAAN: idPermintaan }),
+            body: JSON.stringify({
+              ID_PERMINTAAN: idPermintaan,
+              ID_USER: session.user.ID_USER,
+              CATATAN: data.pengembalian.catatan,
+            }),
           }
         );
 
@@ -472,7 +479,7 @@ export default function ShowModal({
         console.error(err);
       }
     }
-  }
+  };
   async function verifikasiPengembalian() {
     if (dataPermintaan) {
       setIsLoading(true);
@@ -1076,22 +1083,39 @@ export default function ShowModal({
           description="Apakah anda yakin akan melakukan pengajuan pengembalian?"
           onClose={hideModal}
         >
-          <Button
-            variants="ACCENT"
-            onClick={pengajuanPengembalian}
-            fullWidth
-            disabled={isLoading}
+          <form
+            className="flex flex-col gap-4"
+            onSubmit={handleSubmit(pengajuanPengembalian)}
           >
-            {isLoading ? "Memproses..." : "Ya"}
-          </Button>
-          <Button
-            variants="SECONDARY"
-            onClick={hideModal}
-            fullWidth
-            disabled={isLoading}
-          >
-            Batal
-          </Button>
+            <div className="flex flex-col gap-2">
+              <label htmlFor="catatan_pengembalian">Catatan Pengembalian</label>
+              <textarea
+                className="w-full p-2 rounded-md outline-none border border-gray-300"
+                cols={4}
+                id="catatan_pengembalian"
+                placeholder="Catatan..."
+                {...register("pengembalian.catatan")}
+              />
+            </div>
+
+            <Button
+              variants="ACCENT"
+              type="submit"
+              fullWidth
+              disabled={isLoading}
+            >
+              {isLoading ? "Memproses..." : "Kirim"}
+            </Button>
+            <Button
+              variants="SECONDARY"
+              type="button"
+              onClick={hideModal}
+              fullWidth
+              disabled={isLoading}
+            >
+              Batal
+            </Button>
+          </form>
         </ModalsContainer>
       );
 
