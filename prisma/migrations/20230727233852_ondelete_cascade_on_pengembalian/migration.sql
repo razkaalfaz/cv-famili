@@ -1,0 +1,5 @@
+-- DropForeignKey
+ALTER TABLE "pengembalian" DROP CONSTRAINT "pengembalian_ID_PERMINTAAN_fkey";
+
+-- AddForeignKey
+ALTER TABLE "pengembalian" ADD CONSTRAINT "pengembalian_ID_PERMINTAAN_fkey" FOREIGN KEY ("ID_PERMINTAAN") REFERENCES "permintaan"("ID_PERMINTAAN") ON DELETE CASCADE ON UPDATE CASCADE;

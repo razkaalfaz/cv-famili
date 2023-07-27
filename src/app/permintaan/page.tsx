@@ -401,6 +401,20 @@ export default function Permintaan() {
                       </tr>
                     </tbody>
                   </table>
+                  {permintaan?.pengembalian && (
+                    <div className="w-full flex flex-col gap-2">
+                      <p>
+                        <b>ID Pengembalian:</b>{" "}
+                        {permintaan.pengembalian.ID_PENGEMBALIAN}
+                      </p>
+                      <p>
+                        <b>Catatan Pengembalian:</b>{" "}
+                        {permintaan.pengembalian.CATATAN === ""
+                          ? "-"
+                          : permintaan.pengembalian.CATATAN}
+                      </p>
+                    </div>
+                  )}
                 </div>
               )
             )}

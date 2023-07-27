@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { decimalNumber } from "@/lib/helper";
 import { NextRequest, NextResponse } from "next/server";
 
 interface RequestBody {
@@ -35,7 +36,7 @@ async function handler(request: NextRequest) {
     const barang = alat.concat(bahan);
 
     const cekDetailPermintaan = async (ID_BARANG: string) => {
-      const dataDetailPermintaan = await db.detail_permintaan.findMany({
+      const dataDetailPermintaan = await db.detail_permintaan.aggregate({
         where: {
           OR: [
             {
@@ -46,11 +47,21 @@ async function handler(request: NextRequest) {
             },
           ],
         },
+        _max: {
+          ID_DETAIL_PERMINTAAN: true,
+        },
       });
 
-      const urutan = dataDetailPermintaan.length;
+      const maxValue = dataDetailPermintaan._max.ID_DETAIL_PERMINTAAN;
+      const urutan = Number(
+        maxValue?.substring(maxValue.length - 2, maxValue.length)
+      );
 
-      return kodifikasiDetailPermintaan(ID_BARANG) + "-" + (urutan + 1);
+      return (
+        kodifikasiDetailPermintaan(ID_BARANG) +
+        "-" +
+        decimalNumber(urutan ? urutan + 1 : 1)
+      );
     };
 
     const barangPromise = barang.map(async (barang) => {

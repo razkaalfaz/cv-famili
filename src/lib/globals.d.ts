@@ -47,6 +47,12 @@ type Permintaan = {
   user: User;
   KETERANGAN: string | null;
   transportasi: Transportasi | null;
+  pengembalian: Pengembalian | null;
+};
+
+type Pengembalian = {
+  ID_PENGEMBALIAN: string;
+  CATATAN: string | null;
 };
 
 type Perbaikan = {

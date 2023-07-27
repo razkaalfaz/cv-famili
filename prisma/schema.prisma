@@ -88,8 +88,9 @@ model pengembalian {
   ID_PENGEMBALIAN   String              @id
   TGL_PENGEMBALIAN  DateTime            @default(now())
   ID_PERMINTAAN     String?             @unique
+  CATATAN           String?
   detail_permintaan detail_permintaan[]
-  permintaan        permintaan?         @relation(fields: [ID_PERMINTAAN], references: [ID_PERMINTAAN])
+  permintaan        permintaan?         @relation(fields: [ID_PERMINTAAN], references: [ID_PERMINTAAN], onDelete: Cascade)
 }
 
 model pengajuan_alat_baru {
