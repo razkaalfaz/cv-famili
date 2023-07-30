@@ -24,6 +24,34 @@ export default function DetailPengajuanAlat({
   );
   const ref = useRef<HTMLDivElement | null>(null);
 
+  const currentDate = new Date();
+  function convertToDateString(value: any) {
+    const date = new Date(value);
+
+    const bulan = [
+      "Januari",
+      "Februari",
+      "Maret",
+      "April",
+      "Mei",
+      "Juni",
+      "Juli",
+      "Agustus",
+      "September",
+      "Oktober",
+      "November",
+      "Desember",
+    ];
+
+    const tanggal = date.getDate();
+    const month = date.getMonth();
+    const tahun = date.getFullYear();
+
+    const dateToReturn = `${decimalNumber(tanggal)} ${bulan[month]} ${tahun}`;
+
+    return dateToReturn;
+  }
+
   if (isLoading) {
     return (
       <div className="w-full h-screen grid place-items-center">
@@ -106,6 +134,26 @@ export default function DetailPengajuanAlat({
                   <td className="px-2 py-2 border border-gray-300 text-center">
                     {pengajuanAlatBaru.DESKRIPSI}
                   </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div className="w-full flex justify-end items-end">
+            <table>
+              <thead>
+                <tr>
+                  <td className="font-bold">
+                    Sukabumi, {convertToDateString(currentDate.toDateString())}
+                  </td>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className="py-14"></td>
+                </tr>
+                <tr>
+                  <td className="font-bold text-center">Admin</td>
                 </tr>
               </tbody>
             </table>
