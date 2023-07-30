@@ -17,6 +17,16 @@ async function handler(request: NextRequest) {
       },
       data: {
         STATUS: "DIKEMBALIKAN",
+        transportasi: {
+          update: {
+            data: {
+              STATUS: "TERSEDIA",
+            },
+          },
+          disconnect: {
+            ID_PERMINTAAN: body.permintaan.ID_PERMINTAAN,
+          },
+        },
       },
       include: {
         detail_permintaan: {

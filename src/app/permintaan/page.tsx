@@ -25,6 +25,7 @@ export default function Permintaan() {
   const [modalShown, setModalShown] = useState<string | null>(null);
   const [isKirim, setIsKirim] = useState(false);
   const [isTerima, setIsTerima] = useState(false);
+  const [opsiArmada, setOpsiArmada] = useState<string | null>(null);
 
   const { data: session } = useSession();
 
@@ -73,7 +74,8 @@ export default function Permintaan() {
 
   async function verifikasiPengembalian(permintaan: Permintaan) {
     setPermintaanToUpdate(permintaan);
-    setModalShown("verifikasi-pengembalian");
+    setOpsiArmada("pengambilan");
+    setIsKirim(true);
   }
 
   function hapusPermintaan(permintaan: Permintaan) {
@@ -83,7 +85,13 @@ export default function Permintaan() {
 
   function kirimPermintaan(permintaan: Permintaan) {
     setPermintaanToUpdate(permintaan);
+    setOpsiArmada("pengiriman");
     setIsKirim(true);
+  }
+
+  function pengembalianSelesai(permintaan: Permintaan) {
+    setPermintaanToUpdate(permintaan);
+    setModalShown("verifikasi-pengembalian");
   }
 
   function terimaPermintaan(permintaan: Permintaan) {
@@ -366,6 +374,18 @@ export default function Permintaan() {
                                     verifikasiPengembalian(permintaan)
                                   }
                                 >
+                                  Ambil Barang Permintaan
+                                </Button>
+                              )}
+
+                              {permintaan.STATUS === "PENGAMBILAN" && (
+                                <Button
+                                  fullWidth
+                                  variants="ACCENT"
+                                  onClick={() =>
+                                    pengembalianSelesai(permintaan)
+                                  }
+                                >
                                   Barang Diterima
                                 </Button>
                               )}
@@ -436,6 +456,7 @@ export default function Permintaan() {
               permintaan={permintaanToUpdate}
               setMessage={setMessage}
               setSuccess={setSuccess}
+              opsi={opsiArmada ?? ""}
             />
             <TerimaPesanan
               isOpen={isTerima}

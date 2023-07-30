@@ -17,6 +17,7 @@ interface ComponentProps {
   onClose: () => void;
   setMessage: React.Dispatch<React.SetStateAction<string | null>>;
   setSuccess: React.Dispatch<React.SetStateAction<string | null>>;
+  opsi: string;
 }
 
 export default function KirimPesanan({
@@ -25,6 +26,7 @@ export default function KirimPesanan({
   onClose,
   setMessage,
   setSuccess,
+  opsi,
 }: ComponentProps) {
   const [dataTransportasi, setDataTransportasi] = useState<
     Transportasi[] | null
@@ -95,11 +97,46 @@ export default function KirimPesanan({
     }
   };
 
+  const ambilBarang: SubmitHandler<Inputs> = async (data) => {
+    setIsLoading(true);
+    setMessage(null);
+    setSuccess(null);
+    try {
+      const res = await fetch(process.env.NEXT_PUBLIC_API_AMBIL_BARANG!, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ID_PERMINTAAN: permintaan?.ID_PERMINTAAN,
+          ID_TRANSPORTASI: data.ID_TRANSPORTASI,
+        }),
+      });
+
+      const response = await res.json();
+
+      if (!response.ok) {
+        setIsLoading(false);
+        setMessage(response.message);
+      } else {
+        setIsLoading(false);
+        setSuccess(response.message);
+        mutate("/api/semua_permintaan");
+        reset();
+        onClose();
+      }
+    } catch (err) {
+      setIsLoading(false);
+      setMessage("Terjadi kesalahan...");
+      console.error(err);
+    }
+  };
+
   return isOpen ? (
     <div className="w-full h-screen fixed top-0 left-0 z-30 bg-black bg-opacity-50 grid place-items-center">
       <div className="px-4 py-4 rounded-lg bg-white text-black flex flex-col gap-4">
         <div className="w-full flex flex-row justify-between items-center">
-          <p className="text-2xl font-semibold">Kirim Permintaan</p>
+          <p className="text-2xl font-semibold">
+            {opsi === "pengiriman" ? "Kirim Permintaan" : "Ambil Barang"}
+          </p>
           <div
             className="px-2 py-2 rounded-md hover:bg-gray-50 grid place-items-center cursor-pointer"
             onClick={onClose}
@@ -110,7 +147,11 @@ export default function KirimPesanan({
 
         <form
           className="flex flex-col gap-2"
-          onSubmit={handleSubmit(kirimPermintaan)}
+          onSubmit={
+            opsi === "pengiriman"
+              ? handleSubmit(kirimPermintaan)
+              : handleSubmit(ambilBarang)
+          }
         >
           <div className={inputContainerStyles}>
             <div className={labelContainerStyles}>
@@ -118,7 +159,8 @@ export default function KirimPesanan({
                 Armada
               </label>
               <p className={subtitleStyles}>
-                Silahkan pilih armada untuk pengiriman
+                Silahkan pilih armada untuk{" "}
+                {opsi === "pengiriman" ? "pengiriman" : "pengambilan barang"}
               </p>
             </div>
             <select
@@ -159,7 +201,8 @@ export default function KirimPesanan({
                   Transportasi
                 </label>
                 <p className={subtitleStyles}>
-                  Silahkan pilih transportasi untuk pengiriman
+                  Silahkan pilih transportasi untuk{" "}
+                  {opsi === "pengiriman" ? "pengiriman" : "pengambilan barang"}
                 </p>
               </div>
               <select
