@@ -119,6 +119,7 @@ enum StatusPermintaan {
   PENGEMBALIAN = "PENGEMBALIAN",
   DITOLAK = "DITOLAK",
   DIKIRIM = "DIKIRIM",
+  PENGAMBILAN = "PENGAMBILAN",
 }
 
 enum StatusPerbaikan {
