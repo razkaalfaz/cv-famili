@@ -18,6 +18,7 @@ export const ROUTES = {
       EDIT: (idBahan: string) => `/bahan/edit/${idBahan}`,
     },
     LANDING: "/barang",
+    PENGAJUAN_ALAT: "/pengajuan_alat_baru",
   },
 };
 

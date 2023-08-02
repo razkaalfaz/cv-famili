@@ -36,7 +36,7 @@ export default function Carousel() {
       <div className="w-full h-full flex flex-col gap-2 z-20 text-white text-center items-center justify-center">
         <p className="text-4xl font-bold">CV. Famili Sejahtera Utama</p>
         <p className="text-base">
-          Lorem ipsum dolor sit amet consectetur adipisicing.
+          Jl. RA Kosasih No. 86 Cibereum, Kec. Sukaraja Kab. Sukabumi
         </p>
       </div>
     </div>

@@ -4,6 +4,7 @@ import {
   ADMIN_DROPDOWN_TABS,
   NAVIGATION_TABS,
   PERALATAN_DROPDOWN_TABS,
+  ROUTES,
 } from "@/lib/constants";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -53,6 +54,17 @@ export default function NavigationTabs() {
                 {tab.name}
               </Link>
             ))}
+
+            <Link
+              href={ROUTES.BARANG.PENGAJUAN_ALAT}
+              className={
+                pathname === ROUTES.BARANG.PENGAJUAN_ALAT
+                  ? activeLinkStyles
+                  : baseLinkStyles
+              }
+            >
+              Pengajuan alat baru
+            </Link>
 
             <Button variants="ERROR" onClick={() => logoutHandler()}>
               Logout

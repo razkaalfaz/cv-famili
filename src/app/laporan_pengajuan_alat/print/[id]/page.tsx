@@ -103,6 +103,11 @@ export default function DetailPengajuanAlat({
                   <td>:</td>
                   <td>{convertToDate(pengajuanAlatBaru.TGL_PENGAJUAN)}</td>
                 </tr>
+                <tr>
+                  <td className="font-bold">Digunakan untuk Proyek</td>
+                  <td>:</td>
+                  <td>{pengajuanAlatBaru?.PROYEK ?? "-"}</td>
+                </tr>
               </tbody>
             </table>
           </div>

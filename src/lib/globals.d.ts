@@ -92,6 +92,7 @@ type PengajuanAlatBaru = {
   JUMLAH_ALAT: number;
   DESKRIPSI: string;
   TGL_PENGAJUAN: Date;
+  PROYEK: string | null;
   user: User;
 };
 
