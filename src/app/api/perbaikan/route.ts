@@ -24,6 +24,7 @@ async function handler(request: NextRequest) {
     },
     update: {
       JUMLAH_ALAT: parseInt(body.JUMLAH_ALAT),
+      STATUS: "PENDING",
     },
   });
 

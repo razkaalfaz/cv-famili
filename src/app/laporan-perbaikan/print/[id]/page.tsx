@@ -105,6 +105,15 @@ export default function DetailPerbaikan({
                   <td>{perbaikan.ID_PERBAIKAN}</td>
                 </tr>
                 <tr>
+                  <td className="font-bold">Status Perbaikan</td>
+                  <td>:</td>
+                  <td>
+                    {perbaikan.STATUS === "PENDING"
+                      ? "Menunggu verifikasi"
+                      : "Diperbaiki"}
+                  </td>
+                </tr>
+                <tr>
                   <td className="font-bold">Tanggal Pengajuan</td>
                   <td>:</td>
                   <td>{convertToDate(perbaikan.TGL_PENGAJUAN)}</td>
