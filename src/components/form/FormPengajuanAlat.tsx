@@ -10,6 +10,7 @@ interface Inputs {
   NAMA_ALAT: string;
   JUMLAH_ALAT: number;
   DESKRIPSI: string;
+  PROYEK: string;
 }
 
 export default function FormPengajuanAlat() {
@@ -40,10 +41,10 @@ export default function FormPengajuanAlat() {
         if (!response.ok) {
           setIsLoading(false);
           setMessage(response.message);
-          reset();
         } else {
           setIsLoading(false);
           setSuccess(response.message);
+          reset();
         }
       } catch (error) {
         console.error(error);
@@ -78,6 +79,23 @@ export default function FormPengajuanAlat() {
             id="nama_alat"
             {...register("NAMA_ALAT")}
             placeholder="Nama alat..."
+            required
+          />
+        </div>
+
+        <div className={inputContainerStyles}>
+          <label htmlFor="nama_proyek" className={labelStyles}>
+            Nama Proyek
+          </label>
+          <p className={subtitleStyles}>
+            Silahkan isi dengan nama proyek yang akan menggunakan alat ini
+          </p>
+          <input
+            className={inputStyles}
+            id="nama_proyek"
+            {...register("PROYEK")}
+            placeholder="Nama proyek..."
+            required
           />
         </div>
 
@@ -96,6 +114,7 @@ export default function FormPengajuanAlat() {
               valueAsNumber: true,
             })}
             placeholder="1"
+            required
           />
         </div>
 
@@ -112,6 +131,7 @@ export default function FormPengajuanAlat() {
             id="deskripsi"
             {...register("DESKRIPSI")}
             placeholder="Deskripsi..."
+            required
           />
         </div>
 

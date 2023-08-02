@@ -7,6 +7,7 @@ interface RequestBody {
   JUMLAH_ALAT: number;
   DESKRIPSI: string;
   ID_USER: number;
+  PROYEK: string;
 }
 
 async function handler(request: NextRequest) {
@@ -40,6 +41,7 @@ async function handler(request: NextRequest) {
         JUMLAH_ALAT: body.JUMLAH_ALAT,
         DESKRIPSI: body.DESKRIPSI,
         ID_USER: body.ID_USER,
+        PROYEK: body.PROYEK,
       },
     });
 
