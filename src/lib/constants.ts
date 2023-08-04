@@ -153,6 +153,11 @@ export const ADMIN_DROPDOWN_TABS = {
       name: "Data Barang",
     },
     {
+      id: "alat",
+      url: "/laporan_alat",
+      name: "Data Alat",
+    },
+    {
       id: "permintaan",
       url: "/permintaan",
       name: "Data Permintaan",

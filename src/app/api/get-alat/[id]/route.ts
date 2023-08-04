@@ -11,6 +11,23 @@ async function handler(
     where: {
       ID_ALAT: idAlat,
     },
+    include: {
+      detail_alat: {
+        include: {
+          detail_permintaan: {
+            select: {
+              ID_PERMINTAAN: true,
+            },
+          },
+          alat: true,
+          perbaikan: {
+            select: {
+              ID_PERBAIKAN: true,
+            },
+          },
+        },
+      },
+    },
   });
 
   if (alat) {

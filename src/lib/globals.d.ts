@@ -9,8 +9,9 @@ type IDetailAlat = {
   KODE_ALAT: string;
   ID_ALAT: string;
   STATUS: STATUS_ALAT;
-  detail_permintaan: DetailPermintaan | null;
+  detail_permintaan: DetailPermintaan[] | null;
   alat: Alat;
+  perbaikan: Perbaikan | null;
 };
 
 type PermintaanBarang = {
@@ -80,6 +81,7 @@ type User = {
 };
 
 type DetailPermintaan = {
+  ID_PERMINTAAN: string;
   ID_DETAIL_PERMINTAAN: string;
   detail_alat: IDetailAlat;
   bahan: Bahan;
