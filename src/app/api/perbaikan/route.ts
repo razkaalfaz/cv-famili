@@ -29,25 +29,10 @@ async function handler(request: NextRequest) {
   });
 
   if (pengajuanPerbaikan) {
-    const updateDataAlat = await db.alat.update({
-      where: {
-        ID_ALAT: body.ID_ALAT,
-      },
-      data: {
-        ALAT_TIDAK_LAYAK: {
-          increment: parseInt(body.JUMLAH_ALAT),
-        },
-      },
+    return NextResponse.json({
+      ok: true,
+      message: "Berhasil mengajukan perbaikan alat.",
     });
-
-    if (updateDataAlat) {
-      return NextResponse.json({
-        ok: true,
-        message: "Berhasil mengajukan perbaikan alat.",
-      });
-    } else {
-      return NextResponse.json({ ok: false, message: "Terjadi kesalahan..." });
-    }
   } else {
     return NextResponse.json({ ok: false, message: "Terjadi kesalahan..." });
   }

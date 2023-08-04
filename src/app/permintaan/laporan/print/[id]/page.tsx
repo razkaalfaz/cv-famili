@@ -58,10 +58,10 @@ export default function Print({ params }: { params: { id: string } }) {
 
   const dataBarang = (detailPermintaan: DetailPermintaan[]) => {
     const alat = detailPermintaan.map((permintaan) => ({
-      ID_BARANG: permintaan?.alat?.ID_ALAT,
-      NAMA_BARANG: permintaan?.alat?.NAMA_ALAT,
-      UNIT_BARANG: permintaan?.alat?.UNIT_ALAT,
-      JUMLAH_BARANG: permintaan?.JUMLAH_ALAT,
+      ID_BARANG: permintaan?.detail_alat?.KODE_ALAT,
+      NAMA_BARANG: permintaan?.detail_alat?.alat.NAMA_ALAT,
+      UNIT_BARANG: permintaan?.detail_alat?.alat.UNIT_ALAT,
+      JUMLAH_BARANG: 0,
     }));
     const bahan = detailPermintaan.map((permintaan) => ({
       ID_BARANG: permintaan?.bahan?.ID_BAHAN,
@@ -159,7 +159,10 @@ export default function Print({ params }: { params: { id: string } }) {
                         {barang.NAMA_BARANG}
                       </td>
                       <td className="px-2 py-2 border border-gray-300 text-center">
-                        {barang.JUMLAH_BARANG} {barang.UNIT_BARANG}
+                        {barang.JUMLAH_BARANG === 0
+                          ? "-"
+                          : barang.JUMLAH_BARANG}{" "}
+                        {barang.UNIT_BARANG}
                       </td>
                     </tr>
                   )

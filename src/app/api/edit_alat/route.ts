@@ -18,8 +18,6 @@ async function handler(request: NextRequest) {
     },
     data: {
       NAMA_ALAT: body.namaAlat,
-      JUMLAH_ALAT: body.jumlahAlat,
-      ALAT_TIDAK_LAYAK: body.alatTidakLayak,
       UNIT_ALAT: body.unitAlat,
     },
   });

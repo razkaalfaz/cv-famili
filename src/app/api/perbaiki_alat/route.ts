@@ -12,18 +12,18 @@ async function handler(request: NextRequest) {
     },
     data: {
       STATUS: "DIPERBAIKI",
-      alat: {
-        update: {
-          where: {
-            ID_ALAT: body.PERBAIKAN.ID_ALAT,
-          },
-          data: {
-            ALAT_TIDAK_LAYAK: {
-              decrement: body.PERBAIKAN.JUMLAH_ALAT ?? 0,
-            },
-          },
-        },
-      },
+      // alat: {
+      //   update: {
+      //     where: {
+      //       ID_ALAT: body.PERBAIKAN.ID_ALAT,
+      //     },
+      //     data: {
+      //       ALAT_TIDAK_LAYAK: {
+      //         decrement: body.PERBAIKAN.JUMLAH_ALAT ?? 0,
+      //       },
+      //     },
+      //   },
+      // },
     },
   });
 
