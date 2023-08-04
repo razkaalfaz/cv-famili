@@ -3,7 +3,15 @@ import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 async function handler(request: NextRequest) {
-  const alat = await db.alat.findMany();
+  const alat = await db.alat.findMany({
+    include: {
+      detail_alat: {
+        include: {
+          detail_permintaan: true,
+        },
+      },
+    },
+  });
   const headersList = headers();
   const date = headersList.get("date");
 

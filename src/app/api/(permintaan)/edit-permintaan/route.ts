@@ -3,7 +3,8 @@ import { NextRequest, NextResponse } from "next/server";
 
 interface RequestBody {
   PERMINTAAN: Permintaan;
-  BARANG: BarangPermintaan[];
+  SELECTED_ALAT: string[];
+  SELECTED_BAHAN: string[];
   NAMA_PROYEK: string;
   LOKASI_PROYEK: string;
   TGL_PENGGUNAAN: Date;
@@ -18,27 +19,18 @@ async function handler(request: NextRequest) {
   const kodifikasiDetailPermintaan = (ID_BARANG: string) =>
     body.PERMINTAAN.ID_PERMINTAAN + "-" + ID_BARANG;
 
-  const alat = body.BARANG.filter(
-    (barang) => barang.ID_BARANG.substring(0, 1) === "A"
-  );
-  const bahan = body.BARANG.filter(
-    (barang) => barang.ID_BARANG.substring(0, 1) === "B"
-  );
+  const barang =
+    body.SELECTED_ALAT.concat(body.SELECTED_BAHAN) ??
+    body.SELECTED_BAHAN.concat(body.SELECTED_ALAT);
 
-  const barang = alat.concat(bahan);
-
-  const deleteBarang = body.DELETED_BARANG.map((idBarang) => ({
-    ID_BARANG: idBarang,
-  }));
-
-  const cekDetailPermintaan = async (barang: BarangPermintaan) => {
+  const cekDetailPermintaan = async (barang: string) => {
     const currentPermintaan = await db.detail_permintaan.findFirst({
       where: {
         OR: [
           {
             AND: [
               {
-                ID_ALAT: barang.ID_BARANG,
+                ID_ALAT: barang,
               },
               {
                 ID_PERMINTAAN: body.PERMINTAAN.ID_PERMINTAAN,
@@ -48,7 +40,7 @@ async function handler(request: NextRequest) {
           {
             AND: [
               {
-                ID_BAHAN: barang.ID_BARANG,
+                ID_BAHAN: barang,
               },
               {
                 ID_PERMINTAAN: body.PERMINTAAN.ID_PERMINTAAN,
@@ -63,10 +55,10 @@ async function handler(request: NextRequest) {
       where: {
         OR: [
           {
-            ID_ALAT: barang.ID_BARANG,
+            ID_ALAT: barang,
           },
           {
-            ID_BAHAN: barang.ID_BARANG,
+            ID_BAHAN: barang,
           },
         ],
       },
@@ -76,7 +68,7 @@ async function handler(request: NextRequest) {
 
     return currentPermintaan
       ? currentPermintaan.ID_DETAIL_PERMINTAAN
-      : kodifikasiDetailPermintaan(barang.ID_BARANG) + "-" + (urutan + 1);
+      : kodifikasiDetailPermintaan(barang) + "-" + (urutan + 1);
   };
 
   const barangPromise = barang.map(async (barang) => {
@@ -84,23 +76,13 @@ async function handler(request: NextRequest) {
 
     return {
       ID_DETAIL_PERMINTAAN: idPermintaan,
-      ID_ALAT:
-        barang.ID_BARANG.substring(0, 1) === "A" ? barang.ID_BARANG : null,
-      JUMLAH_ALAT:
-        barang.ID_BARANG.substring(0, 1) === "A"
-          ? parseInt(
-              body.JUMLAH_BARANG[
-                barang.ID_BARANG as keyof typeof body.JUMLAH_BARANG
-              ].toString()
-            )
-          : null,
-      ID_BAHAN:
-        barang.ID_BARANG.substring(0, 1) === "B" ? barang.ID_BARANG : null,
+      ID_ALAT: barang.substring(0, 1) !== "B" ? barang : null,
+      ID_BAHAN: barang.substring(0, 1) === "B" ? barang : null,
       JUMLAH_BAHAN:
-        barang.ID_BARANG.substring(0, 1) === "B"
+        barang.substring(0, 1) === "B"
           ? parseInt(
               body.JUMLAH_BARANG[
-                barang.ID_BARANG as keyof typeof body.JUMLAH_BARANG
+                barang as keyof typeof body.JUMLAH_BARANG
               ].toString()
             )
           : null,
@@ -114,7 +96,10 @@ async function handler(request: NextRequest) {
 
     const value = await getBarang;
 
-    if ((alat && alat.length > 0) || (bahan && bahan.length > 0)) {
+    if (
+      (body.SELECTED_ALAT && body.SELECTED_ALAT.length > 0) ||
+      (body.SELECTED_BAHAN && body.SELECTED_BAHAN.length > 0)
+    ) {
       const ajukanBarang = await db.permintaan.update({
         where: {
           ID_PERMINTAAN: body.PERMINTAAN.ID_PERMINTAAN,
@@ -131,7 +116,6 @@ async function handler(request: NextRequest) {
               },
               create: x,
               update: {
-                JUMLAH_ALAT: x.JUMLAH_ALAT || null,
                 JUMLAH_BAHAN: x.JUMLAH_BAHAN || null,
                 ID_ALAT: x.ID_ALAT || null,
                 ID_BAHAN: x.ID_BAHAN || null,

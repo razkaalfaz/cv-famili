@@ -14,7 +14,7 @@ type Inputs = {
     jumlahAlat: number;
     unitAlat: string;
     jenisAlat: string;
-    alatTidakLayak: number;
+    kodeUnit: string;
   };
   bahan: {
     namaBahan: string;
@@ -597,6 +597,18 @@ export default function ShowModal({
               />
             </div>
             <div className="flex flex-col gap-2">
+              <label htmlFor="kode_unit_alat">Kode Unit Alat</label>
+              <input
+                id="kode_unit_alat"
+                type="text"
+                required
+                className="w-full rounded-md outline-none border border-gray-300 px-2 py-2"
+                placeholder="ST"
+                maxLength={2}
+                {...register("alat.kodeUnit")}
+              />
+            </div>
+            <div className="flex flex-col gap-2">
               <label htmlFor="jenis_alat">Jenis Alat</label>
               <select
                 required
@@ -669,39 +681,6 @@ export default function ShowModal({
                   placeholder="Nama alat..."
                   className="w-full rounded-md outline-none border border-gray-300 px-2 py-2"
                   {...register("alat.namaAlat")}
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <label htmlFor="jumlah_alat">Jumlah Alat</label>
-                <input
-                  id="jumlah_alat"
-                  type="number"
-                  defaultValue={dataAlat.JUMLAH_ALAT}
-                  required
-                  placeholder="1"
-                  min={1}
-                  className="w-full rounded-md outline-none border border-gray-300 px-2 py-2"
-                  {...register("alat.jumlahAlat", {
-                    setValueAs: (v) => parseInt(v),
-                  })}
-                />
-              </div>
-
-              <div className="flex flex-col gap-2">
-                <label htmlFor="alat_tidak_layak">
-                  Jumlah Alat Tidak Layak
-                </label>
-                <input
-                  id="alat_tidak_layak"
-                  type="number"
-                  defaultValue={dataAlat.ALAT_TIDAK_LAYAK}
-                  required
-                  placeholder="1"
-                  min={0}
-                  className="w-full rounded-md outline-none border border-gray-300 px-2 py-2"
-                  {...register("alat.alatTidakLayak", {
-                    setValueAs: (v) => parseInt(v),
-                  })}
                 />
               </div>
 

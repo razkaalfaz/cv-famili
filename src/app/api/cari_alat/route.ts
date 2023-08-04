@@ -24,6 +24,9 @@ async function handler(request: NextRequest) {
         },
       ],
     },
+    include: {
+      detail_alat: true,
+    },
   });
 
   if (alat) {

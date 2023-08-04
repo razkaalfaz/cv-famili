@@ -31,7 +31,9 @@ export default function ListAlat({ setSuccess, setMessage }: ComponentProps) {
   const variabelUmum = VARIABEL_ALAT.filter(
     (variabel) => variabel.id !== "aksi"
   ).filter((variabel) => variabel.id !== "jumlah_alat_tidak_layak");
-  const variabelAdmin = VARIABEL_ALAT;
+  const variabelAdmin = VARIABEL_ALAT.filter(
+    (variabel) => variabel.id !== "jumlah_alat_tidak_layak"
+  );
 
   const { data: session } = useSession();
 
@@ -145,16 +147,13 @@ export default function ListAlat({ setSuccess, setMessage }: ComponentProps) {
                     <p>{alat.NAMA_ALAT}</p>
                   </td>
                   <td className="text-center border border-gray-300 px-2 py-2">
-                    <p>{alat.JUMLAH_ALAT}</p>
+                    <p>{alat.detail_alat.length}</p>
                   </td>
                   <td className="text-center border border-gray-300 px-2 py-2">
                     <p>{alat.UNIT_ALAT}</p>
                   </td>
                   {session?.user?.ROLE === "ADMIN" && (
                     <>
-                      <td className="text-center border border-gray-300 px-2 py-2">
-                        <p>{alat.ALAT_TIDAK_LAYAK}</p>
-                      </td>
                       <td className="border border-gray-300 px-2 py-2">
                         <div className="w-full flex flex-row items-center justify-center gap-2">
                           <Button
@@ -242,16 +241,13 @@ export default function ListAlat({ setSuccess, setMessage }: ComponentProps) {
                     <p>{alat.NAMA_ALAT}</p>
                   </td>
                   <td className="text-center border border-gray-300 px-2 py-2">
-                    <p>{alat.JUMLAH_ALAT}</p>
+                    <p>{alat.detail_alat.length}</p>
                   </td>
                   <td className="text-center border border-gray-300 px-2 py-2">
                     <p>{alat.UNIT_ALAT}</p>
                   </td>
                   {session?.user?.ROLE === "ADMIN" && (
                     <>
-                      <td className="text-center border border-gray-300 px-2 py-2">
-                        <p>{alat.ALAT_TIDAK_LAYAK}</p>
-                      </td>
                       <td className="border border-gray-300 px-2 py-2">
                         <div className="w-full flex flex-row items-center justify-center gap-2">
                           <Button

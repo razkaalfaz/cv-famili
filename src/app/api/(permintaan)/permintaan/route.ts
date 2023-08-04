@@ -4,12 +4,14 @@ import { NextRequest, NextResponse } from "next/server";
 
 interface RequestBody {
   ID_USER: number;
-  BARANG: BarangPermintaan[];
+  SELECTED_ALAT: string[];
+  SELECTED_BAHAN: string[];
   NAMA_PROYEK: string;
   LOKASI_PROYEK: string;
   TGL_PENGGUNAAN: Date;
   TGL_PENGEMBALIAN: Date;
   JUMLAH_BARANG: { ID_BARANG: string; JUMLAH: number };
+  ID_PERMINTAAN: string;
 }
 
 async function handler(request: NextRequest) {
@@ -25,15 +27,6 @@ async function handler(request: NextRequest) {
     }${years}-${body.ID_USER}`;
     const kodifikasiDetailPermintaan = (ID_BARANG: string) =>
       kodifikasiPermintaan + "-" + ID_BARANG;
-
-    const alat = body.BARANG.filter(
-      (barang) => barang.ID_BARANG.substring(0, 1) === "A"
-    );
-    const bahan = body.BARANG.filter(
-      (barang) => barang.ID_BARANG.substring(0, 1) === "B"
-    );
-
-    const barang = alat.concat(bahan);
 
     const cekDetailPermintaan = async (ID_BARANG: string) => {
       const dataDetailPermintaan = await db.detail_permintaan.aggregate({
@@ -64,28 +57,22 @@ async function handler(request: NextRequest) {
       );
     };
 
+    const barang =
+      body.SELECTED_ALAT.concat(body.SELECTED_BAHAN) ??
+      body.SELECTED_BAHAN.concat(body.SELECTED_ALAT);
+
     const barangPromise = barang.map(async (barang) => {
-      const idPermintaan = await cekDetailPermintaan(barang.ID_BARANG);
+      const idPermintaan = await cekDetailPermintaan(barang);
 
       return {
         ID_DETAIL_PERMINTAAN: idPermintaan,
-        ID_ALAT:
-          barang.ID_BARANG.substring(0, 1) === "A" ? barang.ID_BARANG : null,
-        JUMLAH_ALAT:
-          barang.ID_BARANG.substring(0, 1) === "A"
-            ? parseInt(
-                body.JUMLAH_BARANG[
-                  barang.ID_BARANG as keyof typeof body.JUMLAH_BARANG
-                ].toString()
-              )
-            : null,
-        ID_BAHAN:
-          barang.ID_BARANG.substring(0, 1) === "B" ? barang.ID_BARANG : null,
+        ID_ALAT: barang.substring(0, 1) !== "B" ? barang : null,
+        ID_BAHAN: barang.substring(0, 1) === "B" ? barang : null,
         JUMLAH_BAHAN:
-          barang.ID_BARANG.substring(0, 1) === "B"
+          barang.substring(0, 1) === "B"
             ? parseInt(
                 body.JUMLAH_BARANG[
-                  barang.ID_BARANG as keyof typeof body.JUMLAH_BARANG
+                  barang as keyof typeof body.JUMLAH_BARANG
                 ].toString()
               )
             : null,
@@ -107,7 +94,10 @@ async function handler(request: NextRequest) {
 
       const value = await getBarang;
 
-      if ((alat && alat.length > 0) || (bahan && bahan.length > 0)) {
+      if (
+        (body.SELECTED_ALAT && body.SELECTED_ALAT.length > 0) ||
+        (body.SELECTED_BAHAN && body.SELECTED_BAHAN.length > 0)
+      ) {
         const ajukanBarang = await db.permintaan.create({
           data: {
             ID_PERMINTAAN: kodifikasiPermintaan + "-" + (urutan + 1),

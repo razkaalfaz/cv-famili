@@ -1,6 +1,6 @@
 "use client";
 
-import { VARIABEL_PILIHAN_ALAT } from "@/lib/constants";
+import { VARIABEL_PILIHAN_BAHAN } from "@/lib/constants";
 import { useCallback, useRef } from "react";
 
 interface ComponentProps {
@@ -9,7 +9,7 @@ interface ComponentProps {
     event: React.ChangeEvent<HTMLInputElement>,
     item: BarangPermintaan
   ) => void;
-  selectedBahan: BarangPermintaan[];
+  selectedBahan: string[];
 }
 
 export default function ListPilihanAlat({
@@ -27,7 +27,7 @@ export default function ListPilihanAlat({
     (idBahan: string) => {
       var checked = false;
       for (var i = 0; i < (selectedBahan.length ?? 0); i++) {
-        if (selectedBahan[i].ID_BARANG === idBahan) {
+        if (selectedBahan[i] === idBahan) {
           checked = true;
           break;
         }
@@ -43,7 +43,7 @@ export default function ListPilihanAlat({
       <table className="w-full border border-gray-300">
         <thead className="bg-orange-700 text-white">
           <tr>
-            {VARIABEL_PILIHAN_ALAT.map((variabel) => (
+            {VARIABEL_PILIHAN_BAHAN.map((variabel) => (
               <td
                 className="border border-gray-300 px-2 py-2"
                 key={variabel.id}
