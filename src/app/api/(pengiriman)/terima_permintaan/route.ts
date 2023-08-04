@@ -8,6 +8,7 @@ interface RequestBody {
 
 async function handler(request: NextRequest) {
   const body: RequestBody = await request.json();
+  const currentDate = new Date();
 
   const updatePermintaan = await db.permintaan.update({
     where: {
@@ -15,6 +16,7 @@ async function handler(request: NextRequest) {
     },
     data: {
       STATUS: "DITERIMA",
+      TGL_PENGGUNAAN: currentDate,
       transportasi: {
         update: {
           where: {
