@@ -6,6 +6,8 @@ import TextField from "@/components/inputs/TextField";
 import ListPermintaan from "@/components/permintaan/ListPermintaan";
 import { fetcher } from "@/lib/helper";
 import { MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { PrinterIcon } from "@heroicons/react/24/solid";
+import Link from "next/link";
 import { FormEvent, useState } from "react";
 import useSWR from "swr";
 
@@ -18,6 +20,12 @@ export default function Laporan() {
     "/api/semua_permintaan",
     fetcher
   );
+
+  const permintaanSelesai = semuaPermintaan
+    ? semuaPermintaan.result.filter(
+        (permintaan: Permintaan) => permintaan.STATUS === "DIKEMBALIKAN"
+      )
+    : [];
 
   async function cariPermintaan(
     event: FormEvent<HTMLFormElement>,
@@ -148,6 +156,20 @@ export default function Laporan() {
           </button>
         </div>
       </form>
+
+      {permintaanSelesai.length > 0 && (
+        <div className="w-full grid place-items-end">
+          <Link
+            href={"/permintaan/laporan/cetak"}
+            className="p-2 rounded-md bg-green-950 text-white grid place-items-center"
+          >
+            <div className="flex flex-row gap-2 items-center">
+              <PrinterIcon className="w-4 h-4" />
+              <p>Cetak</p>
+            </div>
+          </Link>
+        </div>
+      )}
 
       {hasilQuery && (
         <div className="w-full flex items-center justify-end">
