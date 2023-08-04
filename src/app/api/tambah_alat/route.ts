@@ -1,60 +1,73 @@
-import { db } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
+import { db } from "@/lib/db";
+import { idPrefixMaker } from "@/lib/helper";
 
 interface RequestBody {
   namaAlat: string;
+  kodeUnit: string;
   jumlahAlat: number;
-  unitAlat: string;
-  alatTidakLayak: number;
   jenisAlat: string;
+  unitAlat: string;
 }
-
 async function handler(request: NextRequest) {
   const body: RequestBody = await request.json();
-
-  const maxValue = await db.alat.aggregate({
-    where: {
-      ID_ALAT: {
-        contains: body.jenisAlat,
+  try {
+    const currentAlat = await db.alat.aggregate({
+      _max: {
+        ID_ALAT: true,
       },
-    },
-    _max: {
-      ID_ALAT: true,
-    },
-  });
+    });
 
-  const urutan =
-    maxValue._max.ID_ALAT?.substring(
-      maxValue._max.ID_ALAT.length,
-      maxValue._max.ID_ALAT.length - 3
-    ) || "0";
+    const maxValue = currentAlat._max.ID_ALAT;
+    const urutan = Number(
+      maxValue?.substring(maxValue.length - 3, maxValue.length)
+    );
 
-  console.log(kodifikasiAlat(parseInt(urutan) + 1));
+    const createManyDetails = () => {
+      let detailAlat = [];
+      for (let i = 0; i < body.jumlahAlat; i++) {
+        detailAlat.push({
+          KODE_ALAT: `${body.kodeUnit}-${idPrefixMaker(i + 1)}`,
+        });
+      }
 
-  function kodifikasiAlat(jumlah: number) {
-    if (jumlah > 9) {
-      return `${body.jenisAlat}0${jumlah}`;
-    } else if (jumlah >= 100) {
-      return `${body.jenisAlat}${jumlah}`;
+      return detailAlat;
+    };
+
+    const newAlat = await db.alat.create({
+      data: {
+        ID_ALAT: `${body.jenisAlat}${idPrefixMaker(urutan ? urutan + 1 : 1)}`,
+        NAMA_ALAT: body.namaAlat,
+        UNIT_ALAT: body.unitAlat,
+        detail_alat: {
+          createMany: {
+            data: createManyDetails(),
+            skipDuplicates: true,
+          },
+        },
+      },
+    });
+
+    if (newAlat) {
+      return NextResponse.json({
+        ok: true,
+        message: "Berhasil menambahkan alat.",
+        result: newAlat,
+      });
     } else {
-      return `${body.jenisAlat}00${jumlah}`;
+      return NextResponse.json({
+        ok: false,
+        message: "Terjadi kesalahan ketika menambahkan alat...",
+        result: null,
+      });
     }
-  }
-
-  const alatBaru = await db.alat.create({
-    data: {
-      ID_ALAT: kodifikasiAlat(parseInt(urutan) + 1),
-      JUMLAH_ALAT: body.jumlahAlat,
-      NAMA_ALAT: body.namaAlat,
-      UNIT_ALAT: body.unitAlat,
-      ALAT_TIDAK_LAYAK: body.alatTidakLayak,
-    },
-  });
-
-  if (alatBaru) {
-    return NextResponse.json({ ok: true, result: alatBaru });
-  } else {
-    return NextResponse.json({ ok: false, result: null });
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json({
+      ok: false,
+      message: "Terjadi kesalahan ketika menambahkan alat...",
+      result: null,
+    });
   }
 }
 

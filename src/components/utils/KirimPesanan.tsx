@@ -87,6 +87,7 @@ export default function KirimPesanan({
         setIsLoading(false);
         setSuccess(response.message);
         mutate("/api/semua_permintaan");
+        mutate("/api/list-alat");
         reset();
         onClose();
       }
@@ -120,6 +121,7 @@ export default function KirimPesanan({
         setIsLoading(false);
         setSuccess(response.message);
         mutate("/api/semua_permintaan");
+        mutate("/api/list-alat");
         reset();
         onClose();
       }

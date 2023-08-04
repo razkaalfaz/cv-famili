@@ -8,13 +8,25 @@ interface RequestBody {
 async function handler(request: NextRequest) {
   const body: RequestBody = await request.json();
 
-  const hapusPermintaan = await db.permintaan.delete({
+  const updateStatusAlat = await db.detail_alat.updateMany({
     where: {
-      ID_PERMINTAAN: body.ID_PERMINTAAN,
+      detail_permintaan: {
+        some: {
+          ID_PERMINTAAN: body.ID_PERMINTAAN,
+        },
+      },
+    },
+    data: {
+      STATUS: "TERSEDIA",
     },
   });
 
-  if (hapusPermintaan) {
+  if (updateStatusAlat) {
+    await db.permintaan.delete({
+      where: {
+        ID_PERMINTAAN: body.ID_PERMINTAAN,
+      },
+    });
     return NextResponse.json({
       ok: true,
       message: "Berhasil menghapus data permintaan.",

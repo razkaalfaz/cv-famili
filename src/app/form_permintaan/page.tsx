@@ -30,6 +30,7 @@ export default function PengajuanPermintaan() {
       <FormPermintaan
         dataAlat={alat.result ?? []}
         dataBahan={bahan.result ?? []}
+        dataPermintaan={null}
       />
     );
   }

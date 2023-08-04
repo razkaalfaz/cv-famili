@@ -8,25 +8,29 @@ datasource db {
 }
 
 model alat {
-  ID_ALAT           String              @id
-  NAMA_ALAT         String?
-  JUMLAH_ALAT       Int
-  UNIT_ALAT         String?
-  ALAT_TIDAK_LAYAK  Int?                @default(0)
-  ALAT_KELUAR       Int                 @default(0)
+  ID_ALAT     String        @id
+  NAMA_ALAT   String?
+  UNIT_ALAT   String?
+  detail_alat detail_alat[]
+}
+
+model detail_alat {
+  KODE_ALAT         String              @id
+  ID_ALAT           String
+  ID_PERBAIKAN      String?
+  STATUS            STATUS_ALAT         @default(TERSEDIA)
+  alat              alat?               @relation(fields: [ID_ALAT], references: [ID_ALAT], onDelete: Cascade)
+  perbaikan         perbaikan?          @relation(fields: [ID_PERBAIKAN], references: [ID_PERBAIKAN], onDelete: SetNull)
   detail_permintaan detail_permintaan[]
-  perbaikan         perbaikan?
 }
 
 model perbaikan {
-  ID_ALAT       String?          @unique
+  ID_PERBAIKAN  String           @id
   KETERANGAN    String
   CATATAN       String?
   STATUS        STATUS_PERBAIKAN @default(PENDING)
-  ID_PERBAIKAN  String           @id
-  JUMLAH_ALAT   Int
   TGL_PENGAJUAN DateTime         @default(now())
-  alat          alat?            @relation(fields: [ID_ALAT], references: [ID_ALAT], onDelete: Cascade)
+  detail_alat   detail_alat[]
 }
 
 model bahan {
@@ -76,7 +80,7 @@ model detail_permintaan {
   ID_PENGEMBALIAN      String?
   ID_ALAT              String?
   ID_BAHAN             String?
-  alat                 alat?         @relation(fields: [ID_ALAT], references: [ID_ALAT], onDelete: Cascade)
+  detail_alat          detail_alat?  @relation(fields: [ID_ALAT], references: [KODE_ALAT], onDelete: Cascade)
   bahan                bahan?        @relation(fields: [ID_BAHAN], references: [ID_BAHAN], onDelete: Cascade)
   pengembalian         pengembalian? @relation(fields: [ID_PENGEMBALIAN], references: [ID_PENGEMBALIAN], onDelete: Cascade)
   permintaan           permintaan    @relation(fields: [ID_PERMINTAAN], references: [ID_PERMINTAAN], onDelete: Cascade)
@@ -141,4 +145,12 @@ enum STATUS_PERBAIKAN {
 enum STATUS_TRANSPORTASI {
   TERSEDIA
   DIPAKAI
+}
+
+enum STATUS_ALAT {
+  DIGUNAKAN
+  PENGAJUAN
+  TERSEDIA
+  DIPERBAIKI
+  RUSAK
 }

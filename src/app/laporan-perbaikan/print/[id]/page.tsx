@@ -131,7 +131,7 @@ export default function DetailPerbaikan({
                 <tr>
                   <td className="border border-gray-300 px-2 py-2">ID Alat</td>
                   <td className="border border-gray-300 px-2 py-2">
-                    Nama Alat
+                    Kode Unit Alat
                   </td>
                   <td className="border border-gray-300 px-2 py-2">
                     Jumlah Alat
@@ -144,13 +144,17 @@ export default function DetailPerbaikan({
               <tbody>
                 <tr>
                   <td className="px-2 py-2 border border-gray-300 text-center">
-                    {perbaikan.ID_ALAT}
+                    {perbaikan.detail_alat.map((detail) => detail.ID_ALAT)[0]}
                   </td>
                   <td className="px-2 py-2 border border-gray-300 text-center">
-                    {perbaikan.alat.NAMA_ALAT}
+                    <div className="flex flex-col gap-2">
+                      {perbaikan.detail_alat.map((detail) => (
+                        <p key={detail.KODE_ALAT}>{detail.KODE_ALAT}</p>
+                      ))}
+                    </div>
                   </td>
                   <td className="px-2 py-2 border border-gray-300 text-center">
-                    {perbaikan.JUMLAH_ALAT}
+                    {perbaikan.detail_alat.length}
                   </td>
                   <td className="px-2 py-2 border border-gray-300 text-center">
                     {perbaikan.KETERANGAN}

@@ -156,15 +156,14 @@ export default function Permintaan() {
                           {permintaan.detail_permintaan.map(
                             (detailPermintaan) => (
                               <>
-                                {detailPermintaan.alat && (
+                                {detailPermintaan.detail_alat && (
                                   <div
                                     key={detailPermintaan.ID_DETAIL_PERMINTAAN}
                                     className="flex flex-row gap-2 items-center"
                                   >
-                                    <p>{detailPermintaan?.alat?.NAMA_ALAT}</p>
-                                    <div className="w-4 h-px bg-gray-300" />
-                                    <p>{detailPermintaan?.JUMLAH_ALAT}</p>
-                                    <p>{detailPermintaan?.alat?.UNIT_ALAT}</p>
+                                    <p>
+                                      {detailPermintaan?.detail_alat?.KODE_ALAT}
+                                    </p>
                                   </div>
                                 )}
                               </>

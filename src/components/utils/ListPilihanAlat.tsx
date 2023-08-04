@@ -87,7 +87,7 @@ export default function ListPilihanAlat({
                 {dataAlat.NAMA_ALAT}
               </td>
               <td className="px-2 py-2 border border-gray-300">
-                {dataAlat.JUMLAH_ALAT} {dataAlat.UNIT_ALAT}
+                {dataAlat.detail_alat.length} {dataAlat.UNIT_ALAT}
               </td>
             </tr>
           ))}

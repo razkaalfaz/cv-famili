@@ -1,40 +1,39 @@
 "use client";
 
-import { ChangeEvent, useEffect, useState } from "react";
+import { dateToString } from "@/lib/helper";
+import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import ListPilihanAlat from "./ListPilihanAlat";
-import ListPilihanBahan from "./ListPilihanBahan";
+import { useSWRConfig } from "swr";
+import AccordionAlat from "./AccordionAlat";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import ListPilihanBahan from "./ListPilihanBahan";
+import { TrashIcon } from "@heroicons/react/24/solid";
 import Button from "../button/Button";
 import Snackbar from "../snackbar/Snackbar";
-import { dateToString } from "@/lib/helper";
-import { useSWRConfig } from "swr";
-import { TrashIcon } from "@heroicons/react/24/solid";
+import { useRouter } from "next/navigation";
 
-type Input = {
+interface Inputs {
   alat: {
-    idAlat: string;
-    jumlah: number;
+    KODE_UNIT: string;
   };
   bahan: {
-    idBahan: string;
-    jumlah: number;
+    ID_BAHAN: string;
+    JUMLAH: number;
   };
-  namaProyek: string;
-  lokasiProyek: string;
-  tanggalPenggunaan: Date;
-  tanggalPengembalian: Date;
-};
+  NAMA_PROYEK: string;
+  LOKASI_PROYEK: string;
+  TGL_PENGGUNAAN: Date;
+  TGL_PENGEMBALIAN: Date;
+}
 
-interface ItemQuantities {
+interface BahanQuantities {
   [key: string]: string;
 }
 
 interface ComponentProps {
   dataAlat: Alat[];
   dataBahan: Bahan[];
-  dataPermintaan?: Permintaan | null;
+  dataPermintaan: Permintaan | null;
 }
 
 export default function FormPermintaan({
@@ -45,206 +44,65 @@ export default function FormPermintaan({
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [selectedItems, setSelectedItems] = useState<BarangPermintaan[]>([]);
-  const [itemQuantities, setItemQuantities] = useState<ItemQuantities>({});
-  const [jenisAlat, setJenisAlat] = useState<string>("all");
+  const [selectedAlat, setSelectedAlat] = useState<string[]>([]);
+  const [selectedBahan, setSelectedBahan] = useState<string[]>([]);
+  const [quantityBahan, setQuantityBahan] = useState<BahanQuantities>({});
   const [uncheckedItems, setUncheckedItems] = useState<string[]>([]);
+  const [isInternal, setIsInternal] = useState(true);
+  const threeDaysShipping = new Date(
+    new Date().getTime() + 72 * 60 * 60 * 1000
+  );
+  const oneDayShipping = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
 
   const inputStyles =
     "w-full rounded-md outline-none border border-gray-300 overflow-hidden px-2 py-2";
   const inputContainerStyles = "w-full flex flex-col gap-1";
   const labelStyles = "font-semibold";
-  const baseButtonStyles =
-    "px-2 py-2 rounded-full grid place-items overflow-hidden border border-gray-300";
-  const activeButtonStyles = baseButtonStyles + " bg-orange-500 text-white";
 
   const router = useRouter();
-
   const { mutate } = useSWRConfig();
-
-  const handleItemChange = (
-    event: ChangeEvent<HTMLInputElement>,
-    item: BarangPermintaan
-  ) => {
-    const { checked } = event.target;
-    if (checked) {
-      setSelectedItems((prev) => [
-        ...prev,
-        {
-          ID_BARANG: item.ID_BARANG,
-          NAMA_BARANG: item.NAMA_BARANG,
-          UNIT_BARANG: item.UNIT_BARANG,
-        },
-      ]);
-      const updatedItems = uncheckedItems.filter(
-        (currentItem) => currentItem !== item.ID_BARANG
-      );
-      setUncheckedItems(updatedItems);
-    } else {
-      const updatedItems = selectedItems.filter(
-        (selectedItem) => selectedItem.ID_BARANG !== item.ID_BARANG
-      );
-      setSelectedItems(updatedItems);
-    }
-  };
-
-  const handleQuantityChange = (
-    event: ChangeEvent<HTMLInputElement>,
-    itemId: string
-  ) => {
-    const { value } = event.target;
-    setItemQuantities({ ...itemQuantities, [itemId]: value });
-  };
-
-  const hapusBarang = (ID_BARANG: string) => {
-    const updatedItems = selectedItems.filter(
-      (item) => item.ID_BARANG !== ID_BARANG
-    );
-    setSelectedItems(updatedItems);
-    var currentQuantities = itemQuantities;
-    delete currentQuantities[ID_BARANG];
-
-    setItemQuantities(currentQuantities);
-    if (!uncheckedItems.includes(ID_BARANG)) {
-      setUncheckedItems((prev) => [...prev, ID_BARANG]);
-    }
-  };
-
-  const renderItemInputs = () => {
-    return selectedItems.map((item) => {
-      const itemData =
-        dataAlat.find((alat) => alat.ID_ALAT === item.ID_BARANG) ||
-        dataBahan.find((bahan) => bahan.ID_BAHAN === item.ID_BARANG);
-      let itemAlat = itemData as Alat;
-      let itemBahan = itemData as Bahan;
-      const maxValue = itemAlat.JUMLAH_ALAT
-        ? itemAlat.JUMLAH_ALAT
-        : itemBahan.STOCK_BAHAN
-        ? itemBahan.STOCK_BAHAN
-        : null;
-      return (
-        <div key={item.ID_BARANG}>
-          <label className="w-full flex flex-row gap-4 items-center">
-            <div className="w-2/12">{item.NAMA_BARANG}:</div>
-            <div className="w-5/6 rounded-md outline-none border border-gray-300 overflow-hidden px-2 py-2 flex flex-row items-center gap-4">
-              <input
-                disabled={isLoading}
-                type="number"
-                min="1"
-                value={itemQuantities[item.ID_BARANG] || ""}
-                max={maxValue ? maxValue : undefined}
-                className="w-full h-full"
-                onChange={(e) => handleQuantityChange(e, item.ID_BARANG)}
-                required
-              />
-              <p className="text-gray-500">{item.UNIT_BARANG}</p>
-            </div>
-            <div
-              className="px-2 py-2 rounded-md grid place-items-center text-white bg-red-950 overflow-hidden cursor-pointer"
-              onClick={() => hapusBarang(item.ID_BARANG)}
-            >
-              <TrashIcon className="w-4 h-4" />
-            </div>
-          </label>
-        </div>
-      );
-    });
-  };
-
-  const renderAlat = (alat: Alat[], jenis: string) => {
-    const alatBerat = alat?.filter(
-      (alat: Alat) => alat?.ID_ALAT.substring(0, 2) === "AB"
-    );
-
-    const alatRingan = alat?.filter(
-      (alat: Alat) => alat?.ID_ALAT.substring(0, 2) === "AR"
-    );
-
-    switch (jenis) {
-      case "AB":
-        return (
-          <ListPilihanAlat
-            selectedAlat={selectedItems}
-            alat={alatBerat}
-            onCheckboxClicked={handleItemChange}
-          />
-        );
-
-      case "AR":
-        return (
-          <ListPilihanAlat
-            selectedAlat={selectedItems}
-            alat={alatRingan}
-            onCheckboxClicked={handleItemChange}
-          />
-        );
-
-      case "all":
-        return (
-          <ListPilihanAlat
-            selectedAlat={selectedItems}
-            alat={dataAlat}
-            onCheckboxClicked={handleItemChange}
-          />
-        );
-      default:
-        return <p className="text-gray-500">Silahkan pilih jenis alat...</p>;
-    }
-  };
-
-  const { handleSubmit, register, reset } = useForm<Input>({
+  const { data: session } = useSession();
+  const { register, reset, handleSubmit } = useForm<Inputs>({
     mode: "onChange",
   });
-  const { data: session } = useSession();
-
-  const ajukanPermintaan: SubmitHandler<Input> = async (data) => {
-    const { namaProyek, lokasiProyek, tanggalPengembalian, tanggalPenggunaan } =
-      data;
-
+  const ajukanPermintaan: SubmitHandler<Inputs> = async (data) => {
+    setIsLoading(true);
     setMessage(null);
     setSuccess(null);
 
     if (session) {
-      setIsLoading(true);
-      if (dataPermintaan === null || dataPermintaan === undefined) {
+      if (!dataPermintaan) {
         try {
           const res = await fetch(process.env.NEXT_PUBLIC_API_PERMINTAAN!, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
+              NAMA_PROYEK: data.NAMA_PROYEK,
+              LOKASI_PROYEK: data.LOKASI_PROYEK,
+              TGL_PENGGUNAAN: data.TGL_PENGGUNAAN,
+              TGL_PENGEMBALIAN: data.TGL_PENGEMBALIAN,
+              SELECTED_ALAT: selectedAlat,
+              SELECTED_BAHAN: selectedBahan,
+              JUMLAH_BARANG: quantityBahan,
               ID_USER: session.user.ID_USER,
-              NAMA_PROYEK: namaProyek,
-              LOKASI_PROYEK: lokasiProyek,
-              TGL_PENGGUNAAN: tanggalPenggunaan,
-              TGL_PENGEMBALIAN: tanggalPengembalian,
-              BARANG: selectedItems,
-              JUMLAH_BARANG: itemQuantities,
             }),
           });
 
           const response = await res.json();
+
           if (!response.ok) {
             setIsLoading(false);
-            if (!response.result) {
-              setMessage(
-                "Tidak ada barang yang di pilih, harap pilih salah satu untuk lanjut."
-              );
-            } else {
-              setMessage("Terjadi kesalahan ketika melakukan permintaan...");
-            }
+            setMessage("Terjadi kesalahan ketika melakukan permintaan...");
           } else {
             setIsLoading(false);
             setSuccess("Berhasil mengajukan permintaan.");
-            setSelectedItems([]);
-            setItemQuantities({});
+            mutate("/api/semua_permintaan");
+            mutate("/api/permintaan-user/" + session.user.ID_USER);
             reset();
-            setTimeout(() => {
-              router.push("/permintaan");
-            }, 3000);
           }
         } catch (err) {
-          setIsLoading(false);
           setMessage("Terjadi kesalahan...");
+          setIsLoading(false);
           console.error(err);
         }
       } else {
@@ -256,14 +114,16 @@ export default function FormPermintaan({
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
                 PERMINTAAN: dataPermintaan,
-                NAMA_PROYEK: namaProyek ?? dataPermintaan.NAMA_PROYEK,
-                LOKASI_PROYEK: lokasiProyek ?? dataPermintaan.LOKASI_PROYEK,
+                NAMA_PROYEK: data.NAMA_PROYEK ?? dataPermintaan.NAMA_PROYEK,
+                LOKASI_PROYEK:
+                  data.LOKASI_PROYEK ?? dataPermintaan.LOKASI_PROYEK,
                 TGL_PENGGUNAAN:
-                  tanggalPenggunaan ?? dataPermintaan.TGL_PENGGUNAAN,
+                  data.TGL_PENGGUNAAN ?? dataPermintaan.TGL_PENGGUNAAN,
                 TGL_PENGEMBALIAN:
-                  tanggalPengembalian ?? dataPermintaan.TGL_PENGEMBALIAN,
-                BARANG: selectedItems,
-                JUMLAH_BARANG: itemQuantities,
+                  data.TGL_PENGEMBALIAN ?? dataPermintaan.TGL_PENGEMBALIAN,
+                SELECTED_ALAT: selectedAlat,
+                SELECTED_BAHAN: selectedBahan,
+                JUMLAH_BARANG: quantityBahan,
                 DELETED_BARANG: uncheckedItems ?? [],
               }),
             }
@@ -282,8 +142,9 @@ export default function FormPermintaan({
           } else {
             setIsLoading(false);
             setSuccess("Berhasil megubah data permintaan.");
-            setSelectedItems([]);
-            setItemQuantities({});
+            setSelectedAlat([]);
+            setSelectedBahan([]);
+            setQuantityBahan({});
             mutate("/api/get-permintaan/" + dataPermintaan.ID_PERMINTAAN);
             reset();
             setTimeout(() => {
@@ -299,10 +160,78 @@ export default function FormPermintaan({
     }
   };
 
+  const handleItemChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    item: BarangPermintaan
+  ) => {
+    const { checked } = event.target;
+    if (checked) {
+      setSelectedBahan((prev) => [...prev, item.ID_BARANG]);
+    } else {
+      const updatedBahan = selectedBahan.filter(
+        (bahan) => bahan !== item.ID_BARANG
+      );
+      setSelectedBahan(updatedBahan);
+    }
+  };
+
+  const handleQuantityChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    itemId: string
+  ) => {
+    const { value } = event.target;
+    setQuantityBahan({ ...quantityBahan, [itemId]: value });
+  };
+
+  const hapusBarang = (ID_BARANG: string) => {
+    const updatedItems = selectedBahan.filter((item) => item !== ID_BARANG);
+    setSelectedBahan(updatedItems);
+    var currentQuantities = quantityBahan;
+    delete currentQuantities[ID_BARANG];
+
+    setQuantityBahan(currentQuantities);
+    if (!uncheckedItems.includes(ID_BARANG)) {
+      setUncheckedItems((prev) => [...prev, ID_BARANG]);
+    }
+  };
+
+  const renderItemInputs = () => {
+    return selectedBahan.map((item) => {
+      const itemData = dataBahan.find((bahan) => bahan.ID_BAHAN === item);
+      const maxValue = itemData?.STOCK_BAHAN;
+      return (
+        <div key={item}>
+          <label className="w-full flex flex-row gap-4 items-center">
+            <div className="w-2/12">{itemData?.NAMA_BAHAN}:</div>
+            <div className="w-5/6 rounded-md outline-none border border-gray-300 overflow-hidden px-2 py-2 flex flex-row items-center gap-4">
+              <input
+                disabled={isLoading}
+                type="number"
+                min="1"
+                value={quantityBahan[item] || ""}
+                max={maxValue ? maxValue : undefined}
+                className="w-full h-full"
+                onChange={(e) => handleQuantityChange(e, item)}
+                required
+              />
+              <p className="text-gray-500">{itemData?.UNIT_BAHAN}</p>
+            </div>
+            <div
+              className="px-2 py-2 rounded-md grid place-items-center text-white bg-red-950 overflow-hidden cursor-pointer"
+              onClick={() => hapusBarang(item)}
+            >
+              <TrashIcon className="w-4 h-4" />
+            </div>
+          </label>
+        </div>
+      );
+    });
+  };
+
   useEffect(() => {
     if (dataPermintaan) {
       const currentAlat = dataPermintaan?.detail_permintaan?.map(
-        (permintaan) => permintaan.alat
+        (permintaan) => permintaan.detail_alat
       );
 
       const currentBahan = dataPermintaan?.detail_permintaan?.map(
@@ -313,23 +242,7 @@ export default function FormPermintaan({
         currentAlat
           .filter((permintaan) => permintaan !== null)
           .forEach((alat) => {
-            setSelectedItems((prev) => [
-              ...prev,
-              {
-                ID_BARANG: alat.ID_ALAT,
-                NAMA_BARANG: alat.NAMA_ALAT,
-                UNIT_BARANG: alat.UNIT_ALAT,
-              },
-            ]);
-          });
-
-        dataPermintaan?.detail_permintaan
-          ?.filter((detailPermintaan) => detailPermintaan?.JUMLAH_ALAT !== null)
-          .forEach((detail) => {
-            setItemQuantities((prev) => ({
-              ...prev,
-              [detail?.alat?.ID_ALAT]: detail.JUMLAH_ALAT.toString(),
-            }));
+            setSelectedAlat((prev) => [...prev, alat.KODE_ALAT]);
           });
       }
 
@@ -337,14 +250,7 @@ export default function FormPermintaan({
         currentBahan
           .filter((permintaan) => permintaan !== null)
           .forEach((bahan) => {
-            setSelectedItems((prev) => [
-              ...prev,
-              {
-                ID_BARANG: bahan.ID_BAHAN,
-                NAMA_BARANG: bahan.NAMA_BAHAN,
-                UNIT_BARANG: bahan.UNIT_BAHAN,
-              },
-            ]);
+            setSelectedBahan((prev) => [...prev, bahan.ID_BAHAN]);
           });
 
         dataPermintaan?.detail_permintaan
@@ -352,7 +258,7 @@ export default function FormPermintaan({
             (detailPermintaan) => detailPermintaan?.JUMLAH_BAHAN !== null
           )
           .forEach((detail) => {
-            setItemQuantities((prev) => ({
+            setQuantityBahan((prev) => ({
               ...prev,
               [detail?.bahan?.ID_BAHAN]: detail.JUMLAH_BAHAN.toString(),
             }));
@@ -372,7 +278,7 @@ export default function FormPermintaan({
         </label>
         <input
           disabled={isLoading}
-          {...register("namaProyek")}
+          {...register("NAMA_PROYEK")}
           type="text"
           placeholder="Nama proyek..."
           id="nama_proyek"
@@ -388,7 +294,7 @@ export default function FormPermintaan({
         </label>
         <input
           disabled={isLoading}
-          {...register("lokasiProyek")}
+          {...register("LOKASI_PROYEK")}
           type="text"
           placeholder="Jl..."
           id="lokasi_proyek"
@@ -396,6 +302,28 @@ export default function FormPermintaan({
           defaultValue={dataPermintaan?.LOKASI_PROYEK ?? ""}
           required
         />
+      </div>
+
+      <div className={inputContainerStyles}>
+        <label className={labelStyles} htmlFor="opsi_pengiriman">
+          Opsi Pengiriman
+        </label>
+        <p className="text-sm text-gray-500">
+          Apakah lokasi proyek berada di dalam kota Sukabumi?
+        </p>
+        <select
+          id="opsi_pengiriman"
+          name="opsi_pengiriman"
+          required
+          onChange={(event) => setIsInternal(event.target.value === "YA")}
+          className={inputStyles}
+        >
+          <option value="YA">Dalam Kota Sukabumi</option>
+          <option value="TIDAK">Luar Kota Sukabumi</option>
+        </select>
+        <p className="text-gray-500">
+          Estimasi pengiriman: {isInternal ? "1 hari" : "3 hari"}.
+        </p>
       </div>
 
       <div className={inputContainerStyles}>
@@ -407,7 +335,12 @@ export default function FormPermintaan({
         </p>
         <input
           disabled={isLoading}
-          {...register("tanggalPenggunaan")}
+          {...register("TGL_PENGGUNAAN")}
+          min={
+            isInternal
+              ? dateToString(oneDayShipping.toDateString())
+              : dateToString(threeDaysShipping.toDateString())
+          }
           type="date"
           id="tgl_penggunaan"
           className={inputStyles}
@@ -427,7 +360,7 @@ export default function FormPermintaan({
         </p>
         <input
           disabled={isLoading}
-          {...register("tanggalPengembalian")}
+          {...register("TGL_PENGEMBALIAN")}
           type="date"
           id="tgl_pengembalian"
           className={inputStyles}
@@ -439,58 +372,61 @@ export default function FormPermintaan({
         />
       </div>
 
-      <div className="w-full flex flex-col gap-4">
-        <p className={labelStyles}>Pilihan Barang</p>
-
-        <div className="w-full flex flex-col gap-2">
-          <p>Data alat</p>
-
-          <div className="flex flex-row items-center gap-4">
-            <button
-              type="button"
-              className={
-                jenisAlat === "all" ? activeButtonStyles : baseButtonStyles
-              }
-              onClick={() => setJenisAlat("all")}
-            >
-              Semua Alat
-            </button>
-            <button
-              type="button"
-              className={
-                jenisAlat === "AB" ? activeButtonStyles : baseButtonStyles
-              }
-              onClick={() => setJenisAlat("AB")}
-            >
-              Alat Berat
-            </button>
-            <button
-              type="button"
-              className={
-                jenisAlat === "AR" ? activeButtonStyles : baseButtonStyles
-              }
-              onClick={() => setJenisAlat("AR")}
-            >
-              Alat Ringan
-            </button>
+      <div className={inputContainerStyles}>
+        <label className={labelStyles}>Alat</label>
+        <p className="text-sm text-gray-500">
+          Silahkan pilih alat yang akan di pinjam
+        </p>
+        {dataPermintaan ? (
+          <div className="w-full flex flex-col gap-4">
+            {dataAlat.map((alat) => (
+              <AccordionAlat
+                isEdit={true}
+                uncheckedAlat={uncheckedItems}
+                setUncheckedAlat={setUncheckedItems}
+                dataAlat={alat}
+                selectedAlat={selectedAlat}
+                setSelectedAlat={setSelectedAlat}
+                key={alat.ID_ALAT}
+                dataPermintaan={dataPermintaan}
+              />
+            ))}
           </div>
+        ) : (
+          <div className="w-full flex flex-col gap-4">
+            {dataAlat.map((alat) => (
+              <AccordionAlat
+                isEdit={false}
+                uncheckedAlat={uncheckedItems}
+                setUncheckedAlat={setUncheckedItems}
+                dataAlat={alat}
+                selectedAlat={selectedAlat}
+                setSelectedAlat={setSelectedAlat}
+                key={alat.ID_ALAT}
+                dataPermintaan={null}
+              />
+            ))}
+          </div>
+        )}
+      </div>
 
-          {jenisAlat && jenisAlat !== "" && renderAlat(dataAlat, jenisAlat)}
-        </div>
-
-        <div className="w-full flex flex-col gap-2">
-          <p>Data bahan</p>
+      <div className={inputContainerStyles}>
+        <label className={labelStyles}>Bahan</label>
+        <p className="text-sm text-gray-500">
+          Silahkan pilih bahan yang tersedia
+        </p>
+        <div className="w-full flex flex-col gap-4">
           <ListPilihanBahan
             bahan={dataBahan}
             onCheckboxClicked={handleItemChange}
-            selectedBahan={selectedItems}
+            selectedBahan={selectedBahan}
           />
         </div>
       </div>
 
-      {selectedItems.length > 0 && (
+      {selectedBahan.length > 0 && (
         <div className="flex flex-col gap-4">
-          <p className={labelStyles}>Jumlah Alat/Bahan yang Dibutuhkan:</p>
+          <p className={labelStyles}>Jumlah bahan yang dibutuhkan:</p>
           {renderItemInputs()}
         </div>
       )}

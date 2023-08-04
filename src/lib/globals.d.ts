@@ -1,9 +1,16 @@
 type Alat = {
   ID_ALAT: string;
   NAMA_ALAT: string;
-  JUMLAH_ALAT: number;
   UNIT_ALAT: string;
-  ALAT_TIDAK_LAYAK: number;
+  detail_alat: IDetailAlat[];
+};
+
+type IDetailAlat = {
+  KODE_ALAT: string;
+  ID_ALAT: string;
+  STATUS: STATUS_ALAT;
+  detail_permintaan: DetailPermintaan | null;
+  alat: Alat;
 };
 
 type PermintaanBarang = {
@@ -59,10 +66,9 @@ type Perbaikan = {
   ID_PERBAIKAN: string;
   KETERANGAN: string;
   TGL_PENGAJUAN: string;
-  ID_ALAT: string;
-  alat: Alat;
-  JUMLAH_ALAT: number;
   STATUS: StatusPerbaikan;
+  CATATAN: string | null;
+  detail_alat: IDetailAlat[];
 };
 
 type User = {
@@ -74,9 +80,8 @@ type User = {
 
 type DetailPermintaan = {
   ID_DETAIL_PERMINTAAN: string;
-  alat: Alat;
+  detail_alat: IDetailAlat;
   bahan: Bahan;
-  JUMLAH_ALAT: number;
   JUMLAH_BAHAN: number;
 };
 
@@ -133,4 +138,12 @@ enum StatusPerbaikan {
 enum StatusTransportasi {
   TERSEDIA = "TERSEDIA",
   DIPAKAI = "DIPAKAI",
+}
+
+enum STATUS_ALAT {
+  DIGUNAKAN = "DIGUNAKAN",
+  TERSEDIA = "TERSEDIA",
+  DIPERBAIKI = "DIPERBAIKI",
+  RUSAK = "RUSAK",
+  PENGAJUAN = "PENGAJUAN",
 }

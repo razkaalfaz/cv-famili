@@ -8,10 +8,13 @@ export function hitungJumlahAlat(alat: Alat[]) {
   const alatRingan = alat?.filter(
     (alat: Alat) => alat?.ID_ALAT.substring(0, 2) === "AR"
   );
+  const alatRusak = alat?.filter((alat: Alat) =>
+    alat?.detail_alat.map((detail) => detail.STATUS === "RUSAK")
+  );
 
-  const alatTidakLayak = alat?.reduce((a, b) => a + b.ALAT_TIDAK_LAYAK, 0);
+  const alatTidakLayak = alatRusak.length;
 
-  const totalAlat = alat?.reduce((a, b) => a + b.JUMLAH_ALAT, 0);
+  const totalAlat = alat?.reduce((a, b) => a + b.detail_alat.length, 0);
 
   return { alatBesar, alatRingan, alatTidakLayak, totalAlat };
 }

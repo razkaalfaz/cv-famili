@@ -32,7 +32,11 @@ async function handler(request: NextRequest) {
     include: {
       detail_permintaan: {
         include: {
-          alat: true,
+          detail_alat: {
+            include: {
+              alat: true,
+            },
+          },
           bahan: true,
         },
       },
@@ -42,18 +46,13 @@ async function handler(request: NextRequest) {
   if (updatePermintaan) {
     const detailPermintaan = updatePermintaan.detail_permintaan;
     for (const detail of detailPermintaan) {
-      if (detail && detail.alat) {
-        await db.alat.update({
+      if (detail && detail.detail_alat) {
+        await db.detail_alat.update({
           where: {
-            ID_ALAT: detail.alat.ID_ALAT,
+            KODE_ALAT: detail.detail_alat.KODE_ALAT,
           },
           data: {
-            ALAT_KELUAR: {
-              increment: detail.JUMLAH_ALAT ?? 0,
-            },
-            JUMLAH_ALAT: {
-              decrement: detail.JUMLAH_ALAT ?? 0,
-            },
+            STATUS: "DIGUNAKAN",
           },
         });
       }

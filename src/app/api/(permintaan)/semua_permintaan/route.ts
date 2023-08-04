@@ -10,7 +10,11 @@ async function handler(request: NextRequest) {
     include: {
       detail_permintaan: {
         include: {
-          alat: true,
+          detail_alat: {
+            include: {
+              alat: true
+            }
+          },
           bahan: true,
         },
       },

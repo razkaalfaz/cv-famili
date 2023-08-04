@@ -12,23 +12,29 @@ async function handler(request: NextRequest) {
     },
     data: {
       STATUS: "DIPERBAIKI",
-      alat: {
-        update: {
+      detail_alat: {
+        updateMany: {
           where: {
-            ID_ALAT: body.PERBAIKAN.ID_ALAT,
+            ID_PERBAIKAN: body.PERBAIKAN.ID_PERBAIKAN,
           },
           data: {
-            ALAT_TIDAK_LAYAK: {
-              decrement: body.PERBAIKAN.JUMLAH_ALAT ?? 0,
-            },
+            STATUS: "TERSEDIA",
           },
         },
+        disconnect: body.PERBAIKAN.detail_alat.map((detail) => ({
+          KODE_ALAT: detail.KODE_ALAT,
+        })),
       },
     },
   });
 
   try {
     if (updateStatusPerbaikan) {
+      await db.perbaikan.delete({
+        where: {
+          ID_PERBAIKAN: body.PERBAIKAN.ID_PERBAIKAN,
+        },
+      });
       return NextResponse.json({
         ok: true,
         message: "Berhasil memverifikasi data perbaikan.",

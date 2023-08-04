@@ -16,10 +16,12 @@ async function handler(request: NextRequest) {
       where: {
         detail_permintaan: {
           some: {
-            alat: {
-              NAMA_ALAT: {
-                contains: body.query,
-                mode: "insensitive",
+            detail_alat: {
+              alat: {
+                NAMA_ALAT: {
+                  contains: body.query,
+                  mode: "insensitive",
+                },
               },
             },
           },
@@ -28,7 +30,11 @@ async function handler(request: NextRequest) {
       include: {
         detail_permintaan: {
           include: {
-            alat: true,
+            detail_alat: {
+              include: {
+                alat: true,
+              },
+            },
             bahan: true,
           },
         },
@@ -51,7 +57,11 @@ async function handler(request: NextRequest) {
       include: {
         detail_permintaan: {
           include: {
-            alat: true,
+            detail_alat: {
+              include: {
+                alat: true,
+              },
+            },
             bahan: true,
           },
         },

@@ -3,14 +3,15 @@ import { NextRequest, NextResponse } from "next/server";
 
 interface RequestBody {
   ID_ALAT: string;
-  JUMLAH_ALAT: string;
   KETERANGAN: string;
+  SELECTED_ALAT: string[];
 }
 
 async function handler(request: NextRequest) {
   const body: RequestBody = await request.json();
 
   const kodifikasiPerbaikan = `PBK-${body.ID_ALAT}`;
+  const currentDate = new Date();
 
   const pengajuanPerbaikan = await db.perbaikan.upsert({
     where: {
@@ -19,35 +20,49 @@ async function handler(request: NextRequest) {
     create: {
       ID_PERBAIKAN: kodifikasiPerbaikan,
       KETERANGAN: body.KETERANGAN,
-      ID_ALAT: body.ID_ALAT,
-      JUMLAH_ALAT: parseInt(body.JUMLAH_ALAT),
+      TGL_PENGAJUAN: currentDate,
+      detail_alat: {
+        connect: body.SELECTED_ALAT.map((kodeAlat) => ({
+          KODE_ALAT: kodeAlat,
+        })),
+      },
     },
     update: {
-      JUMLAH_ALAT: parseInt(body.JUMLAH_ALAT),
-      STATUS: "PENDING",
+      KETERANGAN: body.KETERANGAN,
+      TGL_PENGAJUAN: currentDate,
+      detail_alat: {
+        updateMany: {
+          where: {
+            KODE_ALAT: {
+              in: body.SELECTED_ALAT,
+            },
+          },
+          data: {
+            STATUS: "RUSAK",
+          },
+        },
+        connect: body.SELECTED_ALAT.map((kodeAlat) => ({
+          KODE_ALAT: kodeAlat,
+        })),
+      },
     },
   });
 
   if (pengajuanPerbaikan) {
-    const updateDataAlat = await db.alat.update({
+    await db.detail_alat.updateMany({
       where: {
-        ID_ALAT: body.ID_ALAT,
-      },
-      data: {
-        ALAT_TIDAK_LAYAK: {
-          increment: parseInt(body.JUMLAH_ALAT),
+        KODE_ALAT: {
+          in: body.SELECTED_ALAT,
         },
       },
+      data: {
+        STATUS: "RUSAK",
+      },
     });
-
-    if (updateDataAlat) {
-      return NextResponse.json({
-        ok: true,
-        message: "Berhasil mengajukan perbaikan alat.",
-      });
-    } else {
-      return NextResponse.json({ ok: false, message: "Terjadi kesalahan..." });
-    }
+    return NextResponse.json({
+      ok: true,
+      message: "Berhasil mengajukan perbaikan alat.",
+    });
   } else {
     return NextResponse.json({ ok: false, message: "Terjadi kesalahan..." });
   }

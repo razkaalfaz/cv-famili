@@ -5,7 +5,11 @@ import { NextRequest, NextResponse } from "next/server";
 async function handler(request: NextRequest) {
   const perbaikan = await db.perbaikan.findMany({
     include: {
-      alat: true,
+      detail_alat: {
+        include: {
+          alat: true,
+        },
+      },
     },
   });
   const headersList = headers();
