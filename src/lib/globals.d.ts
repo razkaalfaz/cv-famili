@@ -66,10 +66,9 @@ type Perbaikan = {
   ID_PERBAIKAN: string;
   KETERANGAN: string;
   TGL_PENGAJUAN: string;
-  ID_ALAT: string;
-  alat: Alat;
-  JUMLAH_ALAT: number;
   STATUS: StatusPerbaikan;
+  CATATAN: string | null;
+  detail_alat: IDetailAlat[];
 };
 
 type User = {
