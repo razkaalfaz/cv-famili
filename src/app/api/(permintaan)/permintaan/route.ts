@@ -123,6 +123,20 @@ async function handler(request: NextRequest) {
     const responsePermintaan = await cekPermintaan();
 
     if (responsePermintaan) {
+      await db.detail_alat.updateMany({
+        where: {
+          detail_permintaan: {
+            some: {
+              ID_PERMINTAAN: {
+                contains: responsePermintaan.ID_PERMINTAAN,
+              },
+            },
+          },
+        },
+        data: {
+          STATUS: "PENGAJUAN",
+        },
+      });
       return NextResponse.json({ ok: true, result: responsePermintaan });
     } else {
       return NextResponse.json({ ok: false, result: null });

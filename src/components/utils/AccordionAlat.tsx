@@ -10,6 +10,7 @@ interface ComponentProps {
   selectedAlat: string[];
   uncheckedAlat: string[];
   isEdit: boolean;
+  dataPermintaan: Permintaan | null;
 }
 
 export default function AccordionAlat({
@@ -19,6 +20,7 @@ export default function AccordionAlat({
   uncheckedAlat,
   selectedAlat,
   isEdit,
+  dataPermintaan,
 }: ComponentProps) {
   const [isOpen, setIsOpen] = useState(false);
   const selectedStyles =
@@ -43,11 +45,16 @@ export default function AccordionAlat({
     }
   };
 
+  const alatTersedia = dataAlat.detail_alat.filter(
+    (detail) => detail.STATUS === "TERSEDIA"
+  );
+  const currentAlat = dataPermintaan?.detail_permintaan.map(
+    (detail) => detail.detail_alat
+  );
+
   const showedAlat = isEdit
-    ? dataAlat.detail_alat
-    : dataAlat.detail_alat.filter(
-        (detail) => detail.detail_permintaan === null
-      );
+    ? alatTersedia.concat(currentAlat ?? [])
+    : dataAlat.detail_alat.filter((detail) => detail.STATUS === "TERSEDIA");
   return (
     <div className="w-full flex flex-col rounded-md p-2 border border-gray-300 gap-4">
       <div
@@ -62,7 +69,7 @@ export default function AccordionAlat({
         <>
           <div className="w-full h-px bg-gray-300" />
           <div className="w-full flex flex-col gap-4">
-            {showedAlat.map((detail) => (
+            {alatTersedia.map((detail) => (
               <div
                 key={detail.KODE_ALAT}
                 className={
@@ -75,6 +82,30 @@ export default function AccordionAlat({
                 <p>{detail.KODE_ALAT}</p>
               </div>
             ))}
+
+            {isEdit && (
+              <>
+                <div className="w-full h-px relative bg-gray-300">
+                  <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white">
+                    Alat Dipilih
+                  </p>
+                </div>
+                {currentAlat &&
+                  currentAlat.map((detail) => (
+                    <div
+                      key={detail?.KODE_ALAT}
+                      className={
+                        selectedAlat.includes(detail?.KODE_ALAT)
+                          ? selectedStyles
+                          : basicStyles
+                      }
+                      onClick={() => toggleSelectedAlat(detail?.KODE_ALAT)}
+                    >
+                      <p>{detail?.KODE_ALAT}</p>
+                    </div>
+                  ))}
+              </>
+            )}
           </div>
         </>
       )}

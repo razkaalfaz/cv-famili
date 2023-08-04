@@ -15,12 +15,12 @@ model alat {
 }
 
 model detail_alat {
-  KODE_ALAT         String             @id
+  KODE_ALAT         String              @id
   ID_ALAT           String
-  STATUS            STATUS_ALAT        @default(TERSEDIA)
-  alat              alat?              @relation(fields: [ID_ALAT], references: [ID_ALAT], onDelete: Cascade)
+  STATUS            STATUS_ALAT         @default(TERSEDIA)
+  alat              alat?               @relation(fields: [ID_ALAT], references: [ID_ALAT], onDelete: Cascade)
   perbaikan         perbaikan?
-  detail_permintaan detail_permintaan?
+  detail_permintaan detail_permintaan[]
 }
 
 model perbaikan {
@@ -79,7 +79,7 @@ model detail_permintaan {
   JUMLAH_ALAT          Int?
   JUMLAH_BAHAN         Int?
   ID_PENGEMBALIAN      String?
-  ID_ALAT              String?       @unique
+  ID_ALAT              String?
   ID_BAHAN             String?
   detail_alat          detail_alat?  @relation(fields: [ID_ALAT], references: [KODE_ALAT], onDelete: Cascade)
   bahan                bahan?        @relation(fields: [ID_BAHAN], references: [ID_BAHAN], onDelete: Cascade)
@@ -150,6 +150,7 @@ enum STATUS_TRANSPORTASI {
 
 enum STATUS_ALAT {
   DIGUNAKAN
+  PENGAJUAN
   TERSEDIA
   DIPERBAIKI
   RUSAK

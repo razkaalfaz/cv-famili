@@ -145,10 +145,39 @@ async function handler(request: NextRequest) {
     const updatePermintaan = await cekPermintaan();
 
     if (updatePermintaan) {
-      return NextResponse.json({
-        ok: true,
-        message: "Berhasil mengubah data permintaan.",
+      const updateBarangTersedia = db.detail_alat.updateMany({
+        where: {
+          KODE_ALAT: {
+            in: body.DELETED_BARANG.map((idBarang) => idBarang),
+          },
+        },
+        data: {
+          STATUS: "TERSEDIA",
+        },
       });
+
+      const updateBarangDipakai = db.detail_alat.updateMany({
+        where: {
+          KODE_ALAT: {
+            in: body.SELECTED_ALAT,
+          },
+        },
+        data: {
+          STATUS: "PENGAJUAN",
+        },
+      });
+
+      const response = Promise.all([
+        updateBarangTersedia,
+        updateBarangDipakai,
+      ]).then(() =>
+        NextResponse.json({
+          ok: true,
+          message: "Berhasil mengubah data permintaan.",
+        })
+      );
+
+      return response;
     } else {
       return NextResponse.json({
         ok: false,

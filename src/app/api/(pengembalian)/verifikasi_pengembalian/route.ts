@@ -9,6 +9,7 @@ interface RequestBody {
 
 async function handler(request: NextRequest) {
   const body: RequestBody = await request.json();
+  const currentDate = new Date();
 
   try {
     const updatePermintaan = await db.permintaan.update({
@@ -17,6 +18,7 @@ async function handler(request: NextRequest) {
       },
       data: {
         STATUS: "DIKEMBALIKAN",
+        TGL_PENGEMBALIAN: currentDate,
         transportasi: {
           update: {
             data: {

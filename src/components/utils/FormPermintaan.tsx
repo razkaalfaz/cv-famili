@@ -388,6 +388,7 @@ export default function FormPermintaan({
                 selectedAlat={selectedAlat}
                 setSelectedAlat={setSelectedAlat}
                 key={alat.ID_ALAT}
+                dataPermintaan={dataPermintaan}
               />
             ))}
           </div>
@@ -402,6 +403,7 @@ export default function FormPermintaan({
                 selectedAlat={selectedAlat}
                 setSelectedAlat={setSelectedAlat}
                 key={alat.ID_ALAT}
+                dataPermintaan={null}
               />
             ))}
           </div>
