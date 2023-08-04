@@ -9,7 +9,7 @@ import Loading from "../indikator/Loading";
 import Snackbar from "../snackbar/Snackbar";
 
 interface Inputs {
-  ID_ALAT: string;
+  KODE_ALAT: string;
   JUMLAH_ALAT: number;
   KETERANGAN: string;
 }
@@ -18,6 +18,8 @@ export default function FormPerbaikan() {
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [selectedAlat, setSelectedAlat] = useState<string | null>(null);
+  const [selectedDetail, setSelectedDetail] = useState<string[] | []>([]);
 
   const {
     data: alat,
@@ -30,6 +32,7 @@ export default function FormPerbaikan() {
   });
 
   const pengajuanPerbaikan: SubmitHandler<Inputs> = async (data) => {
+    const { KETERANGAN } = data;
     setIsLoading(true);
     setMessage(null);
     setSuccess(null);
@@ -40,7 +43,11 @@ export default function FormPerbaikan() {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data),
+          body: JSON.stringify({
+            ID_ALAT: selectedAlat,
+            SELECTED_ALAT: selectedDetail,
+            KETERANGAN: KETERANGAN,
+          }),
         }
       );
 
@@ -59,6 +66,56 @@ export default function FormPerbaikan() {
     }
   };
 
+  function showDetailAlat() {
+    if (selectedAlat !== null) {
+      const dataAlat: Alat = alat?.result?.find(
+        (alat: Alat) => alat.ID_ALAT === selectedAlat
+      );
+      const detailAlat = dataAlat.detail_alat.filter(
+        (detail) => detail.STATUS !== "RUSAK"
+      );
+      return (
+        <div className="w-full flex flex-col gap-4">
+          <p className={labelStyles}>Silahkan pilih alat di bawah ini.</p>
+          {detailAlat?.map((detail) => (
+            <div
+              className="flex flex-row gap-2 items-center"
+              key={detail?.KODE_ALAT}
+            >
+              <input
+                type="checkbox"
+                value={detail?.KODE_ALAT}
+                id={detail?.KODE_ALAT}
+                onChange={onDetailAlatChanges}
+              />
+              <label htmlFor={detail?.KODE_ALAT}>{detail?.KODE_ALAT}</label>
+            </div>
+          ))}
+        </div>
+      );
+    } else {
+      return null;
+    }
+  }
+
+  function onAlatChanges(ID_ALAT: string) {
+    setSelectedAlat(ID_ALAT);
+    setSelectedDetail([]);
+  }
+
+  function onDetailAlatChanges(event: React.ChangeEvent<HTMLInputElement>) {
+    const { checked, value } = event.target;
+
+    if (!checked) {
+      setSelectedDetail((prev) => [...prev, value]);
+    } else {
+      const updatedDetail = selectedDetail.filter(
+        (kodeAlat) => kodeAlat !== value
+      );
+      setSelectedDetail(updatedDetail);
+    }
+  }
+
   const inputContainer = "flex flex-col gap-2";
   const labelStyles = "text-sm text-gray-500";
   const inputStyles = "px-2 py-2 outline-none border border-gray-300";
@@ -73,7 +130,11 @@ export default function FormPerbaikan() {
           <label htmlFor="id_alat" className={labelStyles}>
             Alat yang harus diperbaiki
           </label>
-          <select {...register("ID_ALAT")} required className={inputStyles}>
+          <select
+            onChange={(event) => onAlatChanges(event.target.value)}
+            required
+            className={inputStyles}
+          >
             <option value="">
               Silahkan pilih alat yang harus diperbaiki...
             </option>
@@ -92,22 +153,7 @@ export default function FormPerbaikan() {
         </div>
       </div>
 
-      <div className="w-full flex flex-col gap-4">
-        <div className={inputContainer}>
-          <label htmlFor="jumlah_alat" className={labelStyles}>
-            Jumlah alat yang harus diperbaiki
-          </label>
-          <input
-            id="jumlah_alat"
-            className={inputStyles}
-            type="number"
-            required
-            {...register("JUMLAH_ALAT")}
-            min={1}
-            placeholder="1"
-          />
-        </div>
-      </div>
+      {selectedAlat && showDetailAlat()}
 
       <div className="w-full flex flex-col gap-4">
         <div className={inputContainer}>
