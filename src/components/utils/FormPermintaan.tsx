@@ -99,6 +99,9 @@ export default function FormPermintaan({
             mutate("/api/semua_permintaan");
             mutate("/api/permintaan-user/" + session.user.ID_USER);
             reset();
+            setSelectedAlat([]);
+            setSelectedBahan([]);
+            router.push("/permintaan");
           }
         } catch (err) {
           setMessage("Terjadi kesalahan...");
@@ -147,9 +150,7 @@ export default function FormPermintaan({
             setQuantityBahan({});
             mutate("/api/get-permintaan/" + dataPermintaan.ID_PERMINTAAN);
             reset();
-            setTimeout(() => {
-              router.push("/permintaan");
-            }, 3000);
+            router.push("/permintaan");
           }
         } catch (err) {
           setIsLoading(false);
