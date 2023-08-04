@@ -68,6 +68,7 @@ type Perbaikan = {
   TGL_PENGAJUAN: string;
   STATUS: StatusPerbaikan;
   CATATAN: string | null;
+  TINGKAT_KERUSAKAN: TingkatKerusakan;
   detail_alat: IDetailAlat[];
 };
 
@@ -146,4 +147,9 @@ enum STATUS_ALAT {
   DIPERBAIKI = "DIPERBAIKI",
   RUSAK = "RUSAK",
   PENGAJUAN = "PENGAJUAN",
+}
+
+enum TingkatKerusakan {
+  BERAT = "BERAT",
+  RINGAN = "RINGAN",
 }

@@ -68,6 +68,9 @@ export default function ListPerbaikan() {
                   Kode Unit Alat
                 </td>
                 <td className={tdStyle + " text-center font-bold"}>
+                  Tingkat Kerusakan
+                </td>
+                <td className={tdStyle + " text-center font-bold"}>
                   Jumlah Alat
                 </td>
                 <td className={tdStyle + " text-center font-bold"}>
@@ -95,6 +98,11 @@ export default function ListPerbaikan() {
                         <p key={detail.KODE_ALAT}>{detail.KODE_ALAT}</p>
                       ))}
                     </div>
+                  </td>
+                  <td className={tdStyle + " text-center"}>
+                    {perbaikan.TINGKAT_KERUSAKAN === "BERAT"
+                      ? "Rusak Berat"
+                      : "Rusak Ringan"}
                   </td>
                   <td className={tdStyle + " text-center"}>
                     {perbaikan.detail_alat.length}

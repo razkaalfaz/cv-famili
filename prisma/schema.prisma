@@ -25,12 +25,13 @@ model detail_alat {
 }
 
 model perbaikan {
-  ID_PERBAIKAN  String           @id
-  KETERANGAN    String
-  CATATAN       String?
-  STATUS        STATUS_PERBAIKAN @default(PENDING)
-  TGL_PENGAJUAN DateTime         @default(now())
-  detail_alat   detail_alat[]
+  ID_PERBAIKAN      String            @id
+  KETERANGAN        String
+  CATATAN           String?
+  STATUS            STATUS_PERBAIKAN  @default(PENDING)
+  TGL_PENGAJUAN     DateTime          @default(now())
+  TINGKAT_KERUSAKAN TINGKAT_KERUSAKAN
+  detail_alat       detail_alat[]
 }
 
 model bahan {
@@ -153,4 +154,9 @@ enum STATUS_ALAT {
   TERSEDIA
   DIPERBAIKI
   RUSAK
+}
+
+enum TINGKAT_KERUSAKAN {
+  RINGAN
+  BERAT
 }

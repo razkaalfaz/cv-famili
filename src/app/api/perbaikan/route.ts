@@ -5,6 +5,7 @@ interface RequestBody {
   ID_ALAT: string;
   KETERANGAN: string;
   SELECTED_ALAT: string[];
+  TINGKAT_KERUSAKAN: TingkatKerusakan;
 }
 
 async function handler(request: NextRequest) {
@@ -20,6 +21,7 @@ async function handler(request: NextRequest) {
     create: {
       ID_PERBAIKAN: kodifikasiPerbaikan,
       KETERANGAN: body.KETERANGAN,
+      TINGKAT_KERUSAKAN: body.TINGKAT_KERUSAKAN,
       TGL_PENGAJUAN: currentDate,
       detail_alat: {
         connect: body.SELECTED_ALAT.map((kodeAlat) => ({
@@ -30,6 +32,7 @@ async function handler(request: NextRequest) {
     update: {
       KETERANGAN: body.KETERANGAN,
       TGL_PENGAJUAN: currentDate,
+      TINGKAT_KERUSAKAN: body.TINGKAT_KERUSAKAN,
       detail_alat: {
         updateMany: {
           where: {

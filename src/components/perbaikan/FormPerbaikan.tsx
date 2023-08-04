@@ -12,6 +12,7 @@ interface Inputs {
   KODE_ALAT: string;
   JUMLAH_ALAT: number;
   KETERANGAN: string;
+  TINGKAT_KERUSAKAN: string;
 }
 
 export default function FormPerbaikan() {
@@ -32,7 +33,7 @@ export default function FormPerbaikan() {
   });
 
   const pengajuanPerbaikan: SubmitHandler<Inputs> = async (data) => {
-    const { KETERANGAN } = data;
+    const { KETERANGAN, TINGKAT_KERUSAKAN } = data;
     setIsLoading(true);
     setMessage(null);
     setSuccess(null);
@@ -47,6 +48,7 @@ export default function FormPerbaikan() {
             ID_ALAT: selectedAlat,
             SELECTED_ALAT: selectedDetail,
             KETERANGAN: KETERANGAN,
+            TINGKAT_KERUSAKAN: TINGKAT_KERUSAKAN,
           }),
         }
       );
@@ -91,6 +93,23 @@ export default function FormPerbaikan() {
               <label htmlFor={detail?.KODE_ALAT}>{detail?.KODE_ALAT}</label>
             </div>
           ))}
+
+          <div className={inputContainer}>
+            <label htmlFor="tingkat_kerusakan" className={labelStyles}>
+              Tingkat Kerusakan
+            </label>
+            <select
+              required
+              className={inputStyles}
+              {...register("TINGKAT_KERUSAKAN")}
+            >
+              <option value="">
+                Silahkan pilih tingkat kerusakan pada alat...
+              </option>
+              <option value="BERAT">Berat</option>
+              <option value="RINGAN">Ringan</option>
+            </select>
+          </div>
         </div>
       );
     } else {
@@ -106,7 +125,7 @@ export default function FormPerbaikan() {
   function onDetailAlatChanges(event: React.ChangeEvent<HTMLInputElement>) {
     const { checked, value } = event.target;
 
-    if (!checked) {
+    if (checked) {
       setSelectedDetail((prev) => [...prev, value]);
     } else {
       const updatedDetail = selectedDetail.filter(
