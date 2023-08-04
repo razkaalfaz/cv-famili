@@ -134,6 +134,9 @@ export default function DetailPerbaikan({
                     Kode Unit Alat
                   </td>
                   <td className="border border-gray-300 px-2 py-2">
+                    Tingkat Kerusakan
+                  </td>
+                  <td className="border border-gray-300 px-2 py-2">
                     Jumlah Alat
                   </td>
                   <td className="border border-gray-300 px-2 py-2">
@@ -152,6 +155,11 @@ export default function DetailPerbaikan({
                         <p key={detail.KODE_ALAT}>{detail.KODE_ALAT}</p>
                       ))}
                     </div>
+                  </td>
+                  <td className="px-2 py-2 border border-gray-300 text-center">
+                    {perbaikan.TINGKAT_KERUSAKAN === "BERAT"
+                      ? "Rusak Berat"
+                      : "Rusak Ringan"}
                   </td>
                   <td className="px-2 py-2 border border-gray-300 text-center">
                     {perbaikan.detail_alat.length}
