@@ -16,6 +16,11 @@ async function handler(request: NextRequest) {
       _max: {
         ID_ALAT: true,
       },
+      where: {
+        ID_ALAT: {
+          contains: body.jenisAlat,
+        },
+      },
     });
 
     const maxValue = currentAlat._max.ID_ALAT;

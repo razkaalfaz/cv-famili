@@ -267,12 +267,18 @@ export default function ListAlat({ setSuccess, setMessage }: ComponentProps) {
                     <>
                       <td className="border border-gray-300 px-2 py-2">
                         <div className="w-full flex flex-row items-center justify-center gap-2">
-                          <Button
-                            variants="ACCENT"
-                            onClick={() => editAlat(alat.ID_ALAT, alat)}
+                          <Link
+                            href={"/detail_alat/" + alat.ID_ALAT}
+                            className="p-2 rounded-md bg-green-950 text-white grid place-items-center"
                           >
-                            <PencilIcon className="w-4 h-4 text-white" />
-                          </Button>
+                            Detail
+                          </Link>
+                          <Link
+                            href={"/barang/edit_alat/" + alat.ID_ALAT}
+                            className="p-2 rounded-md bg-orange-500 text-white grid place-items-center"
+                          >
+                            <PencilIcon className="w-4 h-4" />
+                          </Link>
                           <Button
                             variants="ERROR"
                             onClick={() => hapusAlat(alat.ID_ALAT)}
