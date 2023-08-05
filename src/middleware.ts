@@ -13,5 +13,9 @@ export const config = {
     "/users",
     "/pengajuan_alat_baru",
     "/laporan_pengajuan_alat/:path*",
+    "/detail_alat/:path*",
+    "/laporan_alat/:path*",
+    "/armada/:path*",
+    "/transportasi/:path*",
   ],
 };

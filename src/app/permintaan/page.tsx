@@ -112,7 +112,7 @@ export default function Permintaan() {
     if (dataPermintaan) {
       if (dataPermintaan.result.length > 0) {
         return (
-          <div className="w-full px-8 py-8 flex flex-col gap-8">
+          <div className="w-full px-8 py-8 flex flex-col gap-8 overflow-hidden">
             {dataPermintaan.result.map(
               (permintaan: Permintaan, index: number) => (
                 <div
@@ -125,301 +125,367 @@ export default function Permintaan() {
                   {permintaan?.user?.NAME && (
                     <b>Permintaan dari: {permintaan?.user?.NAME}</b>
                   )}
-                  <table className="w-full">
-                    <thead>
-                      <tr>
-                        {VARIABEL_PERMINTAAN.map((variabel) => (
-                          <td
-                            className="px-2 py-2 bg-orange-500 text-white text-center border border-gray-300 font-bold"
-                            key={variabel.id}
-                          >
-                            {variabel.name}
-                          </td>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td className="px-2 py-2 border border-gray-300 text-center">
-                          {index + 1}
-                        </td>
-                        <td className="px-2 py-2 border border-gray-300">
-                          {permintaan.ID_PERMINTAAN}
-                        </td>
-                        <td className="px-2 py-2 border border-gray-300">
-                          {permintaan.NAMA_PROYEK}
-                        </td>
-                        <td className="px-2 py-2 border border-gray-300">
-                          {permintaan.LOKASI_PROYEK}
-                        </td>
-                        <td className="px-2 py-2 border border-gray-300">
-                          {permintaan.detail_permintaan.map(
-                            (detailPermintaan) => (
-                              <>
-                                {detailPermintaan.detail_alat && (
-                                  <div
-                                    key={detailPermintaan.ID_DETAIL_PERMINTAAN}
-                                    className="flex flex-row gap-2 items-center"
-                                  >
-                                    <p>
-                                      {detailPermintaan?.detail_alat?.KODE_ALAT}
+                  <div className="inline-block min-w-full">
+                    <div className="overflow-x-auto">
+                      <table className="min-w-full">
+                        <thead className="table-header-group bg-orange-500 text-white text-center font-bold">
+                          <tr>
+                            <td className="px-2 py-2 border border-gray-300">
+                              No.
+                            </td>
+                            <td className="shrink-0 whitespace-nowrap px-2 py-2 border border-gray-300">
+                              ID Permintaan
+                            </td>
+                            <td className="shrink-0 whitespace-nowrap px-2 py-2 border border-gray-300">
+                              Nama Proyek
+                            </td>
+                            <td className="shrink-0 whitespace-nowrap px-2 py-2 border border-gray-300">
+                              Lokasi Proyek
+                            </td>
+                            {permintaan.detail_permintaan
+                              .map((detail) => detail.detail_alat !== null)
+                              .includes(true) && (
+                              <td className="shrink-0 whitespace-nowrap px-2 py-2 border border-gray-300">
+                                Alat
+                              </td>
+                            )}
+                            {permintaan.detail_permintaan
+                              .map((detail) => detail.bahan !== null)
+                              .includes(true) && (
+                              <td className="shrink-0 whitespace-nowrap px-2 py-2 border border-gray-300">
+                                Bahan
+                              </td>
+                            )}
+                            <td className="shrink-0 whitespace-nowrap px-2 py-2 border border-gray-300">
+                              Tanggal Penggunaan
+                            </td>
+                            <td className="shrink-0 whitespace-nowrap px-2 py-2 border border-gray-300">
+                              Tanggal Pengembalian
+                            </td>
+                            <td className="shrink-0 whitespace-nowrap px-2 py-2 border border-gray-300">
+                              Status Permintaan
+                            </td>
+                            <td className="shrink-0 whitespace-nowrap px-2 py-2 border border-gray-300">
+                              Aksi
+                            </td>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td className="whitespace-nowrap p-2 text-center border border-gray-300">
+                              {index + 1}
+                            </td>
+                            <td className="whitespace-nowrap p-2 border border-gray-300">
+                              {permintaan.ID_PERMINTAAN}
+                            </td>
+                            <td className="whitespace-nowrap p-2 border border-gray-300">
+                              {permintaan.NAMA_PROYEK}
+                            </td>
+                            <td className="whitespace-nowrap p-2 border border-gray-300">
+                              {permintaan.LOKASI_PROYEK}
+                            </td>
+                            {permintaan.detail_permintaan
+                              .map((detail) => detail.detail_alat !== null)
+                              .includes(true) && (
+                              <td className="whitespace-nowrap p-2 border border-gray-300 w-max shrink-0">
+                                {permintaan.detail_permintaan.map(
+                                  (detailPermintaan) => (
+                                    <>
+                                      {detailPermintaan.detail_alat && (
+                                        <div
+                                          key={
+                                            detailPermintaan.ID_DETAIL_PERMINTAAN
+                                          }
+                                          className="flex flex-row gap-2 items-center"
+                                        >
+                                          <p>
+                                            {
+                                              detailPermintaan?.detail_alat
+                                                ?.KODE_ALAT
+                                            }{" "}
+                                            -{" "}
+                                            {
+                                              detailPermintaan?.detail_alat
+                                                ?.alat?.NAMA_ALAT
+                                            }
+                                          </p>
+                                        </div>
+                                      )}
+                                    </>
+                                  )
+                                )}
+                              </td>
+                            )}
+                            {permintaan.detail_permintaan
+                              .map((detail) => detail.bahan !== null)
+                              .includes(true) && (
+                              <td className="whitespace-nowrap p-2 border border-gray-300">
+                                {permintaan.detail_permintaan.map(
+                                  (detailPermintaan) => (
+                                    <>
+                                      {detailPermintaan.bahan && (
+                                        <div
+                                          key={
+                                            detailPermintaan.ID_DETAIL_PERMINTAAN
+                                          }
+                                          className="flex flex-row gap-2 items-center"
+                                        >
+                                          <p>
+                                            {detailPermintaan.bahan.NAMA_BAHAN}{" "}
+                                            - {detailPermintaan.JUMLAH_BAHAN}{" "}
+                                            {detailPermintaan.bahan.UNIT_BAHAN}
+                                          </p>
+                                        </div>
+                                      )}
+                                    </>
+                                  )
+                                )}
+                              </td>
+                            )}
+                            <td className="whitespace-nowrap p-2 text-center border border-gray-300">
+                              {convertToDate(permintaan.TGL_PENGGUNAAN)}
+                            </td>
+                            <td className="whitespace-nowrap p-2 text-center border border-gray-300">
+                              {convertToDate(permintaan.TGL_PENGEMBALIAN)}
+                            </td>
+                            <td className="whitespace-nowrap p-2 text-center border border-gray-300">
+                              {permintaan.STATUS}
+                            </td>
+                            {session?.user.ROLE === "USER" ? (
+                              <td className="whitespace-nowrap p-2 text-center border border-gray-300">
+                                <div className="flex flex-row items-center gap-2">
+                                  {permintaan.STATUS === "PENDING" && (
+                                    <>
+                                      <Link
+                                        href={
+                                          "/permintaan/edit/" +
+                                          permintaan.ID_PERMINTAAN
+                                        }
+                                        target="__blank"
+                                        className="px-2 py-2 grid place-items-center bg-green-950 text-white rounded-md"
+                                      >
+                                        <PencilIcon className="w-4 h-4 text-white" />
+                                      </Link>
+                                      <Button
+                                        variants="ERROR"
+                                        onClick={() =>
+                                          hapusPermintaan(permintaan)
+                                        }
+                                      >
+                                        <TrashIcon className="w-4 h-4 text-white" />
+                                      </Button>
+                                    </>
+                                  )}
+                                  {permintaan.STATUS === "DIVERIFIKASI" && (
+                                    <p className="text-gray-500">
+                                      Pengajuan sedang diverifikasi...
                                     </p>
-                                  </div>
-                                )}
-                              </>
-                            )
-                          )}
-                        </td>
-                        <td className="px-2 py-2 border border-gray-300">
-                          {permintaan.detail_permintaan.map(
-                            (detailPermintaan) => (
-                              <>
-                                {detailPermintaan.bahan && (
-                                  <div
-                                    key={detailPermintaan.ID_DETAIL_PERMINTAAN}
-                                    className="flex flex-row gap-2 items-center"
-                                  >
-                                    <p>{detailPermintaan?.bahan?.NAMA_BAHAN}</p>
-                                    <div className="w-4 h-px bg-gray-300" />
-                                    <p>{detailPermintaan?.JUMLAH_BAHAN}</p>
-                                    <p>{detailPermintaan?.bahan?.UNIT_BAHAN}</p>
-                                  </div>
-                                )}
-                              </>
-                            )
-                          )}
-                        </td>
-                        <td className="px-2 py-2 border border-gray-300 text-center">
-                          {convertToDate(permintaan.TGL_PENGGUNAAN)}
-                        </td>
-                        <td className="px-2 py-2 border border-gray-300 text-center">
-                          {convertToDate(permintaan.TGL_PENGEMBALIAN)}
-                        </td>
-                        <td className="px-2 py-2 border border-gray-300 text-center">
-                          {permintaan.STATUS}
-                        </td>
-                        {session?.user.ROLE === "USER" ? (
-                          <td className="px-2 py-2 border border-gray-300 text-center">
-                            <div className="flex flex-row items-center gap-2">
-                              {permintaan.STATUS === "PENDING" && (
-                                <>
-                                  <Link
-                                    href={
-                                      "/permintaan/edit/" +
-                                      permintaan.ID_PERMINTAAN
-                                    }
-                                    target="__blank"
-                                    className="px-2 py-2 grid place-items-center bg-green-950 text-white rounded-md"
-                                  >
-                                    <PencilIcon className="w-4 h-4 text-white" />
-                                  </Link>
-                                  <Button
-                                    variants="ERROR"
-                                    onClick={() => hapusPermintaan(permintaan)}
-                                  >
-                                    <TrashIcon className="w-4 h-4 text-white" />
-                                  </Button>
-                                </>
-                              )}
-                              {permintaan.STATUS === "DIVERIFIKASI" && (
-                                <p className="text-gray-500">
-                                  Pengajuan sedang diverifikasi...
-                                </p>
-                              )}
-                              {permintaan.STATUS === "DIKIRIM" && (
-                                <Button
-                                  variants="ACCENT"
-                                  onClick={() => terimaPermintaan(permintaan)}
-                                >
-                                  Barang Diterima
-                                </Button>
-                              )}
-                              {permintaan.STATUS === "DITERIMA" && (
-                                <div className="flex flex-col gap-2">
-                                  <Button
-                                    variants="ACCENT"
-                                    onClick={() =>
-                                      tambahWaktuPengembalian(permintaan)
-                                    }
-                                    fullWidth
-                                  >
-                                    Perpanjang Waktu Pengembalian
-                                  </Button>
-                                  <Button
-                                    variants="PRIMARY"
-                                    onClick={() =>
-                                      pengembalianBarang(
-                                        permintaan.ID_PERMINTAAN
-                                      )
-                                    }
-                                    fullWidth
-                                  >
-                                    Kembalikan Barang
-                                  </Button>
+                                  )}
+                                  {permintaan.STATUS === "DIKIRIM" && (
+                                    <Button
+                                      variants="ACCENT"
+                                      onClick={() =>
+                                        terimaPermintaan(permintaan)
+                                      }
+                                    >
+                                      Barang Diterima
+                                    </Button>
+                                  )}
+                                  {permintaan.STATUS === "DITERIMA" && (
+                                    <div className="flex flex-col gap-2">
+                                      <Button
+                                        variants="ACCENT"
+                                        onClick={() =>
+                                          tambahWaktuPengembalian(permintaan)
+                                        }
+                                        fullWidth
+                                      >
+                                        Perpanjang Waktu Pengembalian
+                                      </Button>
+                                      <Button
+                                        variants="PRIMARY"
+                                        onClick={() =>
+                                          pengembalianBarang(
+                                            permintaan.ID_PERMINTAAN
+                                          )
+                                        }
+                                        fullWidth
+                                      >
+                                        Kembalikan Barang
+                                      </Button>
+                                    </div>
+                                  )}
+                                  {permintaan.STATUS === "PENGEMBALIAN" && (
+                                    <p className="text-gray-500">
+                                      Pengembalian sedang diverifikasi
+                                    </p>
+                                  )}
+                                  {permintaan.STATUS === "DIKEMBALIKAN" && (
+                                    <b className="text-green-950">
+                                      Barang telah dikembalikan.
+                                    </b>
+                                  )}
+                                  {permintaan.STATUS === "DITOLAK" && (
+                                    <p className="text-gray-500">
+                                      Permintaan telah ditolak
+                                    </p>
+                                  )}
                                 </div>
-                              )}
-                              {permintaan.STATUS === "PENGEMBALIAN" && (
-                                <p className="text-gray-500">
-                                  Pengembalian sedang diverifikasi
-                                </p>
-                              )}
-                              {permintaan.STATUS === "DIKEMBALIKAN" && (
-                                <b className="text-green-950">
-                                  Barang telah dikembalikan.
-                                </b>
-                              )}
-                              {permintaan.STATUS === "DITOLAK" && (
-                                <p className="text-gray-500">
-                                  Permintaan telah ditolak
-                                </p>
-                              )}
-                            </div>
-                          </td>
-                        ) : session?.user.ROLE === "ADMIN" ? (
-                          <td className="px-2 py-2 border border-gray-300 text-center">
-                            <div className="w-full flex flex-col gap-2">
-                              {permintaan.STATUS === "PENDING" && (
-                                <>
-                                  <Button
-                                    fullWidth
-                                    variants="ACCENT"
-                                    onClick={() =>
-                                      verifikasiPermintaan(
-                                        permintaan.ID_PERMINTAAN,
-                                        "DIVERIFIKASI"
-                                      )
-                                    }
-                                  >
-                                    Verifikasi
-                                  </Button>
-                                  <Button
-                                    fullWidth
-                                    variants="ERROR"
-                                    onClick={() =>
-                                      tolakPermintaan(permintaan.ID_PERMINTAAN)
-                                    }
-                                  >
-                                    TOLAK
-                                  </Button>
-                                </>
-                              )}
-                              {permintaan.STATUS === "PENGEMBALIAN" && (
-                                <p className="text-gray-500">
-                                  Pengembalian barang sedang diverifikasi oleh
-                                  petugas peralatan
-                                </p>
-                              )}
-                              {permintaan.STATUS === "DIKIRIM" && (
-                                <p className="text-gray-500">
-                                  Barang sedang dikirim oleh petugas peralatan
-                                </p>
-                              )}
-                              {permintaan.STATUS === "DIKEMBALIKAN" && (
-                                <b className="text-green-950">
-                                  Permintaan telah selesai.
-                                </b>
-                              )}
-                              {permintaan.STATUS === "DITOLAK" && (
-                                <p className="text-gray-500">
-                                  Permintaan telah ditolak
-                                </p>
-                              )}
-                              {permintaan.STATUS === "DITERIMA" && (
-                                <p className="text-gray-500">
-                                  Permintaan telah diterima kepala proyek
-                                </p>
-                              )}
-                              {permintaan.STATUS === "DIVERIFIKASI" && (
-                                <p className="text-gray-500">
-                                  Permintaan telah dikirimkan ke petugas
-                                  peralatan
-                                </p>
-                              )}
-                            </div>
-                          </td>
-                        ) : (
-                          <td className="px-2 py-2 border border-gray-300 text-center">
-                            <div className="w-full flex flex-col gap-2">
-                              {permintaan.STATUS === "PENDING" && (
-                                <p className="text-gray-500">
-                                  Permintaan sedang ditinjau oleh Admin.
-                                </p>
-                              )}
-                              {permintaan.STATUS === "DIVERIFIKASI" && (
-                                <>
-                                  <Button
-                                    fullWidth
-                                    variants="ACCENT"
-                                    onClick={() => kirimPermintaan(permintaan)}
-                                  >
-                                    Kirim
-                                  </Button>
-                                  <Button
-                                    fullWidth
-                                    variants="ERROR"
-                                    onClick={() =>
-                                      tolakPermintaan(permintaan.ID_PERMINTAAN)
-                                    }
-                                  >
-                                    Tolak
-                                  </Button>
-                                </>
-                              )}
-                              {permintaan.STATUS === "PENGEMBALIAN" && (
-                                <Button
-                                  fullWidth
-                                  variants="ACCENT"
-                                  onClick={() =>
-                                    verifikasiPengembalian(permintaan)
-                                  }
-                                >
-                                  Ambil Barang Permintaan
-                                </Button>
-                              )}
+                              </td>
+                            ) : session?.user.ROLE === "ADMIN" ? (
+                              <td className="whitespace-nowrap p-2 text-center border border-gray-300">
+                                <div className="w-full flex flex-col gap-2">
+                                  {permintaan.STATUS === "PENDING" && (
+                                    <>
+                                      <Button
+                                        fullWidth
+                                        variants="ACCENT"
+                                        onClick={() =>
+                                          verifikasiPermintaan(
+                                            permintaan.ID_PERMINTAAN,
+                                            "DIVERIFIKASI"
+                                          )
+                                        }
+                                      >
+                                        Verifikasi
+                                      </Button>
+                                      <Button
+                                        fullWidth
+                                        variants="ERROR"
+                                        onClick={() =>
+                                          tolakPermintaan(
+                                            permintaan.ID_PERMINTAAN
+                                          )
+                                        }
+                                      >
+                                        TOLAK
+                                      </Button>
+                                    </>
+                                  )}
+                                  {permintaan.STATUS === "PENGEMBALIAN" && (
+                                    <p className="text-gray-500">
+                                      Pengembalian barang sedang diverifikasi
+                                      oleh petugas peralatan
+                                    </p>
+                                  )}
+                                  {permintaan.STATUS === "DIKIRIM" && (
+                                    <p className="text-gray-500">
+                                      Barang sedang dikirim oleh petugas
+                                      peralatan
+                                    </p>
+                                  )}
+                                  {permintaan.STATUS === "DIKEMBALIKAN" && (
+                                    <b className="text-green-950">
+                                      Permintaan telah selesai.
+                                    </b>
+                                  )}
+                                  {permintaan.STATUS === "DITOLAK" && (
+                                    <p className="text-gray-500">
+                                      Permintaan telah ditolak
+                                    </p>
+                                  )}
+                                  {permintaan.STATUS === "DITERIMA" && (
+                                    <p className="text-gray-500">
+                                      Permintaan telah diterima kepala proyek
+                                    </p>
+                                  )}
+                                  {permintaan.STATUS === "DIVERIFIKASI" && (
+                                    <p className="text-gray-500">
+                                      Permintaan telah dikirimkan ke petugas
+                                      peralatan
+                                    </p>
+                                  )}
+                                </div>
+                              </td>
+                            ) : (
+                              <td className="whitespace-nowrap p-2 text-center border border-gray-300">
+                                <div className="w-full flex flex-col gap-2">
+                                  {permintaan.STATUS === "PENDING" && (
+                                    <p className="text-gray-500">
+                                      Permintaan sedang ditinjau oleh Admin.
+                                    </p>
+                                  )}
+                                  {permintaan.STATUS === "DIVERIFIKASI" && (
+                                    <>
+                                      <Button
+                                        fullWidth
+                                        variants="ACCENT"
+                                        onClick={() =>
+                                          kirimPermintaan(permintaan)
+                                        }
+                                      >
+                                        Kirim
+                                      </Button>
+                                      <Button
+                                        fullWidth
+                                        variants="ERROR"
+                                        onClick={() =>
+                                          tolakPermintaan(
+                                            permintaan.ID_PERMINTAAN
+                                          )
+                                        }
+                                      >
+                                        Tolak
+                                      </Button>
+                                    </>
+                                  )}
+                                  {permintaan.STATUS === "PENGEMBALIAN" && (
+                                    <Button
+                                      fullWidth
+                                      variants="ACCENT"
+                                      onClick={() =>
+                                        verifikasiPengembalian(permintaan)
+                                      }
+                                    >
+                                      Ambil Barang Permintaan
+                                    </Button>
+                                  )}
 
-                              {permintaan.STATUS === "PENGAMBILAN" && (
-                                <Button
-                                  fullWidth
-                                  variants="ACCENT"
-                                  onClick={() =>
-                                    pengembalianSelesai(permintaan)
-                                  }
-                                >
-                                  Barang Diterima
-                                </Button>
-                              )}
-                              {permintaan.STATUS === "DIKEMBALIKAN" && (
-                                <b className="text-green-950">
-                                  Permintaan telah selesai.
-                                </b>
-                              )}
-                              {permintaan.STATUS === "DITOLAK" && (
-                                <p className="text-gray-500">
-                                  Permintaan telah ditolak
-                                </p>
-                              )}
-                              {permintaan.STATUS === "DIKEMBALIKAN" && (
-                                <b className="text-green-950">
-                                  Permintaan telah selesai.
-                                </b>
-                              )}
-                              {permintaan.STATUS === "DITERIMA" && (
-                                <p className="text-gray-500">
-                                  Permintaan telah diterima kepala proyek
-                                </p>
-                              )}
-                              {permintaan.STATUS === "DIKIRIM" && (
-                                <p className="text-gray-500">
-                                  Barang sedang dikirimkan oleh petugas
-                                  peralatan
-                                </p>
-                              )}
-                            </div>
-                          </td>
-                        )}
-                      </tr>
-                    </tbody>
-                  </table>
+                                  {permintaan.STATUS === "PENGAMBILAN" && (
+                                    <Button
+                                      fullWidth
+                                      variants="ACCENT"
+                                      onClick={() =>
+                                        pengembalianSelesai(permintaan)
+                                      }
+                                    >
+                                      Barang Diterima
+                                    </Button>
+                                  )}
+                                  {permintaan.STATUS === "DIKEMBALIKAN" && (
+                                    <b className="text-green-950">
+                                      Permintaan telah selesai.
+                                    </b>
+                                  )}
+                                  {permintaan.STATUS === "DITOLAK" && (
+                                    <p className="text-gray-500">
+                                      Permintaan telah ditolak
+                                    </p>
+                                  )}
+                                  {permintaan.STATUS === "DIKEMBALIKAN" && (
+                                    <b className="text-green-950">
+                                      Permintaan telah selesai.
+                                    </b>
+                                  )}
+                                  {permintaan.STATUS === "DITERIMA" && (
+                                    <p className="text-gray-500">
+                                      Permintaan telah diterima kepala proyek
+                                    </p>
+                                  )}
+                                  {permintaan.STATUS === "DIKIRIM" && (
+                                    <p className="text-gray-500">
+                                      Barang sedang dikirimkan oleh petugas
+                                      peralatan
+                                    </p>
+                                  )}
+                                </div>
+                              </td>
+                            )}
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
                   {permintaan?.pengembalian && (
                     <div className="w-full flex flex-col gap-2">
                       <p>
