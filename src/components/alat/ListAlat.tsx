@@ -153,6 +153,16 @@ export default function ListAlat({ setSuccess, setMessage }: ComponentProps) {
                   <td className="text-center border border-gray-300 px-2 py-2">
                     <p>{alat.UNIT_ALAT}</p>
                   </td>
+                  {session?.user?.ROLE === "PERALATAN" && (
+                    <td className="border border-gray-300 px-2 py-2">
+                      <Link
+                        href={"/detail_alat/" + alat.ID_ALAT}
+                        className="p-2 rounded-md bg-green-950 text-white grid place-items-center"
+                      >
+                        Detail
+                      </Link>
+                    </td>
+                  )}
                   {session?.user?.ROLE === "ADMIN" && (
                     <>
                       <td className="border border-gray-300 px-2 py-2">
@@ -162,6 +172,12 @@ export default function ListAlat({ setSuccess, setMessage }: ComponentProps) {
                             className="p-2 rounded-md bg-green-950 text-white grid place-items-center"
                           >
                             Detail
+                          </Link>
+                          <Link
+                            href={"/barang/edit_alat/" + alat.ID_ALAT}
+                            className="p-2 rounded-md bg-orange-500 text-white grid place-items-center"
+                          >
+                            <PencilIcon className="w-4 h-4" />
                           </Link>
                           <Button
                             variants="ERROR"
