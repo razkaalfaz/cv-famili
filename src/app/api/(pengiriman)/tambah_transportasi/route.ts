@@ -3,9 +3,8 @@ import { idPrefixMaker } from "@/lib/helper";
 import { NextRequest, NextResponse } from "next/server";
 
 interface RequestBody {
-  NAMA_TRANSPORTASI: string;
   ID_ARMADA: string;
-  JUMLAH_TRANSPORTASI: number;
+  TRANSPORTASI: ITransportasi[];
 }
 
 async function handler(request: NextRequest) {
@@ -23,23 +22,15 @@ async function handler(request: NextRequest) {
       maxValue?.substring(maxValue?.length - 3, maxValue?.length)
     );
 
-    const createManyTransportations = () => {
-      let transportasi = [];
-      for (let i = 0; i < body.JUMLAH_TRANSPORTASI; i++) {
-        transportasi.push({
-          ID_TRANSPORTASI: `TP${idPrefixMaker(
-            urutan ? urutan + 1 + i : i + 1
-          )}`,
-          NAMA_TRANSPORTASI: body.NAMA_TRANSPORTASI,
-          ID_ARMADA: body.ID_ARMADA,
-        });
-      }
-
-      return transportasi;
-    };
-
     const newTransportations = await db.transportasi.createMany({
-      data: createManyTransportations(),
+      data: body.TRANSPORTASI.map((transportasi, index: number) => ({
+        ID_ARMADA: body.ID_ARMADA,
+        NAMA_TRANSPORTASI: transportasi.namaTransportasi,
+        PLAT_NOMOR: transportasi.platNomor,
+        ID_TRANSPORTASI: `TP${idPrefixMaker(
+          urutan ? urutan + index + 1 : index + 1
+        )}`,
+      })),
     });
 
     if (newTransportations) {

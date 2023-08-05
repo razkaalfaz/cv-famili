@@ -3,23 +3,28 @@
 import Button from "@/components/button/Button";
 import Snackbar from "@/components/snackbar/Snackbar";
 import { fetcher } from "@/lib/helper";
+import { MinusIcon, PlusIcon } from "@heroicons/react/24/solid";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import useSWR from "swr";
 
 interface Inputs {
-  NAMA_TRANSPORTASI: string;
   ID_ARMADA: string;
-  JUMLAH_TRANSPORTASI: number;
 }
 
 export default function TambahTransportasi() {
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [jumlahTransportasi, setJumlahTransportasi] = useState(1);
+  const [dataTransportasi, setDataTransportasi] = useState<ITransportasi[]>([
+    { namaTransportasi: "", platNomor: "" },
+  ]);
   const { handleSubmit, reset, register } = useForm<Inputs>({
     mode: "onChange",
   });
+  const router = useRouter();
 
   const {
     data: armada,
@@ -32,13 +37,17 @@ export default function TambahTransportasi() {
     setMessage(null);
     setSuccess(null);
 
+    const { ID_ARMADA } = data;
     try {
       const res = await fetch(
         process.env.NEXT_PUBLIC_API_TAMBAH_TRANSPORTASI!,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data),
+          body: JSON.stringify({
+            ID_ARMADA: ID_ARMADA,
+            TRANSPORTASI: dataTransportasi,
+          }),
         }
       );
 
@@ -50,11 +59,51 @@ export default function TambahTransportasi() {
       } else {
         setIsLoading(false);
         setSuccess(response.message);
+        router.push("/transportasi");
         reset();
       }
     } catch (err) {
       console.error(err);
     }
+  };
+
+  const handleJumlahTransportasiChange = (value: number) => {
+    const newJumlahTransportasi = jumlahTransportasi + value;
+    setJumlahTransportasi(
+      newJumlahTransportasi > 0 ? newJumlahTransportasi : 0
+    );
+
+    setDataTransportasi((prevData) => {
+      const newDataTransportasi = prevData.slice(
+        0,
+        Math.min(prevData.length, newJumlahTransportasi)
+      );
+
+      if (newJumlahTransportasi > prevData.length) {
+        return [
+          ...newDataTransportasi,
+          ...Array(newJumlahTransportasi - prevData.length).fill({
+            nama: "",
+            platNomor: "",
+          }),
+        ];
+      }
+
+      return newDataTransportasi;
+    });
+  };
+
+  const handleDataTransportasiChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    index: number
+  ) => {
+    const { name, value } = event.target;
+
+    setDataTransportasi((prevData) =>
+      prevData.map((data, i) =>
+        i === index ? { ...data, [name]: value } : data
+      )
+    );
   };
 
   const inputContainerStyles = "flex flex-col gap-2";
@@ -77,25 +126,6 @@ export default function TambahTransportasi() {
       >
         <div className={inputContainerStyles}>
           <div className={labelContainerStyles}>
-            <label htmlFor="nama_transportasi" className={labelStyles}>
-              Nama Transportasi
-            </label>
-            <p className={subtitleStyles}>
-              Silahkan isi dengan nama tranportasi seperti: truk, pickup, dll.
-            </p>
-          </div>
-          <input
-            className={inputStyles}
-            type="text"
-            required
-            id="nama_transportasi"
-            placeholder="Nama transportasi..."
-            {...register("NAMA_TRANSPORTASI")}
-          />
-        </div>
-
-        <div className={inputContainerStyles}>
-          <div className={labelContainerStyles}>
             <label htmlFor="jumlah_transportasi" className={labelStyles}>
               Jumlah Transportasi
             </label>
@@ -103,18 +133,58 @@ export default function TambahTransportasi() {
               Silahkan isi dengan jumlah transportasi yang tersedia.
             </p>
           </div>
-          <input
-            className={inputStyles}
-            type="number"
-            min={1}
-            required
-            id="jumlah_transportasi"
-            placeholder="1"
-            {...register("JUMLAH_TRANSPORTASI", {
-              valueAsNumber: true,
-            })}
-          />
+          <div className="w-full flex flex-row gap-2 items-center">
+            <input
+              className={inputStyles}
+              type="number"
+              min={1}
+              value={jumlahTransportasi}
+              required
+              id="jumlah_transportasi"
+              placeholder="1"
+              disabled
+            />
+            <Button
+              type="button"
+              variants="ACCENT"
+              onClick={() => handleJumlahTransportasiChange(1)}
+            >
+              <PlusIcon className="w-4 h-4" />
+            </Button>
+            <Button
+              type="button"
+              variants="ERROR"
+              onClick={() => handleJumlahTransportasiChange(-1)}
+            >
+              <MinusIcon className="w-4 h-4" />
+            </Button>
+          </div>
         </div>
+
+        {dataTransportasi.map((data, index) => (
+          <div key={index}>
+            <div className="w-full flex flex-row gap-2 items-center">
+              <input
+                type="text"
+                name="namaTransportasi"
+                placeholder="Nama transportasi..."
+                value={data.namaTransportasi}
+                onChange={(event) => handleDataTransportasiChange(event, index)}
+                required
+                className={inputStyles}
+              />
+              <input
+                type="text"
+                name="platNomor"
+                placeholder="Plat nomor..."
+                value={data.platNomor}
+                onChange={(event) => handleDataTransportasiChange(event, index)}
+                required
+                className={inputStyles}
+              />
+            </div>
+          </div>
+        ))}
 
         <div className={inputContainerStyles}>
           <div className={labelContainerStyles}>
