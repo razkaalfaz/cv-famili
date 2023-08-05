@@ -123,7 +123,7 @@ export default function EditAlat({ params }: PageProps) {
           />
         </div>
         <div className={inputContainerStyles}>
-          <label htmlFor="jumlahAlat">Kode Unit Alat</label>
+          <label htmlFor="jumlahAlat">Jumlah Alat</label>
           <input
             type="number"
             id="jumlahAlat"
