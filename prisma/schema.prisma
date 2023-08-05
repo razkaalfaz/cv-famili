@@ -118,6 +118,7 @@ model armada {
 model transportasi {
   ID_TRANSPORTASI   String              @id
   NAMA_TRANSPORTASI String
+  PLAT_NOMOR        String?
   ID_PERMINTAAN     String?             @unique
   ID_ARMADA         String
   STATUS            STATUS_TRANSPORTASI @default(TERSEDIA)

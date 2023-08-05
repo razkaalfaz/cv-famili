@@ -109,9 +109,15 @@ type Transportasi = {
   ID_ARMADA: string;
   NAMA_TRANSPORTASI: string;
   ID_PERMINTAAN: string | null;
+  PLAT_NOMOR: string;
   STATUS: StatusTransportasi;
   permintaan: Permintaan | null;
   armada: Armada;
+};
+
+type ITransportasi = {
+  namaTransportasi: string;
+  platNomor: string;
 };
 
 type Armada = {

@@ -33,7 +33,7 @@ export default function TabelTransportasi({
             ID Transportasi
           </td>
           <td className="px-2 py-2 border border-gray-300 bg-orange-500 text-white font-bold text-center">
-            ID Armada
+            Plat Nomor
           </td>
           <td className="px-2 py-2 border border-gray-300 bg-orange-500 text-white font-bold text-center">
             Nama Transportasi
@@ -67,7 +67,7 @@ export default function TabelTransportasi({
                     {transportasi.ID_TRANSPORTASI}
                   </td>
                   <td className={tableDataCenteredStyles}>
-                    {transportasi.ID_ARMADA}
+                    {transportasi.PLAT_NOMOR}
                   </td>
                   <td className={tableDataCenteredStyles}>
                     {transportasi.NAMA_TRANSPORTASI}
