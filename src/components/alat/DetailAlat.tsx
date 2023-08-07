@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Button from "../button/Button";
+import Link from "next/link";
 
 interface ComponentProps {
   dataAlat: Alat;
@@ -88,6 +89,7 @@ export default function DetailAlatComponent({ dataAlat }: ComponentProps) {
             <td className={tdStyles}>Kode Unit Alat</td>
             <td className={tdStyles}>Status Alat</td>
             <td className={tdStyles}>ID Perbaikan</td>
+            <td className={tdStyles}>Detail Kerusakan</td>
           </tr>
         </thead>
 
@@ -108,6 +110,18 @@ export default function DetailAlatComponent({ dataAlat }: ComponentProps) {
                   <td className={tdStyles}>
                     {detail.perbaikan ? detail.perbaikan.ID_PERBAIKAN : "-"}
                   </td>
+                  {detail.STATUS === "RUSAK" ? (
+                    <td className={tdStyles + " text-center"}>
+                      <Link
+                        className="rounded-md p-2 bg-green-950 text-white grid place-items-center"
+                        href={"/laporan-perbaikan/detail/" + detail.KODE_ALAT}
+                      >
+                        Detail
+                      </Link>
+                    </td>
+                  ) : (
+                    <td className={tdStyles + " text-center"}>-</td>
+                  )}
                 </tr>
               ))}
             </>
