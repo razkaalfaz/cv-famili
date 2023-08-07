@@ -95,7 +95,9 @@ export default function ListPerbaikan() {
                   <td className={tdStyle}>
                     <div className="shrink-0 flex flex-col gap-2">
                       {perbaikan.detail_alat.map((detail) => (
-                        <p key={detail.KODE_ALAT}>{detail.KODE_ALAT}</p>
+                        <p key={detail.KODE_ALAT}>
+                          {detail.KODE_ALAT} - {detail.alat.NAMA_ALAT}
+                        </p>
                       ))}
                     </div>
                   </td>

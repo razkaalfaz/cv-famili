@@ -85,7 +85,7 @@ export default function DetailPengajuanAlat({
           </div>
 
           <div className="flex flex-col gap-4">
-            <b>Laporan Pengajuan Alat Baru</b>
+            <b>Surat Pengajuan Alat Baru</b>
             <table className="w-fit">
               <tbody>
                 <tr>

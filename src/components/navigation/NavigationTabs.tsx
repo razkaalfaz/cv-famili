@@ -84,6 +84,10 @@ export default function NavigationTabs() {
             </Link>
 
             <Dropdown
+              dropdownName="Permintaan"
+              dropdownData={ADMIN_DROPDOWN_TABS.PERMINTAAN}
+            />
+            <Dropdown
               dropdownName="Data"
               dropdownData={ADMIN_DROPDOWN_TABS.DATA}
             />
@@ -110,12 +114,12 @@ export default function NavigationTabs() {
             </Link>
 
             <Dropdown
-              dropdownName="Data"
-              dropdownData={PERALATAN_DROPDOWN_TABS.DATA}
+              dropdownName="Permintaan"
+              dropdownData={PERALATAN_DROPDOWN_TABS.PERMINTAAN}
             />
             <Dropdown
-              dropdownName="Pengajuan"
-              dropdownData={PERALATAN_DROPDOWN_TABS.PENGAJUAN}
+              dropdownName="Data"
+              dropdownData={PERALATAN_DROPDOWN_TABS.DATA}
             />
 
             <Button variants="ERROR" onClick={() => logoutHandler()}>
