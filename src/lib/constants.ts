@@ -150,17 +150,12 @@ export const ADMIN_DROPDOWN_TABS = {
     {
       id: "barang",
       url: "/barang",
-      name: "Data Barang",
+      name: "Data Alat dan Bahan",
     },
     {
       id: "alat",
       url: "/laporan_alat",
-      name: "Data Alat",
-    },
-    {
-      id: "permintaan",
-      url: "/permintaan",
-      name: "Data Permintaan",
+      name: "Detail Alat",
     },
     {
       id: "users",
@@ -184,15 +179,22 @@ export const ADMIN_DROPDOWN_TABS = {
       url: "/permintaan/laporan",
       name: "Laporan Permintaan",
     },
+  ] as Tab[],
+  PERMINTAAN: [
     {
-      id: "lap_perbaikan",
-      url: "/laporan-perbaikan",
-      name: "Laporan Perbaikan",
+      id: "permintaan",
+      url: "/permintaan",
+      name: "Permintaan Alat dan Bahan",
     },
     {
       id: "lap_pengajuan_alat",
       url: "/laporan_pengajuan_alat",
-      name: "Laporan Pengajuan Alat Baru",
+      name: "Permintaan Alat Baru",
+    },
+    {
+      id: "lap_perbaikan",
+      url: "/laporan-perbaikan",
+      name: "Permintaan Perbaikan Alat",
     },
   ] as Tab[],
 };
@@ -202,17 +204,12 @@ export const PERALATAN_DROPDOWN_TABS = {
     {
       id: "barang",
       url: "/barang",
-      name: "Data Barang",
+      name: "Data Alat dan Bahan",
     },
     {
       id: "alat",
       url: "/laporan_alat",
-      name: "Data Alat",
-    },
-    {
-      id: "permintaan",
-      url: "/permintaan",
-      name: "Data Permintaan",
+      name: "Detail Alat",
     },
     {
       id: "armada",
@@ -235,6 +232,23 @@ export const PERALATAN_DROPDOWN_TABS = {
       id: "pengajuan-alat-baru",
       url: "/pengajuan_alat_baru",
       name: "Pengajuan Alat Baru",
+    },
+  ] as Tab[],
+  PERMINTAAN: [
+    {
+      id: "permintaan-alat-dan-bahan",
+      url: "/permintaan",
+      name: "Permintaan Alat dan Bahan",
+    },
+    {
+      id: "pengajuan-alat-baru",
+      url: "/pengajuan_alat_baru",
+      name: "Permintaan Alat Baru",
+    },
+    {
+      id: "pengajuan-perbaikan",
+      url: "/pengajuan_perbaikan",
+      name: "Permintaan Perbaikan Alat",
     },
   ] as Tab[],
 };

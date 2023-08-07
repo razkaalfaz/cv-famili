@@ -96,7 +96,7 @@ export default function DetailPerbaikan({
           </div>
 
           <div className="flex flex-col gap-4">
-            <b>Laporan Perbaikan</b>
+            <b>Surat Perbaikan</b>
             <table className="w-fit">
               <tbody>
                 <tr>
@@ -152,7 +152,9 @@ export default function DetailPerbaikan({
                   <td className="px-2 py-2 border border-gray-300 text-center">
                     <div className="flex flex-col gap-2">
                       {perbaikan.detail_alat.map((detail) => (
-                        <p key={detail.KODE_ALAT}>{detail.KODE_ALAT}</p>
+                        <p key={detail.KODE_ALAT}>
+                          {detail.KODE_ALAT} - {detail.alat.NAMA_ALAT}
+                        </p>
                       ))}
                     </div>
                   </td>
