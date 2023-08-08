@@ -2,9 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 
 interface RequestBody {
-  BROKEN_ALAT: IDetailAlat[];
-  KETERANGAN_RUSAK: string;
-  TINGKAT_KERUSAKAN: string;
+  ALAT_RUSAK: AlatRusak[];
 }
 async function handler(request: NextRequest) {
   const body: RequestBody = await request.json();
@@ -12,42 +10,26 @@ async function handler(request: NextRequest) {
   const currentDate = new Date();
   try {
     const response: boolean[] = [];
-    for (const detailAlat of body.BROKEN_ALAT) {
-      const dataPerbaikan = await db.perbaikan.upsert({
+
+    for (const detailAlat of body.ALAT_RUSAK) {
+      const detailPerbaikan = await db.detail_perbaikan.upsert({
         where: {
-          ID_PERBAIKAN: `PBK-${detailAlat.ID_ALAT}`,
+          ID_DETAIL_PERBAIKAN: `PBK-DETAIL-${detailAlat.KODE_UNIT_ALAT}`,
         },
         create: {
-          ID_PERBAIKAN: `PBK-${detailAlat.ID_ALAT}`,
-          KETERANGAN: body.KETERANGAN_RUSAK,
-          TINGKAT_KERUSAKAN: body.TINGKAT_KERUSAKAN as TingkatKerusakan,
-          detail_alat: {
-            connect: {
-              KODE_ALAT: detailAlat.KODE_ALAT,
-            },
-          },
+          ID_DETAIL_PERBAIKAN: `PBK-DETAIL-${detailAlat.KODE_UNIT_ALAT}`,
+          KETERANGAN: detailAlat.KETERANGAN_RUSAK,
+          TGL_PENGAJUAN: currentDate,
+          TINGKAT_KERUSAKAN: detailAlat.TINGKAT_KERUSAKAN as TingkatKerusakan,
         },
         update: {
-          detail_alat: {
-            connect: {
-              KODE_ALAT: detailAlat.KODE_ALAT,
-            },
-            update: {
-              where: {
-                KODE_ALAT: detailAlat.KODE_ALAT,
-              },
-              data: {
-                STATUS: "RUSAK",
-              },
-            },
-          },
-          KETERANGAN: body.KETERANGAN_RUSAK,
-          TINGKAT_KERUSAKAN: body.TINGKAT_KERUSAKAN as TingkatKerusakan,
+          KETERANGAN: detailAlat.KETERANGAN_RUSAK,
+          TINGKAT_KERUSAKAN: detailAlat.TINGKAT_KERUSAKAN as TingkatKerusakan,
           TGL_PENGAJUAN: currentDate,
         },
       });
 
-      if (dataPerbaikan) {
+      if (detailPerbaikan) {
         response.push(true);
       } else {
         response.push(false);
@@ -58,7 +40,7 @@ async function handler(request: NextRequest) {
       await db.detail_alat.updateMany({
         where: {
           KODE_ALAT: {
-            in: body.BROKEN_ALAT.map((detailAlat) => detailAlat.KODE_ALAT),
+            in: body.ALAT_RUSAK.map((detailAlat) => detailAlat.KODE_UNIT_ALAT),
           },
         },
         data: {

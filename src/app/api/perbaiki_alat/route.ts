@@ -2,39 +2,50 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 
 interface RequestBody {
-  PERBAIKAN: Perbaikan;
+  DETAIL_PERBAIKAN: IDetailPerbaikan;
 }
 async function handler(request: NextRequest) {
   const body: RequestBody = await request.json();
-  const updateStatusPerbaikan = await db.perbaikan.update({
+  const updatePerbaikan = await db.perbaikan.update({
     where: {
-      ID_PERBAIKAN: body.PERBAIKAN.ID_PERBAIKAN,
+      ID_PERBAIKAN: body.DETAIL_PERBAIKAN.ID_PERBAIKAN ?? "",
     },
     data: {
-      STATUS: "DIPERBAIKI",
-      detail_alat: {
-        updateMany: {
+      detail_perbaikan: {
+        update: {
           where: {
-            ID_PERBAIKAN: body.PERBAIKAN.ID_PERBAIKAN,
+            ID_DETAIL_PERBAIKAN: body.DETAIL_PERBAIKAN.ID_DETAIL_PERBAIKAN,
           },
           data: {
-            STATUS: "TERSEDIA",
+            detail_alat: {
+              update: {
+                STATUS: "TERSEDIA",
+              },
+            },
           },
         },
-        disconnect: body.PERBAIKAN.detail_alat.map((detail) => ({
-          KODE_ALAT: detail.KODE_ALAT,
-        })),
       },
+    },
+    include: {
+      detail_perbaikan: true,
     },
   });
 
   try {
-    if (updateStatusPerbaikan) {
-      await db.perbaikan.delete({
-        where: {
-          ID_PERBAIKAN: body.PERBAIKAN.ID_PERBAIKAN,
-        },
-      });
+    if (updatePerbaikan) {
+      if (updatePerbaikan.detail_perbaikan.length > 1) {
+        await db.detail_perbaikan.delete({
+          where: {
+            ID_DETAIL_PERBAIKAN: body.DETAIL_PERBAIKAN.ID_DETAIL_PERBAIKAN,
+          },
+        });
+      } else {
+        await db.perbaikan.delete({
+          where: {
+            ID_PERBAIKAN: body.DETAIL_PERBAIKAN.ID_PERBAIKAN ?? "",
+          },
+        });
+      }
       return NextResponse.json({
         ok: true,
         message: "Berhasil memverifikasi data perbaikan.",
