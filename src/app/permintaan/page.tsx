@@ -67,9 +67,9 @@ export default function Permintaan() {
     setIdPermintaan(null);
   }
 
-  function pengembalianBarang(ID_PERMINTAAN: string) {
+  function pengembalianBarang(permintaan: Permintaan) {
     setModalShown("pengajuan-pengembalian");
-    setIdPermintaan(ID_PERMINTAAN);
+    setPermintaanToUpdate(permintaan);
   }
 
   async function verifikasiPengembalian(permintaan: Permintaan) {
@@ -305,9 +305,7 @@ export default function Permintaan() {
                                       <Button
                                         variants="PRIMARY"
                                         onClick={() =>
-                                          pengembalianBarang(
-                                            permintaan.ID_PERMINTAAN
-                                          )
+                                          pengembalianBarang(permintaan)
                                         }
                                         fullWidth
                                       >

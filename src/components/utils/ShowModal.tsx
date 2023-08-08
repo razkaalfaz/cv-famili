@@ -3,7 +3,7 @@
 import { SubmitHandler, useForm } from "react-hook-form";
 import Button from "../button/Button";
 import ModalsContainer from "../modal/ModalsContainer";
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { useSWRConfig } from "swr";
 import { useSession } from "next-auth/react";
 import { dateToString } from "@/lib/helper";
@@ -31,6 +31,8 @@ type Inputs = {
   };
   pengembalian: {
     catatan: string;
+    keteranganRusak: string;
+    tingkatKerusakan: string;
   };
 };
 
@@ -64,6 +66,8 @@ export default function ShowModal({
   setSuccess,
 }: ComponentProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const [isBroken, setIsBroken] = useState(false);
+  const [brokenAlat, setBrokenAlat] = useState<IDetailAlat[]>([]);
 
   const { handleSubmit, register, reset } = useForm<Inputs>({
     mode: "onChange",
@@ -446,7 +450,7 @@ export default function ShowModal({
     }
   }
   const pengajuanPengembalian: SubmitHandler<Inputs> = async (data) => {
-    if (idPermintaan && session) {
+    if (dataPermintaan && session) {
       setIsLoading(true);
       setMessage(null);
       setSuccess(null);
@@ -458,7 +462,7 @@ export default function ShowModal({
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              ID_PERMINTAAN: idPermintaan,
+              ID_PERMINTAAN: dataPermintaan.ID_PERMINTAAN,
               ID_USER: session.user.ID_USER,
               CATATAN: data.pengembalian.catatan,
             }),
@@ -480,7 +484,7 @@ export default function ShowModal({
       }
     }
   };
-  async function verifikasiPengembalian() {
+  const verifikasiPengembalian: SubmitHandler<Inputs> = async (data) => {
     if (dataPermintaan) {
       setIsLoading(true);
       setMessage(null);
@@ -495,6 +499,10 @@ export default function ShowModal({
             body: JSON.stringify({
               permintaan: dataPermintaan,
               ID_USER: dataPermintaan.ID_USER,
+              IS_BROKEN: isBroken,
+              BROKEN_ALAT: brokenAlat,
+              KETERANGAN_RUSAK: data.pengembalian.keteranganRusak,
+              TINGKAT_KERUSAKAN: data.pengembalian.tingkatKerusakan,
             }),
           }
         );
@@ -513,7 +521,7 @@ export default function ShowModal({
         console.error(err);
       }
     }
-  }
+  };
   async function hapusPermintaan() {
     if (dataPermintaan) {
       setIsLoading(true);
@@ -539,6 +547,38 @@ export default function ShowModal({
         }
       } catch (err) {
         console.error(err);
+      }
+    }
+  }
+
+  function onBrokenChanged(option: string) {
+    if (option === "y") {
+      setIsBroken(true);
+    } else {
+      setIsBroken(false);
+    }
+  }
+
+  function registerBrokenAlat(event: ChangeEvent<HTMLInputElement>) {
+    const { checked, value } = event.target;
+
+    if (dataPermintaan) {
+      const detailAlat = dataPermintaan.detail_permintaan.map(
+        (detail) => detail.detail_alat
+      );
+      const brokenDetailAlat = detailAlat.find(
+        (detail) => detail.KODE_ALAT === value
+      );
+
+      if (brokenDetailAlat) {
+        if (checked) {
+          setBrokenAlat((prev) => [...prev, brokenDetailAlat]);
+        } else {
+          const updatedBrokenAlat = brokenAlat.filter(
+            (curr) => curr.KODE_ALAT !== value
+          );
+          setBrokenAlat(updatedBrokenAlat);
+        }
       }
     }
   }
@@ -1102,27 +1142,104 @@ export default function ShowModal({
       return (
         <ModalsContainer
           title="Verifikasi Pengembalian"
-          description="Apakah pengembalian barang sudah sesuai dengan pengajuan permintaan?"
+          description="Silahkan verifikasi pengembalian yang diterima dari kepala proyek."
           onClose={hideModal}
         >
-          <div className="w-full flex flex-col gap-2">
+          <form
+            className="w-full flex flex-col gap-2"
+            onSubmit={handleSubmit(verifikasiPengembalian)}
+          >
+            <div className="flex flex-col gap-2">
+              <label htmlFor="isBroken">Apakah ada alat yang rusak?</label>
+              <select
+                id="isBroken"
+                onChange={(event) => onBrokenChanged(event.target.value)}
+                required
+                className="w-full p-2 rounded-md outline-none border border-gray-300"
+              >
+                <option value="n">Tidak</option>
+                <option value="y">Ya</option>
+              </select>
+            </div>
+
+            {isBroken && dataPermintaan && (
+              <>
+                <div className="flex flex-col gap-2">
+                  <label htmlFor="alatRusak">
+                    Silahkan pilih alat yang rusak
+                  </label>
+                  {dataPermintaan.detail_permintaan.map((detail) => (
+                    <div
+                      key={detail.ID_DETAIL_PERMINTAAN}
+                      className="w-full grid grid-cols-3"
+                    >
+                      <div className="flex flex-row gap-2 items-center">
+                        <input
+                          type="checkbox"
+                          value={detail.detail_alat.KODE_ALAT}
+                          id={detail.detail_alat.KODE_ALAT}
+                          onChange={registerBrokenAlat}
+                        />
+                        <label htmlFor={detail.detail_alat.KODE_ALAT}>
+                          {detail.detail_alat.KODE_ALAT} -{" "}
+                          {detail.detail_alat.alat.NAMA_ALAT}
+                        </label>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+
+            {isBroken && (
+              <div className="flex flex-col gap-2">
+                <label htmlFor="keteranganRusak">
+                  Berikan Keterangan Kerusakan
+                </label>
+                <textarea
+                  className="w-full p-2 rounded-md outline-none border border-gray-300"
+                  cols={4}
+                  id="keteranganRusak"
+                  placeholder="Alat ini mengalami kerusakan pada bagian..."
+                  required
+                  {...register("pengembalian.keteranganRusak")}
+                />
+              </div>
+            )}
+
+            {isBroken && (
+              <div className="flex flex-col gap-2">
+                <label htmlFor="tingkatKerusakan">Tingkat Kerusakan Alat</label>
+                <select
+                  id="tingkatKerusakan"
+                  required
+                  className="w-full p-2 rounded-md outline-none border border-gray-300"
+                  {...register("pengembalian.tingkatKerusakan")}
+                >
+                  <option value="RINGAN">Ringan</option>
+                  <option value="BERAT">Berat</option>
+                </select>
+              </div>
+            )}
+
             <Button
               variants="ACCENT"
               fullWidth
               disabled={isLoading}
-              onClick={() => verifikasiPengembalian()}
+              type="submit"
             >
-              {isLoading ? "Memproses..." : "Ya"}
+              {isLoading ? "Memverifikasi..." : "Verifikasi"}
             </Button>
             <Button
               variants="SECONDARY"
               fullWidth
               disabled={isLoading}
+              type="button"
               onClick={() => hideModal()}
             >
               Batal
             </Button>
-          </div>
+          </form>
         </ModalsContainer>
       );
 
