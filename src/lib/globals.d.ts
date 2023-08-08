@@ -8,10 +8,12 @@ type Alat = {
 type IDetailAlat = {
   KODE_ALAT: string;
   ID_ALAT: string;
+  ID_DETAIL_PERBAIKAN: string | null;
   STATUS: STATUS_ALAT;
   detail_permintaan: DetailPermintaan[] | null;
   alat: Alat;
   perbaikan: Perbaikan | null;
+  detail_perbaikan: IDetailPerbaikan | null;
 };
 
 type PermintaanBarang = {
@@ -65,12 +67,30 @@ type Pengembalian = {
 
 type Perbaikan = {
   ID_PERBAIKAN: string;
-  KETERANGAN: string;
-  TGL_PENGAJUAN: string;
   STATUS: StatusPerbaikan;
   CATATAN: string | null;
+  ID_ALAT: string | null;
+  alat: Alat | null;
+  detail_perbaikan: IDetailPerbaikan[];
+};
+
+type AlatRusak = {
+  ID_ALAT: string;
+  KODE_UNIT_ALAT: string;
+  KETERANGAN_RUSAK: string;
+  TINGKAT_KERUSAKAN: string;
+};
+
+type IDetailPerbaikan = {
+  ID_DETAIL_PERBAIKAN: string;
+  ID_PERBAIKAN: string | null;
+  KODE_ALAT: string;
+  detail_alat: IDetailAlat;
+  STATUS: StatusPerbaikan;
   TINGKAT_KERUSAKAN: TingkatKerusakan;
-  detail_alat: IDetailAlat[];
+  TGL_PENGAJUAN: Date;
+  perbaikan: Perbaikan | null;
+  KETERANGAN: string;
 };
 
 type User = {
