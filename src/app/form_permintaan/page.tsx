@@ -27,11 +27,17 @@ export default function PengajuanPermintaan() {
 
   if (alat && bahan) {
     return (
-      <FormPermintaan
-        dataAlat={alat.result ?? []}
-        dataBahan={bahan.result ?? []}
-        dataPermintaan={null}
-      />
+      <div className="w-full h-screen grid place-items-center">
+        <div className="w-full flex flex-col gap-4 items-center justify-center">
+          <b className="text-4xl">Page Maintenance</b>
+          <p className="text-xl">Try access this page later...</p>
+        </div>
+      </div>
+      // <FormPermintaan
+      //   dataAlat={alat.result ?? []}
+      //   dataBahan={bahan.result ?? []}
+      //   dataPermintaan={null}
+      // />
     );
   }
 }
