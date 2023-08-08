@@ -71,6 +71,13 @@ export default function DetailPerbaikan({
     );
   }
 
+  const cekAlatRusak = (detailPerbaikan: IDetailPerbaikan[]) => {
+    const stillBroken = detailPerbaikan.filter(
+      (detail) => detail.STATUS !== "DIPERBAIKI"
+    );
+    return stillBroken;
+  };
+
   if (data) {
     const perbaikan: Perbaikan = data.result;
 
@@ -108,15 +115,21 @@ export default function DetailPerbaikan({
                   <td className="font-bold">Status Perbaikan</td>
                   <td>:</td>
                   <td>
-                    {perbaikan.STATUS === "PENDING"
-                      ? "Menunggu verifikasi"
-                      : "Diperbaiki"}
+                    {cekAlatRusak(perbaikan.detail_perbaikan).length > 0 ? (
+                      <div className="flex flex-row items-center gap-2">
+                        <p>Masih terdapat alat yang rusak:</p>
+                        <div className="flex flex-row gap-2">
+                          {cekAlatRusak(perbaikan.detail_perbaikan).map(
+                            (detail) => (
+                              <b key={detail.KODE_ALAT}>{detail.KODE_ALAT}</b>
+                            )
+                          )}
+                        </div>
+                      </div>
+                    ) : (
+                      <p>Semua alat sudah diperbaiki.</p>
+                    )}
                   </td>
-                </tr>
-                <tr>
-                  <td className="font-bold">Tanggal Pengajuan</td>
-                  <td>:</td>
-                  <td>{convertToDate(perbaikan.TGL_PENGAJUAN)}</td>
                 </tr>
               </tbody>
             </table>
@@ -129,7 +142,11 @@ export default function DetailPerbaikan({
             <table className="w-full font-medium">
               <thead className="font-bold text-center">
                 <tr>
-                  <td className="border border-gray-300 px-2 py-2">ID Alat</td>
+                  <td colSpan={4} className="border border-gray-300 px-2 py-2">
+                    {perbaikan.alat?.NAMA_ALAT} - {perbaikan.alat?.ID_ALAT}
+                  </td>
+                </tr>
+                <tr>
                   <td className="border border-gray-300 px-2 py-2">
                     Kode Unit Alat
                   </td>
@@ -137,7 +154,7 @@ export default function DetailPerbaikan({
                     Tingkat Kerusakan
                   </td>
                   <td className="border border-gray-300 px-2 py-2">
-                    Jumlah Alat
+                    Tanggal Pengajuan
                   </td>
                   <td className="border border-gray-300 px-2 py-2">
                     Keterangan
@@ -145,31 +162,24 @@ export default function DetailPerbaikan({
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td className="px-2 py-2 border border-gray-300 text-center">
-                    {perbaikan.detail_alat.map((detail) => detail.ID_ALAT)[0]}
-                  </td>
-                  <td className="px-2 py-2 border border-gray-300 text-center">
-                    <div className="flex flex-col gap-2">
-                      {perbaikan.detail_alat.map((detail) => (
-                        <p key={detail.KODE_ALAT}>
-                          {detail.KODE_ALAT} - {detail.alat.NAMA_ALAT}
-                        </p>
-                      ))}
-                    </div>
-                  </td>
-                  <td className="px-2 py-2 border border-gray-300 text-center">
-                    {perbaikan.TINGKAT_KERUSAKAN === "BERAT"
-                      ? "Rusak Berat"
-                      : "Rusak Ringan"}
-                  </td>
-                  <td className="px-2 py-2 border border-gray-300 text-center">
-                    {perbaikan.detail_alat.length}
-                  </td>
-                  <td className="px-2 py-2 border border-gray-300 text-center">
-                    {perbaikan.KETERANGAN}
-                  </td>
-                </tr>
+                {perbaikan.detail_perbaikan.map((detail) => (
+                  <tr key={detail.ID_DETAIL_PERBAIKAN}>
+                    <td className="p-2 border border-gray-300 text-center">
+                      {detail.KODE_ALAT}
+                    </td>
+                    <td className="p-2 border border-gray-300 text-center">
+                      {detail.TINGKAT_KERUSAKAN === "BERAT"
+                        ? "Rusak Berat"
+                        : "Rusak Ringan"}
+                    </td>
+                    <td className="p-2 border border-gray-300 text-center">
+                      {convertToDate(detail.TGL_PENGAJUAN)}
+                    </td>
+                    <td className="p-2 border border-gray-300">
+                      {detail.KETERANGAN}
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>

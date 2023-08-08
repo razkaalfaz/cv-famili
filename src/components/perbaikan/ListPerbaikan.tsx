@@ -8,11 +8,13 @@ import Button from "../button/Button";
 import ModalPerbaikan from "./ModalPerbaikan";
 import { useState } from "react";
 import Snackbar from "../snackbar/Snackbar";
-import { CheckIcon } from "@heroicons/react/24/solid";
+import { CheckIcon, PrinterIcon } from "@heroicons/react/24/solid";
 
 export default function ListPerbaikan() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [dataPerbaikan, setDataPerbaikan] = useState<Perbaikan | null>(null);
+  const [dataPerbaikan, setDataPerbaikan] = useState<IDetailPerbaikan | null>(
+    null
+  );
   const [message, setMessage] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const { data, isLoading } = useSWR("/api/list-perbaikan", fetcher);
@@ -33,11 +35,11 @@ export default function ListPerbaikan() {
     setDataPerbaikan(null);
   }
 
-  function showModal(perbaikan: Perbaikan) {
+  function showModal(detail_perbaikan: IDetailPerbaikan) {
     setMessage(null);
     setSuccess(null);
     setIsModalOpen(true);
-    setDataPerbaikan(perbaikan);
+    setDataPerbaikan(detail_perbaikan);
   }
 
   const tdStyle = "px-2 py-2 border border-gray-300";
@@ -56,88 +58,79 @@ export default function ListPerbaikan() {
     if (perbaikan.length > 0) {
       return (
         <>
-          <table>
-            <thead className="bg-orange-500 text-white">
-              <tr>
-                <td className={tdStyle + " text-center font-bold"}>No.</td>
-                <td className={tdStyle + " text-center font-bold"}>
-                  ID Perbaikan
-                </td>
-                <td className={tdStyle + " text-center font-bold"}>ID Alat</td>
-                <td className={tdStyle + " text-center font-bold"}>
-                  Kode Unit Alat
-                </td>
-                <td className={tdStyle + " text-center font-bold"}>
-                  Tingkat Kerusakan
-                </td>
-                <td className={tdStyle + " text-center font-bold"}>
-                  Jumlah Alat
-                </td>
-                <td className={tdStyle + " text-center font-bold"}>
-                  Tanggal Pengajuan
-                </td>
-                <td className={tdStyle + " text-center font-bold"}>Aksi</td>
-              </tr>
-            </thead>
-
-            <tbody>
-              {perbaikan.map((perbaikan: Perbaikan, index: number) => (
-                <tr key={perbaikan.ID_PERBAIKAN}>
-                  <td className={tdStyle + " text-center"}>{index + 1}</td>
-                  <td className={tdStyle}>{perbaikan.ID_PERBAIKAN}</td>
-                  <td className={tdStyle}>
-                    {
-                      perbaikan.detail_alat.map(
-                        (detail) => detail.alat.ID_ALAT
-                      )[0]
-                    }
-                  </td>
-                  <td className={tdStyle}>
-                    <div className="shrink-0 flex flex-col gap-2">
-                      {perbaikan.detail_alat.map((detail) => (
-                        <p key={detail.KODE_ALAT}>
-                          {detail.KODE_ALAT} - {detail.alat.NAMA_ALAT}
-                        </p>
-                      ))}
-                    </div>
-                  </td>
-                  <td className={tdStyle + " text-center"}>
-                    {perbaikan.TINGKAT_KERUSAKAN === "BERAT"
-                      ? "Rusak Berat"
-                      : "Rusak Ringan"}
-                  </td>
-                  <td className={tdStyle + " text-center"}>
-                    {perbaikan.detail_alat.length}
-                  </td>
-                  <td className={tdStyle + " text-center"}>
-                    {convertToDate(perbaikan.TGL_PENGAJUAN)}
-                  </td>
-                  <td className={tdStyle}>
-                    <div className="w-full flex flex-col gap-2">
-                      <Link
-                        href={
-                          "/laporan-perbaikan/print/" + perbaikan.ID_PERBAIKAN
-                        }
-                        target="_blank"
-                        className="px-2 py-2 bg-orange-500 text-white rounded-md grid place-items-center w-full"
-                      >
-                        Detail
-                      </Link>
-                      {perbaikan.STATUS === "PENDING" && (
-                        <Button
-                          variants="ACCENT"
-                          onClick={() => showModal(perbaikan)}
-                          fullWidth
+          <div className="min-w-full inline-block">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                {perbaikan.map((dataPerbaikan: Perbaikan) => (
+                  <>
+                    <thead
+                      className="bg-orange-500 text-white font-bold text-center"
+                      key={dataPerbaikan.ID_ALAT}
+                    >
+                      <tr>
+                        <td
+                          className="p-2 border-b border-b-gray-300 text-center"
+                          colSpan={5}
                         >
-                          Verifikasi
-                        </Button>
+                          {dataPerbaikan.alat?.NAMA_ALAT}
+                        </td>
+                        <td className="p-2 text-center">
+                          <Link
+                            href={
+                              "/laporan-perbaikan/print/" +
+                              dataPerbaikan.ID_PERBAIKAN
+                            }
+                            target="_blank"
+                            className="px-2 py-2 bg-orange-900 text-white rounded-md grid place-items-center w-full"
+                          >
+                            <PrinterIcon className="w-4 h-4" />
+                          </Link>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className={tdStyle}>No.</td>
+                        <td className={tdStyle}>ID Perbaikan</td>
+                        <td className={tdStyle}>Kode Alat</td>
+                        <td className={tdStyle}>Tingkat Kerusakan</td>
+                        <td className={tdStyle}>Tanggal Pengajuan</td>
+                        <td className={tdStyle}>Aksi</td>
+                      </tr>
+                    </thead>
+                    <tbody key={dataPerbaikan.ID_PERBAIKAN}>
+                      {dataPerbaikan.detail_perbaikan.map(
+                        (detail, index: number) => (
+                          <tr key={detail.KODE_ALAT}>
+                            <td className={tdStyle + " text-center"}>
+                              {index + 1}.
+                            </td>
+                            <td className={tdStyle}>{detail.ID_PERBAIKAN}</td>
+                            <td className={tdStyle}>{detail.KODE_ALAT}</td>
+                            <td className={tdStyle}>
+                              {detail.TINGKAT_KERUSAKAN}
+                            </td>
+                            <td className={tdStyle + " text-center"}>
+                              {convertToDate(detail.TGL_PENGAJUAN)}
+                            </td>
+                            <td className={tdStyle + " text-center"}>
+                              <div className="flex flex-col gap-2">
+                                <Button
+                                  variants="PRIMARY"
+                                  fullWidth
+                                  onClick={() => showModal(detail)}
+                                >
+                                  Verifikasi
+                                </Button>
+                              </div>
+                            </td>
+                          </tr>
+                        )
                       )}
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                    </tbody>
+                  </>
+                ))}
+              </table>
+            </div>
+          </div>
 
           <ModalPerbaikan
             isOpen={isModalOpen}

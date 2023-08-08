@@ -6,7 +6,7 @@ import ModalsContainer from "../modal/ModalsContainer";
 import { useSWRConfig } from "swr";
 
 interface ComponentProps {
-  dataPerbaikan: Perbaikan | null;
+  dataPerbaikan: IDetailPerbaikan | null;
   isOpen: boolean;
   onClose: () => void;
   setMessage: React.Dispatch<React.SetStateAction<string | null>>;
@@ -29,7 +29,7 @@ export default function PerbaikiAlat({
       const res = await fetch(process.env.NEXT_PUBLIC_API_PERBAIKI_ALAT!, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ PERBAIKAN: dataPerbaikan }),
+        body: JSON.stringify({ DETAIL_PERBAIKAN: dataPerbaikan }),
       });
 
       const response = await res.json();
