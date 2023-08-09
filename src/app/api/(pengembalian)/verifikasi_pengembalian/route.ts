@@ -5,14 +5,14 @@ interface RequestBody {
   permintaan: Permintaan;
   ID_USER: number;
   IS_BROKEN: boolean;
-  BROKEN_ALAT: IDetailAlat[];
-  KETERANGAN_RUSAK: string;
-  TINGKAT_KERUSAKAN: string;
+  ALAT_RUSAK: AlatRusak[];
 }
 
 async function handler(request: NextRequest) {
   const body: RequestBody = await request.json();
   const currentDate = new Date();
+
+  console.log(body);
 
   async function updateDataPermintaan() {
     const updatePermintaan = await db.permintaan.update({
@@ -63,7 +63,7 @@ async function handler(request: NextRequest) {
               },
               {
                 KODE_ALAT: {
-                  notIn: body.BROKEN_ALAT.map((detail) => detail.KODE_ALAT),
+                  notIn: body.ALAT_RUSAK.map((detail) => detail.KODE_UNIT_ALAT),
                 },
               },
             ],
@@ -107,9 +107,7 @@ async function handler(request: NextRequest) {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            BROKEN_ALAT: body.BROKEN_ALAT,
-            KETERANGAN_RUSAK: body.KETERANGAN_RUSAK,
-            TINGKAT_KERUSAKAN: body.TINGKAT_KERUSAKAN,
+            ALAT_RUSAK: body.ALAT_RUSAK,
           }),
         }
       );

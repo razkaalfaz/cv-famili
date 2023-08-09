@@ -22,11 +22,10 @@ export default function FormPerbaikan() {
   const [selectedAlat, setSelectedAlat] = useState<string | null>(null);
   const [selectedDetail, setSelectedDetail] = useState<string[] | []>([]);
 
-  const {
-    data: alat,
-    isLoading: loadingData,
-    isValidating,
-  } = useSWR("/api/list-alat", fetcher);
+  const { data: alat, isLoading: loadingData } = useSWR(
+    "/api/list-alat",
+    fetcher
+  );
 
   const { handleSubmit, reset, register } = useForm<Inputs>({
     mode: "onChange",
@@ -74,7 +73,8 @@ export default function FormPerbaikan() {
         (alat: Alat) => alat.ID_ALAT === selectedAlat
       );
       const detailAlat = dataAlat.detail_alat.filter(
-        (detail) => detail.STATUS !== "RUSAK"
+        (detail) =>
+          detail.STATUS === "RUSAK" && !detail.detail_perbaikan?.ID_PERBAIKAN
       );
       return (
         <div className="w-full flex flex-col gap-4">

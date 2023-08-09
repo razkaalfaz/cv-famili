@@ -5,6 +5,7 @@ import Snackbar from "@/components/snackbar/Snackbar";
 import KirimPesanan from "@/components/utils/KirimPesanan";
 import ShowModal from "@/components/utils/ShowModal";
 import TerimaPesanan from "@/components/utils/TerimaPesanan";
+import VerifikasiPengembalian from "@/components/utils/VerifikasiPengembalian";
 import { VARIABEL_PERMINTAAN } from "@/lib/constants";
 import { decimalNumber, fetcher, sortPermintaan } from "@/lib/helper";
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
@@ -26,6 +27,7 @@ export default function Permintaan() {
   const [isKirim, setIsKirim] = useState(false);
   const [isTerima, setIsTerima] = useState(false);
   const [opsiArmada, setOpsiArmada] = useState<string | null>(null);
+  const [isCompleted, setIsCompleted] = useState(false);
 
   const { data: session } = useSession();
 
@@ -91,7 +93,7 @@ export default function Permintaan() {
 
   function pengembalianSelesai(permintaan: Permintaan) {
     setPermintaanToUpdate(permintaan);
-    setModalShown("verifikasi-pengembalian");
+    setIsCompleted(true);
   }
 
   function terimaPermintaan(permintaan: Permintaan) {
@@ -526,6 +528,13 @@ export default function Permintaan() {
               setMessage={setMessage}
               permintaan={permintaanToUpdate}
               onClose={onCloseTerima}
+              setSuccess={setSuccess}
+            />
+            <VerifikasiPengembalian
+              isOpen={isCompleted}
+              onClose={() => setIsCompleted(false)}
+              permintaan={permintaanToUpdate}
+              setMessage={setMessage}
               setSuccess={setSuccess}
             />
           </div>
