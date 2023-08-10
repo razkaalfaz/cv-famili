@@ -8,30 +8,42 @@ datasource db {
 }
 
 model alat {
-  ID_ALAT     String        @id
-  NAMA_ALAT   String?
-  UNIT_ALAT   String?
-  detail_alat detail_alat[]
+  ID_ALAT      String        @id
+  NAMA_ALAT    String?
+  UNIT_ALAT    String?
+  ID_PERBAIKAN String?
+  perbaikan    perbaikan?
+  detail_alat  detail_alat[]
 }
 
 model detail_alat {
-  KODE_ALAT         String              @id
-  ID_ALAT           String
-  ID_PERBAIKAN      String?
-  STATUS            STATUS_ALAT         @default(TERSEDIA)
-  alat              alat?               @relation(fields: [ID_ALAT], references: [ID_ALAT], onDelete: Cascade)
-  perbaikan         perbaikan?          @relation(fields: [ID_PERBAIKAN], references: [ID_PERBAIKAN], onDelete: SetNull)
-  detail_permintaan detail_permintaan[]
+  KODE_ALAT           String              @id
+  ID_ALAT             String
+  ID_DETAIL_PERBAIKAN String?             @unique
+  STATUS              STATUS_ALAT         @default(TERSEDIA)
+  alat                alat?               @relation(fields: [ID_ALAT], references: [ID_ALAT], onDelete: Cascade)
+  detail_perbaikan    detail_perbaikan?   @relation(fields: [ID_DETAIL_PERBAIKAN], references: [ID_DETAIL_PERBAIKAN], onDelete: SetNull)
+  detail_permintaan   detail_permintaan[]
 }
 
 model perbaikan {
-  ID_PERBAIKAN      String            @id
-  KETERANGAN        String
-  CATATAN           String?
-  STATUS            STATUS_PERBAIKAN  @default(PENDING)
-  TGL_PENGAJUAN     DateTime          @default(now())
-  TINGKAT_KERUSAKAN TINGKAT_KERUSAKAN
-  detail_alat       detail_alat[]
+  ID_PERBAIKAN     String             @id
+  CATATAN          String?
+  ID_ALAT          String?            @unique
+  detail_perbaikan detail_perbaikan[]
+  alat             alat?              @relation(fields: [ID_ALAT], references: [ID_ALAT], onDelete: Cascade)
+}
+
+model detail_perbaikan {
+  ID_DETAIL_PERBAIKAN String            @id
+  ID_PERBAIKAN        String?
+  KODE_ALAT           String?
+  KETERANGAN          String
+  STATUS              STATUS_PERBAIKAN  @default(PENDING)
+  TGL_PENGAJUAN       DateTime
+  TINGKAT_KERUSAKAN   TINGKAT_KERUSAKAN
+  detail_alat         detail_alat?
+  perbaikan           perbaikan?        @relation(fields: [ID_PERBAIKAN], references: [ID_PERBAIKAN], onDelete: Cascade)
 }
 
 model bahan {

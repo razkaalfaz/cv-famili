@@ -10,7 +10,9 @@ export default function LaporanPerbaikan() {
         </p>
       </div>
 
-      <ListPerbaikan />
+      <div className="w-full">
+        <ListPerbaikan />
+      </div>
     </div>
   );
 }

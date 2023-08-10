@@ -8,6 +8,11 @@ async function handler(request: NextRequest) {
       detail_alat: {
         include: {
           detail_permintaan: true,
+          detail_perbaikan: {
+            include: {
+              detail_alat: true,
+            },
+          },
           alat: true,
         },
       },

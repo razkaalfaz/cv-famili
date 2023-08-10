@@ -14,11 +14,16 @@ async function handler(
       ID_PERBAIKAN: params.id,
     },
     include: {
-      detail_alat: {
+      detail_perbaikan: {
         include: {
-          alat: true,
+          detail_alat: {
+            include: {
+              alat: true,
+            },
+          },
         },
       },
+      alat: true,
     },
   });
 

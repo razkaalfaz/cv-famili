@@ -65,10 +65,10 @@ export default function DataPerbaikan({ id }: ComponentProps) {
                   {dataAlat.KODE_ALAT}
                 </td>
                 <td className="p-2 border border-gray-300 whitespace-nowrap">
-                  {dataAlat.perbaikan?.TINGKAT_KERUSAKAN}
+                  {dataAlat.detail_perbaikan?.TINGKAT_KERUSAKAN}
                 </td>
                 <td className="p-2 border border-gray-300 whitespace-nowrap">
-                  {dataAlat.perbaikan?.KETERANGAN}
+                  {dataAlat.detail_perbaikan?.KETERANGAN}
                 </td>
               </tr>
             </tbody>

@@ -14,7 +14,7 @@ async function handler(
       KODE_ALAT: params.id,
     },
     include: {
-      perbaikan: true,
+      detail_perbaikan: true,
       alat: true,
     },
   });

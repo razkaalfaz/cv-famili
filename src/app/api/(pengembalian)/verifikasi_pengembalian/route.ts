@@ -5,9 +5,7 @@ interface RequestBody {
   permintaan: Permintaan;
   ID_USER: number;
   IS_BROKEN: boolean;
-  BROKEN_ALAT: IDetailAlat[];
-  KETERANGAN_RUSAK: string;
-  TINGKAT_KERUSAKAN: string;
+  ALAT_RUSAK: AlatRusak[];
 }
 
 async function handler(request: NextRequest) {
@@ -63,7 +61,7 @@ async function handler(request: NextRequest) {
               },
               {
                 KODE_ALAT: {
-                  notIn: body.BROKEN_ALAT.map((detail) => detail.KODE_ALAT),
+                  notIn: body.ALAT_RUSAK.map((detail) => detail.KODE_UNIT_ALAT),
                 },
               },
             ],
@@ -84,18 +82,18 @@ async function handler(request: NextRequest) {
       });
 
       if (updateDetailPermintaan) {
-        return NextResponse.json({
+        return {
           ok: true,
           message: "Barang pengembalian berhasil diterima.",
-        });
+        };
       } else {
-        return NextResponse.json({
+        return {
           ok: false,
           message: "Terjadi kesalahan...",
-        });
+        };
       }
     } else {
-      return NextResponse.json({ ok: false, message: "Terjadi kesalahan..." });
+      return { ok: false, message: "Terjadi kesalahan..." };
     }
   }
 
@@ -107,9 +105,7 @@ async function handler(request: NextRequest) {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            BROKEN_ALAT: body.BROKEN_ALAT,
-            KETERANGAN_RUSAK: body.KETERANGAN_RUSAK,
-            TINGKAT_KERUSAKAN: body.TINGKAT_KERUSAKAN,
+            ALAT_RUSAK: body.ALAT_RUSAK,
           }),
         }
       );
@@ -123,11 +119,11 @@ async function handler(request: NextRequest) {
         });
       } else {
         const updateResponse = await updateDataPermintaan();
-        return updateResponse;
+        return NextResponse.json(updateResponse);
       }
     } else {
       const updateResponse = await updateDataPermintaan();
-      return updateResponse;
+      return NextResponse.json(updateResponse);
     }
   } catch (err) {
     console.error(err);

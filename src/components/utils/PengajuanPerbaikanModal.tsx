@@ -6,59 +6,75 @@ import ModalsContainer from "../modal/ModalsContainer";
 import { useSWRConfig } from "swr";
 
 interface ComponentProps {
-  dataPerbaikan: IDetailPerbaikan | null;
-  isOpen: boolean;
-  onClose: () => void;
+  ALAT_RUSAK: AlatRusak;
   setMessage: React.Dispatch<React.SetStateAction<string | null>>;
   setSuccess: React.Dispatch<React.SetStateAction<string | null>>;
+  isOpen: boolean;
+  onClose: () => void;
 }
 
-export default function PerbaikiAlat({
-  dataPerbaikan,
-  isOpen,
-  onClose,
+export default function PengajuanPerbaikanModal({
+  ALAT_RUSAK,
   setMessage,
   setSuccess,
+  isOpen,
+  onClose,
 }: ComponentProps) {
   const [isLoading, setIsLoading] = useState(false);
+
   const { mutate } = useSWRConfig();
 
-  async function perbaikiAlat() {
+  function hideModal() {
+    setMessage(null);
+    setSuccess(null);
+    onClose();
+  }
+
+  async function ajukanPerbaikan() {
     setIsLoading(true);
+    setMessage(null);
+    setSuccess(null);
+
     try {
-      const res = await fetch(process.env.NEXT_PUBLIC_API_PERBAIKI_ALAT!, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ DETAIL_PERBAIKAN: dataPerbaikan }),
-      });
+      const res = await fetch(
+        process.env.NEXT_PUBLIC_API_PENGAJUAN_PERBAIKAN!,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ALAT_RUSAK: ALAT_RUSAK }),
+        }
+      );
 
       const response = await res.json();
+
       if (!response.ok) {
         setIsLoading(false);
         setMessage(response.message);
       } else {
         setIsLoading(false);
         setSuccess(response.message);
-        mutate("/api/list-perbaikan");
-        onClose();
+        mutate("/api/list-alat");
+        hideModal();
       }
     } catch (err) {
+      setIsLoading(false);
+      setMessage("Terjadi kesalahan...");
       console.error(err);
     }
   }
 
-  return isOpen ? (
+  return (
     <ModalsContainer
-      title="Verifikasi Perbaikan"
-      description="Apakah alat ini telah diperbaiki?"
-      onClose={onClose}
+      title="Ajukan Perbaikan"
+      description="Apakah anda ingin mengajukan perbaikan untuk alat ini?"
+      onClose={hideModal}
     >
-      <div className="flex flex-col gap-2 w-full">
+      <div className="w-full flex flex-col gap-2">
         <Button
-          variants="PRIMARY"
+          variants="ACCENT"
           fullWidth
           disabled={isLoading}
-          onClick={() => perbaikiAlat()}
+          onClick={() => ajukanPerbaikan()}
         >
           {isLoading ? "Memproses..." : "Ya"}
         </Button>
@@ -66,11 +82,11 @@ export default function PerbaikiAlat({
           variants="SECONDARY"
           fullWidth
           disabled={isLoading}
-          onClick={onClose}
+          onClick={hideModal}
         >
           Batal
         </Button>
       </div>
     </ModalsContainer>
-  ) : null;
+  );
 }
