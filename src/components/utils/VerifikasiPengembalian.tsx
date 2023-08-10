@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Button from "../button/Button";
 import ModalsContainer from "../modal/ModalsContainer";
+import { useSWRConfig } from "swr";
 
 interface ComponentProps {
   permintaan: Permintaan | null;
@@ -34,6 +35,8 @@ export default function VerifikasiPengembalian({
   const [tingkatKerusakan, setTingkatKerusakan] = useState<TingkatKerusakan>(
     {}
   );
+
+  const { mutate } = useSWRConfig();
 
   async function verifikasiPengembalian(
     event: React.FormEvent<HTMLFormElement>
@@ -72,7 +75,23 @@ export default function VerifikasiPengembalian({
           }),
         }
       );
+
+      const response = await res.json();
+      if (!response.ok) {
+        setIsLoading(false);
+        setMessage(response.message);
+        setSuccess(null);
+      } else {
+        setIsLoading(false);
+        setMessage(null);
+        setSuccess(response.message);
+        hideModal();
+        mutate("/api/list-perbaikan");
+      }
     } catch (err) {
+      setIsLoading(false);
+      setSuccess(null);
+      setMessage("Terjadi kesalahan...");
       console.error(err);
     }
   }
@@ -133,7 +152,6 @@ export default function VerifikasiPengembalian({
   }
 
   function renderAlatRusakInput(detail_alat: IDetailAlat) {
-    const inputStyles = "w-full rounded-md p-2";
     return (
       <div className="w-max flex flex-row items-center gap-2 justify-between">
         <input
@@ -141,6 +159,7 @@ export default function VerifikasiPengembalian({
           value={detail_alat.KODE_ALAT}
           id={detail_alat.KODE_ALAT}
           onChange={registerBrokenAlat}
+          required={brokenAlat.length < 1}
         />
         <label htmlFor={detail_alat.KODE_ALAT}>
           {detail_alat.KODE_ALAT} - {detail_alat.alat.NAMA_ALAT}
@@ -156,6 +175,7 @@ export default function VerifikasiPengembalian({
               onChange={(event) =>
                 registerKeteranganRusak(event, detail_alat.KODE_ALAT)
               }
+              required
             />
 
             <select
@@ -164,6 +184,7 @@ export default function VerifikasiPengembalian({
               onChange={(event) =>
                 registerTingkatKerusakan(event, detail_alat.KODE_ALAT)
               }
+              required
             >
               <option value="">Tingkat Kerusakan...</option>
               <option value="RINGAN">Ringan</option>

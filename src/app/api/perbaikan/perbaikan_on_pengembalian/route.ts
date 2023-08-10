@@ -21,11 +21,22 @@ async function handler(request: NextRequest) {
           KETERANGAN: detailAlat.KETERANGAN_RUSAK,
           TGL_PENGAJUAN: currentDate,
           TINGKAT_KERUSAKAN: detailAlat.TINGKAT_KERUSAKAN as TingkatKerusakan,
+          KODE_ALAT: detailAlat.KODE_UNIT_ALAT,
+          detail_alat: {
+            connect: {
+              KODE_ALAT: detailAlat.KODE_UNIT_ALAT,
+            },
+          },
         },
         update: {
           KETERANGAN: detailAlat.KETERANGAN_RUSAK,
           TINGKAT_KERUSAKAN: detailAlat.TINGKAT_KERUSAKAN as TingkatKerusakan,
           TGL_PENGAJUAN: currentDate,
+          detail_alat: {
+            update: {
+              STATUS: "RUSAK",
+            },
+          },
         },
       });
 

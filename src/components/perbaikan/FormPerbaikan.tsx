@@ -2,197 +2,149 @@
 
 import { fetcher } from "@/lib/helper";
 import { useState } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
 import useSWR from "swr";
 import Button from "../button/Button";
-import Loading from "../indikator/Loading";
 import Snackbar from "../snackbar/Snackbar";
-
-interface Inputs {
-  KODE_ALAT: string;
-  JUMLAH_ALAT: number;
-  KETERANGAN: string;
-  TINGKAT_KERUSAKAN: string;
-}
+import { CheckIcon } from "@heroicons/react/24/solid";
+import PengajuanPerbaikanModal from "../utils/PengajuanPerbaikanModal";
 
 export default function FormPerbaikan() {
-  const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [selectedAlat, setSelectedAlat] = useState<string | null>(null);
-  const [selectedDetail, setSelectedDetail] = useState<string[] | []>([]);
+  const [isOpen, setIsOpen] = useState(false);
+
+  const [alatToFix, setAlatToFix] = useState<IDetailPerbaikan | null>(null);
 
   const { data: alat, isLoading: loadingData } = useSWR(
     "/api/list-alat",
     fetcher
   );
 
-  const { handleSubmit, reset, register } = useForm<Inputs>({
-    mode: "onChange",
-  });
+  function showModal(detailPerbaikan: IDetailPerbaikan | null) {
+    if (detailPerbaikan) {
+      const alatRusak: AlatRusak = {
+        ID_ALAT: detailPerbaikan.detail_alat.ID_ALAT,
+        KETERANGAN_RUSAK: detailPerbaikan.KETERANGAN,
+        KODE_UNIT_ALAT: detailPerbaikan.KODE_ALAT,
+        TINGKAT_KERUSAKAN: detailPerbaikan.TINGKAT_KERUSAKAN,
+      };
 
-  const pengajuanPerbaikan: SubmitHandler<Inputs> = async (data) => {
-    const { KETERANGAN, TINGKAT_KERUSAKAN } = data;
-    setIsLoading(true);
-    setMessage(null);
-    setSuccess(null);
-
-    try {
-      const res = await fetch(
-        process.env.NEXT_PUBLIC_API_PENGAJUAN_PERBAIKAN!,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            ID_ALAT: selectedAlat,
-            SELECTED_ALAT: selectedDetail,
-            KETERANGAN: KETERANGAN,
-            TINGKAT_KERUSAKAN: TINGKAT_KERUSAKAN,
-          }),
-        }
-      );
-
-      const response = await res.json();
-
-      if (!response.ok) {
-        setIsLoading(false);
-        setMessage(response.message);
-      } else {
-        setIsLoading(false);
-        setSuccess(response.message);
-        reset();
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  function showDetailAlat() {
-    if (selectedAlat !== null) {
-      const dataAlat: Alat = alat?.result?.find(
-        (alat: Alat) => alat.ID_ALAT === selectedAlat
-      );
-      const detailAlat = dataAlat.detail_alat.filter(
-        (detail) =>
-          detail.STATUS === "RUSAK" && !detail.detail_perbaikan?.ID_PERBAIKAN
-      );
       return (
-        <div className="w-full flex flex-col gap-4">
-          <p className={labelStyles}>Silahkan pilih alat di bawah ini.</p>
-          {detailAlat?.map((detail) => (
-            <div
-              className="flex flex-row gap-2 items-center"
-              key={detail?.KODE_ALAT}
-            >
-              <input
-                type="checkbox"
-                value={detail?.KODE_ALAT}
-                id={detail?.KODE_ALAT}
-                onChange={onDetailAlatChanges}
-              />
-              <label htmlFor={detail?.KODE_ALAT}>{detail?.KODE_ALAT}</label>
-            </div>
-          ))}
-
-          <div className={inputContainer}>
-            <label htmlFor="tingkat_kerusakan" className={labelStyles}>
-              Tingkat Kerusakan
-            </label>
-            <select
-              required
-              className={inputStyles}
-              {...register("TINGKAT_KERUSAKAN")}
-            >
-              <option value="">
-                Silahkan pilih tingkat kerusakan pada alat...
-              </option>
-              <option value="BERAT">Berat</option>
-              <option value="RINGAN">Ringan</option>
-            </select>
-          </div>
-        </div>
+        <PengajuanPerbaikanModal
+          ALAT_RUSAK={alatRusak}
+          isOpen={isOpen}
+          onClose={() => setIsOpen(false)}
+          setMessage={setMessage}
+          setSuccess={setSuccess}
+        />
       );
     } else {
       return null;
     }
   }
 
-  function onAlatChanges(ID_ALAT: string) {
-    setSelectedAlat(ID_ALAT);
-    setSelectedDetail([]);
-  }
-
-  function onDetailAlatChanges(event: React.ChangeEvent<HTMLInputElement>) {
-    const { checked, value } = event.target;
-
-    if (checked) {
-      setSelectedDetail((prev) => [...prev, value]);
-    } else {
-      const updatedDetail = selectedDetail.filter(
-        (kodeAlat) => kodeAlat !== value
-      );
-      setSelectedDetail(updatedDetail);
-    }
+  function onOpen(detailPerbaikan: IDetailPerbaikan | null) {
+    setAlatToFix(detailPerbaikan);
+    setIsOpen(true);
   }
 
   const inputContainer = "flex flex-col gap-2";
   const labelStyles = "text-sm text-gray-500";
-  const inputStyles = "px-2 py-2 outline-none border border-gray-300";
+
+  function renderDetailAlat() {
+    if (alat) {
+      const dataAlat: Alat[] = alat.result;
+      const detailAlat = dataAlat.flatMap((alat) => alat.detail_alat);
+      const alatRusak = detailAlat.filter(
+        (detail) => detail.STATUS === "RUSAK"
+      );
+      const availableAlat = alatRusak.filter(
+        (detail) => detail.detail_perbaikan?.ID_PERBAIKAN === null
+      );
+      return availableAlat;
+    } else {
+      return [];
+    }
+  }
 
   return (
-    <form
-      className="w-full flex flex-col gap-8"
-      onSubmit={handleSubmit(pengajuanPerbaikan)}
-    >
+    <>
       <div className="w-full flex flex-col gap-4">
         <div className={inputContainer}>
           <label htmlFor="id_alat" className={labelStyles}>
             Alat yang harus diperbaiki
           </label>
-          <select
-            onChange={(event) => onAlatChanges(event.target.value)}
-            required
-            className={inputStyles}
-          >
-            <option value="">
-              Silahkan pilih alat yang harus diperbaiki...
-            </option>
-            {loadingData ? (
-              <option value="">Loading...</option>
-            ) : (
-              <>
-                {alat?.result.map((alat: Alat) => (
-                  <option key={alat.ID_ALAT} value={alat.ID_ALAT}>
-                    {alat.NAMA_ALAT}
-                  </option>
-                ))}
-              </>
-            )}
-          </select>
+
+          {loadingData && (
+            <div className="w-full grid place-items-center">
+              Loading data...
+            </div>
+          )}
+
+          {alat && (
+            <table>
+              <thead className="bg-orange-500 text-white font-bold text-center">
+                <tr>
+                  <td className="p-2 border border-gray-300">No.</td>
+                  <td className="p-2 border border-gray-300">Nama Alat</td>
+                  <td className="p-2 border border-gray-300">Kode Alat</td>
+                  <td className="p-2 border border-gray-300">Keterangan</td>
+                  <td className="p-2 border border-gray-300">
+                    Tingkat Kerusakan
+                  </td>
+                  <td className="p-2 border border-gray-300">Aksi</td>
+                </tr>
+              </thead>
+
+              <tbody>
+                {renderDetailAlat().length > 0 ? (
+                  <>
+                    {renderDetailAlat().map((detail, index: number) => (
+                      <tr key={detail.KODE_ALAT}>
+                        <td className="p-2 border border-gray-300 text-center">
+                          {index + 1}.
+                        </td>
+                        <td className="p-2 border border-gray-300">
+                          {detail.alat.NAMA_ALAT}
+                        </td>
+                        <td className="p-2 border border-gray-300 text-center">
+                          {detail.KODE_ALAT}
+                        </td>
+                        <td className="p-2 border border-gray-300">
+                          {detail.detail_perbaikan?.KETERANGAN}
+                        </td>
+                        <td className="p-2 border border-gray-300 text-center">
+                          {detail.detail_perbaikan?.TINGKAT_KERUSAKAN}
+                        </td>
+                        <td className="p-2 border border-gray-300 text-center">
+                          <Button
+                            variants="ACCENT"
+                            fullWidth
+                            onClick={() => onOpen(detail.detail_perbaikan)}
+                          >
+                            Ajukan Perbaikan
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </>
+                ) : (
+                  <tr className="w-full p-2 bg-green-950 text-white">
+                    <td colSpan={6} className="p-2 text-center">
+                      <div className="flex flex-row gap-2 items-center">
+                        <CheckIcon className="w-4 h-4" />
+                        <p>Tidak ada alat rusak</p>
+                      </div>
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
 
-      {selectedAlat && showDetailAlat()}
-
-      <div className="w-full flex flex-col gap-4">
-        <div className={inputContainer}>
-          <label htmlFor="keterangan" className={labelStyles}>
-            Keterangan
-          </label>
-          <textarea
-            id="keterangan"
-            className={inputStyles}
-            required
-            cols={3}
-            placeholder="Alat ini harus diperbaiki karena..."
-            {...register("KETERANGAN")}
-          />
-        </div>
-      </div>
-
-      <Button variants="PRIMARY" fullWidth type="submit" disabled={isLoading}>
-        {isLoading ? "Memproses..." : "Kirim"}
-      </Button>
+      {isOpen && showModal(alatToFix)}
 
       {success && (
         <Snackbar
@@ -210,6 +162,6 @@ export default function FormPerbaikan() {
           duration={5000}
         />
       )}
-    </form>
+    </>
   );
 }

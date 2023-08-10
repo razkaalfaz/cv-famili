@@ -2,7 +2,7 @@ import { db } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 
 interface RequestBody {
-  ALAT_RUSAK: AlatRusak[];
+  ALAT_RUSAK: AlatRusak;
 }
 
 async function handler(request: NextRequest) {
@@ -10,59 +10,53 @@ async function handler(request: NextRequest) {
   const currentDate = new Date();
 
   try {
-    const response: boolean[] = [];
-    for (const alatRusak of body.ALAT_RUSAK) {
-      const kodifikasiPerbaikan = `PBK-${alatRusak.ID_ALAT}`;
-      const pengajuanPerbaikan = await db.perbaikan.upsert({
-        where: {
-          ID_PERBAIKAN: kodifikasiPerbaikan,
-        },
-        create: {
-          ID_PERBAIKAN: kodifikasiPerbaikan,
-          ID_ALAT: alatRusak.ID_ALAT,
-          detail_perbaikan: {
+    const kodifikasiPerbaikan = `PBK-${body.ALAT_RUSAK.ID_ALAT}`;
+    const pengajuanPerbaikan = await db.perbaikan.upsert({
+      where: {
+        ID_PERBAIKAN: kodifikasiPerbaikan,
+      },
+      create: {
+        ID_PERBAIKAN: kodifikasiPerbaikan,
+        ID_ALAT: body.ALAT_RUSAK.ID_ALAT,
+        detail_perbaikan: {
+          connectOrCreate: {
+            where: {
+              ID_DETAIL_PERBAIKAN: `PBK-DETAIL-${body.ALAT_RUSAK.KODE_UNIT_ALAT}`,
+            },
             create: {
-              ID_DETAIL_PERBAIKAN: `PBK-DETAIL-${alatRusak.KODE_UNIT_ALAT}`,
-              KETERANGAN: alatRusak.KETERANGAN_RUSAK,
+              ID_DETAIL_PERBAIKAN: `PBK-DETAIL-${body.ALAT_RUSAK.KODE_UNIT_ALAT}`,
+              KETERANGAN: body.ALAT_RUSAK.KETERANGAN_RUSAK,
               TGL_PENGAJUAN: currentDate,
-              TINGKAT_KERUSAKAN:
-                alatRusak.TINGKAT_KERUSAKAN as TingkatKerusakan,
-              KODE_ALAT: alatRusak.KODE_UNIT_ALAT,
+              TINGKAT_KERUSAKAN: body.ALAT_RUSAK
+                .TINGKAT_KERUSAKAN as TingkatKerusakan,
+              KODE_ALAT: body.ALAT_RUSAK.KODE_UNIT_ALAT,
             },
           },
         },
-        update: {
-          detail_perbaikan: {
-            connectOrCreate: {
-              where: {
-                ID_DETAIL_PERBAIKAN: `PBK-DETAIL-${alatRusak.KODE_UNIT_ALAT}`,
-              },
-              create: {
-                ID_DETAIL_PERBAIKAN: `PBK-DETAIL-${alatRusak.KODE_UNIT_ALAT}`,
-                KETERANGAN: alatRusak.KETERANGAN_RUSAK,
-                TGL_PENGAJUAN: currentDate,
-                TINGKAT_KERUSAKAN:
-                  alatRusak.TINGKAT_KERUSAKAN as TingkatKerusakan,
-                KODE_ALAT: alatRusak.KODE_UNIT_ALAT,
-              },
+      },
+      update: {
+        detail_perbaikan: {
+          connectOrCreate: {
+            where: {
+              ID_DETAIL_PERBAIKAN: `PBK-DETAIL-${body.ALAT_RUSAK.KODE_UNIT_ALAT}`,
+            },
+            create: {
+              ID_DETAIL_PERBAIKAN: `PBK-DETAIL-${body.ALAT_RUSAK.KODE_UNIT_ALAT}`,
+              KETERANGAN: body.ALAT_RUSAK.KETERANGAN_RUSAK,
+              TGL_PENGAJUAN: currentDate,
+              TINGKAT_KERUSAKAN: body.ALAT_RUSAK
+                .TINGKAT_KERUSAKAN as TingkatKerusakan,
+              KODE_ALAT: body.ALAT_RUSAK.KODE_UNIT_ALAT,
             },
           },
         },
-      });
+      },
+    });
 
-      if (pengajuanPerbaikan) {
-        response.push(true);
-      } else {
-        response.push(false);
-      }
-    }
-
-    if (!response.includes(false)) {
-      await db.detail_alat.updateMany({
+    if (pengajuanPerbaikan) {
+      await db.detail_alat.update({
         where: {
-          KODE_ALAT: {
-            in: body.ALAT_RUSAK.map((alatRusak) => alatRusak.KODE_UNIT_ALAT),
-          },
+          KODE_ALAT: body.ALAT_RUSAK.KODE_UNIT_ALAT,
         },
         data: {
           STATUS: "RUSAK",

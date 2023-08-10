@@ -12,8 +12,6 @@ async function handler(request: NextRequest) {
   const body: RequestBody = await request.json();
   const currentDate = new Date();
 
-  console.log(body);
-
   async function updateDataPermintaan() {
     const updatePermintaan = await db.permintaan.update({
       where: {
@@ -84,18 +82,18 @@ async function handler(request: NextRequest) {
       });
 
       if (updateDetailPermintaan) {
-        return NextResponse.json({
+        return {
           ok: true,
           message: "Barang pengembalian berhasil diterima.",
-        });
+        };
       } else {
-        return NextResponse.json({
+        return {
           ok: false,
           message: "Terjadi kesalahan...",
-        });
+        };
       }
     } else {
-      return NextResponse.json({ ok: false, message: "Terjadi kesalahan..." });
+      return { ok: false, message: "Terjadi kesalahan..." };
     }
   }
 
@@ -121,11 +119,11 @@ async function handler(request: NextRequest) {
         });
       } else {
         const updateResponse = await updateDataPermintaan();
-        return updateResponse;
+        return NextResponse.json(updateResponse);
       }
     } else {
       const updateResponse = await updateDataPermintaan();
-      return updateResponse;
+      return NextResponse.json(updateResponse);
     }
   } catch (err) {
     console.error(err);
