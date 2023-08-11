@@ -99,7 +99,23 @@ export default function ListConditionalAlat({ dataAlat }: ComponentProps) {
               <td className={tdStyles}>Nama Alat</td>
               <td className={tdStyles}>Kode Unit Alat</td>
               <td className={tdStyles}>Status Alat</td>
-              <td className={tdStyles}>Detail Kerusakan</td>
+              {listOptions === "rusak" && (
+                <>
+                  <td className={tdStyles}>ID Perbaikan</td>
+                  <td className={tdStyles}>Detail Kerusakan</td>
+                </>
+              )}
+              {(listOptions === "pengajuan" || listOptions === "digunakan") && (
+                <td className={tdStyles}>ID Permintaan</td>
+              )}
+
+              {listOptions === "all" && (
+                <>
+                  <td className={tdStyles}>ID Permintaan</td>
+                  <td className={tdStyles}>ID Perbaikan</td>
+                  <td className={tdStyles}>Detail Kerusakan</td>
+                </>
+              )}
             </tr>
           </thead>
 
@@ -123,17 +139,69 @@ export default function ListConditionalAlat({ dataAlat }: ComponentProps) {
                     <td className={tdStyles + " text-center"}>
                       {detail.STATUS}
                     </td>
-                    {detail.STATUS === "RUSAK" ? (
-                      <td className={tdStyles + " text-center"}>
-                        <Link
-                          className="rounded-md p-2 bg-green-950 text-white grid place-items-center"
-                          href={"/laporan-perbaikan/detail/" + detail.KODE_ALAT}
-                        >
-                          Detail
-                        </Link>
+                    {listOptions === "rusak" && (
+                      <>
+                        <td className={tdStyles}>
+                          {detail.perbaikan
+                            ? detail.perbaikan.ID_PERBAIKAN
+                            : "-"}
+                        </td>
+                        {detail.STATUS === "RUSAK" ? (
+                          <td className={tdStyles + " text-center"}>
+                            <Link
+                              className="rounded-md p-2 bg-green-950 text-white grid place-items-center"
+                              href={
+                                "/laporan-perbaikan/detail/" + detail.KODE_ALAT
+                              }
+                            >
+                              Detail
+                            </Link>
+                          </td>
+                        ) : (
+                          <td className={tdStyles + " text-center"}>-</td>
+                        )}
+                      </>
+                    )}
+
+                    {(listOptions === "pengajuan" ||
+                      listOptions === "digunakan") && (
+                      <td className={tdStyles}>
+                        {detail.detail_permintaan
+                          ? detail.detail_permintaan.map((x) => x.ID_PERMINTAAN)
+                          : "-"}
                       </td>
-                    ) : (
-                      <td className={tdStyles + " text-center"}>-</td>
+                    )}
+
+                    {listOptions === "all" && (
+                      <>
+                        <td className={tdStyles}>
+                          {detail.detail_permintaan &&
+                          detail.detail_permintaan.length > 0
+                            ? detail.detail_permintaan.map(
+                                (x) => x.ID_PERMINTAAN
+                              )
+                            : "-"}
+                        </td>
+                        <td className={tdStyles}>
+                          {detail.perbaikan
+                            ? detail.perbaikan.ID_PERBAIKAN
+                            : "-"}
+                        </td>
+                        {detail.STATUS === "RUSAK" ? (
+                          <td className={tdStyles + " text-center"}>
+                            <Link
+                              className="rounded-md p-2 bg-green-950 text-white grid place-items-center"
+                              href={
+                                "/laporan-perbaikan/detail/" + detail.KODE_ALAT
+                              }
+                            >
+                              Detail
+                            </Link>
+                          </td>
+                        ) : (
+                          <td className={tdStyles + " text-center"}>-</td>
+                        )}
+                      </>
                     )}
                   </tr>
                 ))}

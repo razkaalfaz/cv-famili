@@ -15,8 +15,8 @@ async function handler(
       detail_alat: {
         include: {
           detail_permintaan: {
-            select: {
-              ID_PERMINTAAN: true,
+            include: {
+              detail_alat: true,
             },
           },
           alat: true,

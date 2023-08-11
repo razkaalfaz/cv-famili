@@ -348,11 +348,9 @@ export default function FormPermintaan({
       );
 
       if (currentAlat) {
-        currentAlat
-          .filter((permintaan) => permintaan !== null)
-          .forEach((alat) => {
-            setSelectedAlat((prev) => [...prev, alat.ID_ALAT]);
-          });
+        currentAlat.forEach((alat) => {
+          setSelectedAlat((prev) => [...prev, alat.ID_ALAT]);
+        });
 
         dataPermintaan?.detail_permintaan_alat?.forEach((detail) => {
           setQuantityAlat((prev) => ({
@@ -388,135 +386,139 @@ export default function FormPermintaan({
       className="w-full flex flex-col gap-4 px-8 py-8"
       onSubmit={handleSubmit(ajukanPermintaan)}
     >
-      <div className={inputContainerStyles}>
-        <label className={labelStyles} htmlFor="nama_proyek">
-          Nama Proyek
-        </label>
-        <input
-          disabled={isLoading}
-          {...register("NAMA_PROYEK")}
-          type="text"
-          placeholder="Nama proyek..."
-          id="nama_proyek"
-          className={inputStyles}
-          defaultValue={dataPermintaan?.NAMA_PROYEK ?? ""}
-          required
-        />
-      </div>
-
-      <div className={inputContainerStyles}>
-        <label className={labelStyles} htmlFor="lokasi_proyek">
-          Lokasi Proyek
-        </label>
-        <input
-          disabled={isLoading}
-          {...register("LOKASI_PROYEK")}
-          type="text"
-          placeholder="Jl..."
-          id="lokasi_proyek"
-          className={inputStyles}
-          defaultValue={dataPermintaan?.LOKASI_PROYEK ?? ""}
-          required
-        />
-      </div>
-
-      <div className={inputContainerStyles}>
-        <label className={labelStyles} htmlFor="opsi_pengiriman">
-          Opsi Pengiriman
-        </label>
-        <p className="text-sm text-gray-500">
-          Apakah lokasi proyek berada di dalam kota Sukabumi?
-        </p>
-        <select
-          id="opsi_pengiriman"
-          name="opsi_pengiriman"
-          required
-          onChange={(event) => setIsInternal(event.target.value === "YA")}
-          className={inputStyles}
-        >
-          <option value="YA">Dalam Kota Sukabumi</option>
-          <option value="TIDAK">Luar Kota Sukabumi</option>
-        </select>
-        <p className="text-gray-500">
-          Estimasi pengiriman: {isInternal ? "1 hari" : "3 hari"}.
-        </p>
-      </div>
-
-      <div className={inputContainerStyles}>
-        <label className={labelStyles} htmlFor="tgl_penggunaan">
-          Tanggal Penggunaan
-        </label>
-        <p className="text-sm text-gray-500">
-          Pada tanggal berapa alat/bahan yang anda ajukan akan di gunakan?
-        </p>
-        <input
-          disabled={isLoading}
-          {...register("TGL_PENGGUNAAN")}
-          min={
-            isInternal
-              ? dateToString(oneDayShipping.toDateString())
-              : dateToString(threeDaysShipping.toDateString())
-          }
-          type="date"
-          id="tgl_penggunaan"
-          className={inputStyles}
-          defaultValue={
-            dateToString(dataPermintaan?.TGL_PENGGUNAAN?.toString() ?? "") ?? ""
-          }
-          required
-        />
-      </div>
-
-      <div className={inputContainerStyles}>
-        <label className={labelStyles} htmlFor="tgl_pengembalian">
-          Tanggal Pengembalian
-        </label>
-        <p className="text-sm text-gray-500">
-          Pada tanggal berapa alat/bahan yang anda ajukan akan di kembalikan?
-        </p>
-        <input
-          disabled={isLoading}
-          {...register("TGL_PENGEMBALIAN")}
-          type="date"
-          id="tgl_pengembalian"
-          className={inputStyles}
-          defaultValue={
-            dateToString(dataPermintaan?.TGL_PENGEMBALIAN?.toString() ?? "") ??
-            ""
-          }
-          required
-        />
-      </div>
-
-      <div className={inputContainerStyles}>
-        <label className={labelStyles}>Alat</label>
-        <p className="text-sm text-gray-500">
-          Silahkan pilih alat yang akan di pinjam
-        </p>
+      <div className="w-full grid grid-cols-2 gap-8">
         <div className="w-full flex flex-col gap-4">
-          <ListPilihanAlat
-            alat={dataAlat}
-            onCheckboxClicked={handleAlatChange}
-            selectedAlat={selectedAlat}
-          />
+          <div className={inputContainerStyles}>
+            <label className={labelStyles} htmlFor="nama_proyek">
+              Nama Proyek
+            </label>
+            <input
+              disabled={isLoading}
+              {...register("NAMA_PROYEK")}
+              type="text"
+              placeholder="Nama proyek..."
+              id="nama_proyek"
+              className={inputStyles}
+              defaultValue={dataPermintaan?.NAMA_PROYEK ?? ""}
+              required
+            />
+          </div>
+          <div className={inputContainerStyles}>
+            <label className={labelStyles} htmlFor="lokasi_proyek">
+              Lokasi Proyek
+            </label>
+            <input
+              disabled={isLoading}
+              {...register("LOKASI_PROYEK")}
+              type="text"
+              placeholder="Jl..."
+              id="lokasi_proyek"
+              className={inputStyles}
+              defaultValue={dataPermintaan?.LOKASI_PROYEK ?? ""}
+              required
+            />
+          </div>
+          <div className={inputContainerStyles}>
+            <label className={labelStyles} htmlFor="opsi_pengiriman">
+              Opsi Pengiriman
+            </label>
+            <p className="text-sm text-gray-500">
+              Apakah lokasi proyek berada di dalam kota Sukabumi?
+            </p>
+            <select
+              id="opsi_pengiriman"
+              name="opsi_pengiriman"
+              required
+              onChange={(event) => setIsInternal(event.target.value === "YA")}
+              className={inputStyles}
+            >
+              <option value="YA">Dalam Kota Sukabumi</option>
+              <option value="TIDAK">Luar Kota Sukabumi</option>
+            </select>
+            <p className="text-gray-500">
+              Estimasi pengiriman: {isInternal ? "1 hari" : "3 hari"}.
+            </p>
+          </div>
+          <div className={inputContainerStyles}>
+            <label className={labelStyles} htmlFor="tgl_penggunaan">
+              Tanggal Penggunaan
+            </label>
+            <p className="text-sm text-gray-500">
+              Pada tanggal berapa alat/bahan yang anda ajukan akan di gunakan?
+            </p>
+            <input
+              disabled={isLoading}
+              {...register("TGL_PENGGUNAAN")}
+              min={
+                isInternal
+                  ? dateToString(oneDayShipping.toDateString())
+                  : dateToString(threeDaysShipping.toDateString())
+              }
+              type="date"
+              id="tgl_penggunaan"
+              className={inputStyles}
+              defaultValue={
+                dateToString(
+                  dataPermintaan?.TGL_PENGGUNAAN?.toString() ?? ""
+                ) ?? ""
+              }
+              required
+            />
+          </div>
+          <div className={inputContainerStyles}>
+            <label className={labelStyles} htmlFor="tgl_pengembalian">
+              Tanggal Pengembalian
+            </label>
+            <p className="text-sm text-gray-500">
+              Pada tanggal berapa alat/bahan yang anda ajukan akan di
+              kembalikan?
+            </p>
+            <input
+              disabled={isLoading}
+              {...register("TGL_PENGEMBALIAN")}
+              type="date"
+              id="tgl_pengembalian"
+              className={inputStyles}
+              defaultValue={
+                dateToString(
+                  dataPermintaan?.TGL_PENGEMBALIAN?.toString() ?? ""
+                ) ?? ""
+              }
+              required
+            />
+          </div>
+
+          {renderItemInputs()}
+        </div>
+        <div className="w-full flex flex-col gap-4">
+          <div className={inputContainerStyles}>
+            <label className={labelStyles}>Alat</label>
+            <p className="text-sm text-gray-500">
+              Silahkan pilih alat yang akan di pinjam
+            </p>
+            <div className="w-full flex flex-col gap-4">
+              <ListPilihanAlat
+                alat={dataAlat}
+                onCheckboxClicked={handleAlatChange}
+                selectedAlat={selectedAlat}
+              />
+            </div>
+          </div>
+          <div className={inputContainerStyles}>
+            <label className={labelStyles}>Bahan</label>
+            <p className="text-sm text-gray-500">
+              Silahkan pilih bahan yang tersedia
+            </p>
+            <div className="w-full flex flex-col gap-4">
+              <ListPilihanBahan
+                bahan={dataBahan}
+                onCheckboxClicked={handleBahanChange}
+                selectedBahan={selectedBahan}
+              />
+            </div>
+          </div>
         </div>
       </div>
-
-      <div className={inputContainerStyles}>
-        <label className={labelStyles}>Bahan</label>
-        <p className="text-sm text-gray-500">
-          Silahkan pilih bahan yang tersedia
-        </p>
-        <div className="w-full flex flex-col gap-4">
-          <ListPilihanBahan
-            bahan={dataBahan}
-            onCheckboxClicked={handleBahanChange}
-            selectedBahan={selectedBahan}
-          />
-        </div>
-      </div>
-
-      {renderItemInputs()}
 
       <Button type="submit" variants="PRIMARY" fullWidth disabled={isLoading}>
         {isLoading ? "Memproses..." : "Kirim"}
