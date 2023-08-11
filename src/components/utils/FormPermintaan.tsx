@@ -1,16 +1,16 @@
 "use client";
 
 import { dateToString } from "@/lib/helper";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useSWRConfig } from "swr";
-import AccordionAlat from "./AccordionAlat";
 import { useSession } from "next-auth/react";
 import ListPilihanBahan from "./ListPilihanBahan";
 import { TrashIcon } from "@heroicons/react/24/solid";
 import Button from "../button/Button";
 import Snackbar from "../snackbar/Snackbar";
 import { useRouter } from "next/navigation";
+import ListPilihanAlat from "./ListPilihanAlat";
 
 interface Inputs {
   alat: {
@@ -27,6 +27,10 @@ interface Inputs {
 }
 
 interface BahanQuantities {
+  [key: string]: string;
+}
+
+interface AlatQuantities {
   [key: string]: string;
 }
 
@@ -47,6 +51,7 @@ export default function FormPermintaan({
   const [selectedAlat, setSelectedAlat] = useState<string[]>([]);
   const [selectedBahan, setSelectedBahan] = useState<string[]>([]);
   const [quantityBahan, setQuantityBahan] = useState<BahanQuantities>({});
+  const [quantityAlat, setQuantityAlat] = useState<AlatQuantities>({});
   const [uncheckedItems, setUncheckedItems] = useState<string[]>([]);
   const [isInternal, setIsInternal] = useState(true);
   const threeDaysShipping = new Date(
@@ -83,7 +88,8 @@ export default function FormPermintaan({
               TGL_PENGEMBALIAN: data.TGL_PENGEMBALIAN,
               SELECTED_ALAT: selectedAlat,
               SELECTED_BAHAN: selectedBahan,
-              JUMLAH_BARANG: quantityBahan,
+              JUMLAH_BAHAN: quantityBahan,
+              JUMLAH_ALAT: quantityAlat,
               ID_USER: session.user.ID_USER,
             }),
           });
@@ -161,7 +167,7 @@ export default function FormPermintaan({
     }
   };
 
-  const handleItemChange = (
+  const handleBahanChange = (
     event: React.ChangeEvent<HTMLInputElement>,
     item: BarangPermintaan
   ) => {
@@ -176,7 +182,22 @@ export default function FormPermintaan({
     }
   };
 
-  const handleQuantityChange = (
+  const handleAlatChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    item: BarangPermintaan
+  ) => {
+    const { checked } = event.target;
+    if (checked) {
+      setSelectedAlat((prev) => [...prev, item.ID_BARANG]);
+    } else {
+      const updatedAlat = selectedAlat.filter(
+        (alat) => alat !== item.ID_BARANG
+      );
+      setSelectedAlat(updatedAlat);
+    }
+  };
+
+  const handleBahanQuantitiesChange = (
     event: React.ChangeEvent<HTMLInputElement>,
     itemId: string
   ) => {
@@ -184,7 +205,15 @@ export default function FormPermintaan({
     setQuantityBahan({ ...quantityBahan, [itemId]: value });
   };
 
-  const hapusBarang = (ID_BARANG: string) => {
+  const handleAlatQuantitiesChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    itemId: string
+  ) => {
+    const { value } = event?.target;
+    setQuantityAlat({ ...quantityAlat, [itemId]: value });
+  };
+
+  const hapusBahan = (ID_BARANG: string) => {
     const updatedItems = selectedBahan.filter((item) => item !== ID_BARANG);
     setSelectedBahan(updatedItems);
     var currentQuantities = quantityBahan;
@@ -196,43 +225,122 @@ export default function FormPermintaan({
     }
   };
 
+  const hapusAlat = (ID_BARANG: string) => {
+    const updatedItems = selectedAlat.filter((item) => item !== ID_BARANG);
+    setSelectedAlat(updatedItems);
+    var currentQuantities = quantityAlat;
+    delete currentQuantities[ID_BARANG];
+
+    setQuantityAlat(currentQuantities);
+    if (!uncheckedItems.includes(ID_BARANG)) {
+      setUncheckedItems((prev) => [...prev, ID_BARANG]);
+    }
+  };
+
   const renderItemInputs = () => {
-    return selectedBahan.map((item) => {
-      const itemData = dataBahan.find((bahan) => bahan.ID_BAHAN === item);
-      const maxValue = itemData?.STOCK_BAHAN;
+    if (selectedAlat.length > 0 || selectedBahan.length > 0) {
       return (
-        <div key={item}>
-          <label className="w-full flex flex-row gap-4 items-center">
-            <div className="w-2/12">{itemData?.NAMA_BAHAN}:</div>
-            <div className="w-5/6 rounded-md outline-none border border-gray-300 overflow-hidden px-2 py-2 flex flex-row items-center gap-4">
-              <input
-                disabled={isLoading}
-                type="number"
-                min="1"
-                value={quantityBahan[item] || ""}
-                max={maxValue ? maxValue : undefined}
-                className="w-full h-full"
-                onChange={(e) => handleQuantityChange(e, item)}
-                required
-              />
-              <p className="text-gray-500">{itemData?.UNIT_BAHAN}</p>
-            </div>
-            <div
-              className="px-2 py-2 rounded-md grid place-items-center text-white bg-red-950 overflow-hidden cursor-pointer"
-              onClick={() => hapusBarang(item)}
-            >
-              <TrashIcon className="w-4 h-4" />
-            </div>
-          </label>
+        <div className="flex flex-col gap-8">
+          <div className="w-full flex flex-col gap-4">
+            {selectedAlat.length > 0 && (
+              <div className="w-full flex flex-col gap-2">
+                <p className={labelStyles}>Jumlah alat yang dibutuhkan:</p>
+                {selectedAlat.map((item) => {
+                  const itemData = dataAlat.find(
+                    (alat) => alat.ID_ALAT === item
+                  );
+                  const detailAlat = itemData?.detail_alat;
+                  const alatTersedia = detailAlat?.filter(
+                    (detail) => detail.STATUS === "TERSEDIA"
+                  );
+                  const maxValue = alatTersedia?.length;
+                  return (
+                    <div key={item}>
+                      <label className="w-full flex flex-row gap-4 items-center">
+                        <div className="w-2/12">{itemData?.NAMA_ALAT}:</div>
+                        <div className="w-5/6 rounded-md outline-none border border-gray-300 overflow-hidden px-2 py-2 flex flex-row items-center gap-4">
+                          <input
+                            disabled={isLoading}
+                            type="number"
+                            min="1"
+                            value={quantityAlat[item] || ""}
+                            max={maxValue ? maxValue : undefined}
+                            className="w-full h-full"
+                            onChange={(e) =>
+                              handleAlatQuantitiesChange(e, item)
+                            }
+                            required
+                          />
+                          <p className="text-gray-500">{itemData?.UNIT_ALAT}</p>
+                        </div>
+                        <div
+                          className="px-2 py-2 rounded-md grid place-items-center text-white bg-red-950 overflow-hidden cursor-pointer"
+                          onClick={() => hapusAlat(item)}
+                        >
+                          <TrashIcon className="w-4 h-4" />
+                        </div>
+                      </label>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            <div className="w-full h-px bg-gray-300" />
+
+            {selectedBahan.length > 0 && (
+              <div className="w-full flex flex-col gap-2">
+                <p className={labelStyles}>Jumlah bahan yang dibutuhkan:</p>
+                {selectedBahan.map((item) => {
+                  const itemData = dataBahan.find(
+                    (bahan) => bahan.ID_BAHAN === item
+                  );
+                  const maxValue = itemData?.STOCK_BAHAN;
+                  return (
+                    <div key={item}>
+                      <label className="w-full flex flex-row gap-4 items-center">
+                        <div className="w-2/12">{itemData?.NAMA_BAHAN}:</div>
+                        <div className="w-5/6 rounded-md outline-none border border-gray-300 overflow-hidden px-2 py-2 flex flex-row items-center gap-4">
+                          <input
+                            disabled={isLoading}
+                            type="number"
+                            min="1"
+                            value={quantityBahan[item] || ""}
+                            max={maxValue ? maxValue : undefined}
+                            className="w-full h-full"
+                            onChange={(e) =>
+                              handleBahanQuantitiesChange(e, item)
+                            }
+                            required
+                          />
+                          <p className="text-gray-500">
+                            {itemData?.UNIT_BAHAN}
+                          </p>
+                        </div>
+                        <div
+                          className="px-2 py-2 rounded-md grid place-items-center text-white bg-red-950 overflow-hidden cursor-pointer"
+                          onClick={() => hapusBahan(item)}
+                        >
+                          <TrashIcon className="w-4 h-4" />
+                        </div>
+                      </label>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </div>
       );
-    });
+    } else {
+      return null;
+    }
   };
 
   useEffect(() => {
     if (dataPermintaan) {
-      const currentAlat = dataPermintaan?.detail_permintaan?.map(
-        (permintaan) => permintaan.detail_alat
+      const currentAlat = dataPermintaan?.detail_permintaan_alat?.map(
+        (permintaan) => permintaan
       );
 
       const currentBahan = dataPermintaan?.detail_permintaan?.map(
@@ -243,8 +351,15 @@ export default function FormPermintaan({
         currentAlat
           .filter((permintaan) => permintaan !== null)
           .forEach((alat) => {
-            setSelectedAlat((prev) => [...prev, alat.KODE_ALAT]);
+            setSelectedAlat((prev) => [...prev, alat.ID_ALAT]);
           });
+
+        dataPermintaan?.detail_permintaan_alat?.forEach((detail) => {
+          setQuantityAlat((prev) => ({
+            ...prev,
+            [detail.ID_ALAT]: detail.JUMLAH_ALAT.toString(),
+          }));
+        });
       }
 
       if (currentBahan) {
@@ -378,37 +493,13 @@ export default function FormPermintaan({
         <p className="text-sm text-gray-500">
           Silahkan pilih alat yang akan di pinjam
         </p>
-        {dataPermintaan ? (
-          <div className="w-full flex flex-col gap-4">
-            {dataAlat.map((alat) => (
-              <AccordionAlat
-                isEdit={true}
-                uncheckedAlat={uncheckedItems}
-                setUncheckedAlat={setUncheckedItems}
-                dataAlat={alat}
-                selectedAlat={selectedAlat}
-                setSelectedAlat={setSelectedAlat}
-                key={alat.ID_ALAT}
-                dataPermintaan={dataPermintaan}
-              />
-            ))}
-          </div>
-        ) : (
-          <div className="w-full flex flex-col gap-4">
-            {dataAlat.map((alat) => (
-              <AccordionAlat
-                isEdit={false}
-                uncheckedAlat={uncheckedItems}
-                setUncheckedAlat={setUncheckedItems}
-                dataAlat={alat}
-                selectedAlat={selectedAlat}
-                setSelectedAlat={setSelectedAlat}
-                key={alat.ID_ALAT}
-                dataPermintaan={null}
-              />
-            ))}
-          </div>
-        )}
+        <div className="w-full flex flex-col gap-4">
+          <ListPilihanAlat
+            alat={dataAlat}
+            onCheckboxClicked={handleAlatChange}
+            selectedAlat={selectedAlat}
+          />
+        </div>
       </div>
 
       <div className={inputContainerStyles}>
@@ -419,18 +510,13 @@ export default function FormPermintaan({
         <div className="w-full flex flex-col gap-4">
           <ListPilihanBahan
             bahan={dataBahan}
-            onCheckboxClicked={handleItemChange}
+            onCheckboxClicked={handleBahanChange}
             selectedBahan={selectedBahan}
           />
         </div>
       </div>
 
-      {selectedBahan.length > 0 && (
-        <div className="flex flex-col gap-4">
-          <p className={labelStyles}>Jumlah bahan yang dibutuhkan:</p>
-          {renderItemInputs()}
-        </div>
-      )}
+      {renderItemInputs()}
 
       <Button type="submit" variants="PRIMARY" fullWidth disabled={isLoading}>
         {isLoading ? "Memproses..." : "Kirim"}

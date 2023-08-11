@@ -12,10 +12,15 @@ async function handler(request: NextRequest) {
         include: {
           detail_alat: {
             include: {
-              alat: true
-            }
+              alat: true,
+            },
           },
           bahan: true,
+        },
+      },
+      detail_permintaan_alat: {
+        include: {
+          alat: true,
         },
       },
       user: true,

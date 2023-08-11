@@ -54,6 +54,7 @@ type Permintaan = {
   TGL_PENGEMBALIAN: Date;
   STATUS: StatusPermintaan;
   detail_permintaan: DetailPermintaan[];
+  detail_permintaan_alat: IDetailPermintaanAlat[];
   user: User;
   KETERANGAN: string | null;
   transportasi: Transportasi | null;
@@ -106,6 +107,14 @@ type DetailPermintaan = {
   detail_alat: IDetailAlat;
   bahan: Bahan;
   JUMLAH_BAHAN: number;
+};
+
+type IDetailPermintaanAlat = {
+  ID_PERMINTAAN_ALAT: string;
+  ID_ALAT: string;
+  ID_PERMINTAAN: string;
+  JUMLAH_ALAT: number;
+  alat: Alat;
 };
 
 type BarangPermintaan = {

@@ -8,12 +8,13 @@ datasource db {
 }
 
 model alat {
-  ID_ALAT      String        @id
-  NAMA_ALAT    String?
-  UNIT_ALAT    String?
-  ID_PERBAIKAN String?
-  perbaikan    perbaikan?
-  detail_alat  detail_alat[]
+  ID_ALAT                String                   @id
+  NAMA_ALAT              String?
+  UNIT_ALAT              String?
+  ID_PERBAIKAN           String?
+  detail_permintaan_alat detail_permintaan_alat[]
+  perbaikan              perbaikan?
+  detail_alat            detail_alat[]
 }
 
 model detail_alat {
@@ -56,22 +57,32 @@ model bahan {
 }
 
 model permintaan {
-  ID_PERMINTAAN     String              @id
-  ID_USER           Int?
-  TGL_PERMINTAAN    DateTime?           @default(now())
-  STATUS            STATUS_PERMINTAAN?  @default(PENDING)
-  ID_PENGEMBALIAN   String?
-  LOKASI_PROYEK     String
-  NAMA_PROYEK       String
-  TGL_PENGEMBALIAN  DateTime?
-  TGL_PENGGUNAAN    DateTime?
-  KETERANGAN        String?
-  transportasi      transportasi?
-  detail_permintaan detail_permintaan[]
-  pengembalian      pengembalian?
-  user              user?               @relation(fields: [ID_USER], references: [ID_USER], onDelete: Cascade, onUpdate: Restrict)
+  ID_PERMINTAAN          String                   @id
+  ID_USER                Int?
+  TGL_PERMINTAAN         DateTime?                @default(now())
+  STATUS                 STATUS_PERMINTAAN?       @default(PENDING)
+  ID_PENGEMBALIAN        String?
+  LOKASI_PROYEK          String
+  NAMA_PROYEK            String
+  TGL_PENGEMBALIAN       DateTime?
+  TGL_PENGGUNAAN         DateTime?
+  KETERANGAN             String?
+  transportasi           transportasi?
+  detail_permintaan_alat detail_permintaan_alat[]
+  detail_permintaan      detail_permintaan[]
+  pengembalian           pengembalian?
+  user                   user?                    @relation(fields: [ID_USER], references: [ID_USER], onDelete: Cascade, onUpdate: Restrict)
 
   @@index([ID_USER])
+}
+
+model detail_permintaan_alat {
+  ID_PERMINTAAN_ALAT String     @id
+  ID_ALAT            String
+  ID_PERMINTAAN      String
+  JUMLAH_ALAT        Int        @default(1)
+  alat               alat       @relation(fields: [ID_ALAT], references: [ID_ALAT], onDelete: Cascade)
+  permintaan         permintaan @relation(fields: [ID_PERMINTAAN], references: [ID_PERMINTAAN], onDelete: Cascade)
 }
 
 model user {

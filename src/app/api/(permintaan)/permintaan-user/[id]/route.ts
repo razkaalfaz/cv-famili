@@ -24,6 +24,11 @@ async function handler(
           bahan: true,
         },
       },
+      detail_permintaan_alat: {
+        include: {
+          alat: true,
+        },
+      },
       user: true,
       transportasi: true,
       pengembalian: true,
