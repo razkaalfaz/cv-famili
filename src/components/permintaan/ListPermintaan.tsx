@@ -1,8 +1,6 @@
 "use cient";
 
-import { VARIABEL_PERMINTAAN } from "@/lib/constants";
 import { decimalNumber } from "@/lib/helper";
-import Button from "../button/Button";
 import Link from "next/link";
 
 interface ComponentProps {
@@ -20,12 +18,6 @@ export default function ListPermintaan({ dataPermintaan }: ComponentProps) {
     )}/${years}`;
     return dateToReturn;
   }
-
-  const variabelTabel = () => {
-    const variabel = VARIABEL_PERMINTAAN.filter((x) => x.id !== "number");
-
-    return variabel;
-  };
 
   if (dataPermintaan) {
     if (dataPermintaan.length > 0) {
@@ -54,8 +46,8 @@ export default function ListPermintaan({ dataPermintaan }: ComponentProps) {
                         <td className="shrink-0 whitespace-nowrap px-2 py-2 border border-gray-300">
                           Lokasi Proyek
                         </td>
-                        {permintaan.detail_permintaan
-                          .map((detail) => detail.detail_alat !== null)
+                        {permintaan.detail_permintaan_alat
+                          .map((detail) => detail.ID_ALAT !== null)
                           .includes(true) && (
                           <td className="shrink-0 whitespace-nowrap px-2 py-2 border border-gray-300">
                             Alat
@@ -93,34 +85,17 @@ export default function ListPermintaan({ dataPermintaan }: ComponentProps) {
                         <td className="whitespace-nowrap p-2 border border-gray-300">
                           {permintaan.LOKASI_PROYEK}
                         </td>
-                        {permintaan.detail_permintaan
-                          .map((detail) => detail.detail_alat !== null)
+                        {permintaan.detail_permintaan_alat
+                          .map((detail) => detail.ID_ALAT !== null)
                           .includes(true) && (
-                          <td className="whitespace-nowrap p-2 border border-gray-300 w-max shrink-0">
-                            {permintaan.detail_permintaan.map(
+                          <td className="whitespace-nowrap p-2 border border-gray-300 w-max shrink-0 flex flex-col gap-2">
+                            {permintaan.detail_permintaan_alat.map(
                               (detailPermintaan) => (
-                                <>
-                                  {detailPermintaan.detail_alat && (
-                                    <div
-                                      key={
-                                        detailPermintaan.ID_DETAIL_PERMINTAAN
-                                      }
-                                      className="flex flex-row gap-2 items-center"
-                                    >
-                                      <p>
-                                        {
-                                          detailPermintaan?.detail_alat
-                                            ?.KODE_ALAT
-                                        }{" "}
-                                        -{" "}
-                                        {
-                                          detailPermintaan?.detail_alat?.alat
-                                            ?.NAMA_ALAT
-                                        }
-                                      </p>
-                                    </div>
-                                  )}
-                                </>
+                                <p key={detailPermintaan.ID_PERMINTAAN_ALAT}>
+                                  {detailPermintaan.alat.NAMA_ALAT} -{" "}
+                                  {detailPermintaan.JUMLAH_ALAT}{" "}
+                                  {detailPermintaan.alat.UNIT_ALAT}
+                                </p>
                               )
                             )}
                           </td>

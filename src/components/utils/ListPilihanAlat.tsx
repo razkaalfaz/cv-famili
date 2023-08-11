@@ -9,7 +9,7 @@ interface ComponentProps {
     event: React.ChangeEvent<HTMLInputElement>,
     item: BarangPermintaan
   ) => void;
-  selectedAlat: BarangPermintaan[];
+  selectedAlat: string[];
 }
 
 export default function ListPilihanAlat({
@@ -27,7 +27,7 @@ export default function ListPilihanAlat({
     (idAlat: string) => {
       var checked = false;
       for (var i = 0; i < (selectedAlat?.length ?? 0); i++) {
-        if (selectedAlat[i].ID_BARANG === idAlat) {
+        if (selectedAlat[i] === idAlat) {
           checked = true;
           break;
         }
@@ -37,6 +37,15 @@ export default function ListPilihanAlat({
     },
     [selectedAlat]
   );
+
+  const maxValue = (alat: Alat) => {
+    const detailAlat = alat.detail_alat;
+    const alatTersedia = detailAlat.filter(
+      (detail) => detail.STATUS === "TERSEDIA"
+    );
+
+    return alatTersedia.length;
+  };
 
   return (
     <div className="w-full flex flex-row items-center flex-wrap gap-8">
@@ -87,7 +96,7 @@ export default function ListPilihanAlat({
                 {dataAlat.NAMA_ALAT}
               </td>
               <td className="px-2 py-2 border border-gray-300">
-                {dataAlat.detail_alat.length} {dataAlat.UNIT_ALAT}
+                {maxValue(dataAlat)} {dataAlat.UNIT_ALAT}
               </td>
             </tr>
           ))}

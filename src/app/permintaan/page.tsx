@@ -144,8 +144,8 @@ export default function Permintaan() {
                             <td className="shrink-0 whitespace-nowrap px-2 py-2 border border-gray-300">
                               Lokasi Proyek
                             </td>
-                            {permintaan.detail_permintaan
-                              .map((detail) => detail.detail_alat !== null)
+                            {permintaan.detail_permintaan_alat
+                              .map((detail) => detail.ID_ALAT !== null)
                               .includes(true) && (
                               <td className="shrink-0 whitespace-nowrap px-2 py-2 border border-gray-300">
                                 Alat
@@ -186,34 +186,19 @@ export default function Permintaan() {
                             <td className="whitespace-nowrap p-2 border border-gray-300">
                               {permintaan.LOKASI_PROYEK}
                             </td>
-                            {permintaan.detail_permintaan
-                              .map((detail) => detail.detail_alat !== null)
+                            {permintaan.detail_permintaan_alat
+                              .map((detail) => detail.ID_ALAT !== null)
                               .includes(true) && (
                               <td className="whitespace-nowrap p-2 border border-gray-300 w-max shrink-0">
-                                {permintaan.detail_permintaan.map(
+                                {permintaan.detail_permintaan_alat.map(
                                   (detailPermintaan) => (
-                                    <>
-                                      {detailPermintaan.detail_alat && (
-                                        <div
-                                          key={
-                                            detailPermintaan.ID_DETAIL_PERMINTAAN
-                                          }
-                                          className="flex flex-row gap-2 items-center"
-                                        >
-                                          <p>
-                                            {
-                                              detailPermintaan?.detail_alat
-                                                ?.KODE_ALAT
-                                            }{" "}
-                                            -{" "}
-                                            {
-                                              detailPermintaan?.detail_alat
-                                                ?.alat?.NAMA_ALAT
-                                            }
-                                          </p>
-                                        </div>
-                                      )}
-                                    </>
+                                    <p
+                                      key={detailPermintaan.ID_PERMINTAAN_ALAT}
+                                    >
+                                      {detailPermintaan.alat.NAMA_ALAT} -{" "}
+                                      {detailPermintaan.JUMLAH_ALAT}{" "}
+                                      {detailPermintaan.alat.UNIT_ALAT}
+                                    </p>
                                   )
                                 )}
                               </td>
@@ -258,7 +243,7 @@ export default function Permintaan() {
                                 <div className="flex flex-row items-center gap-2">
                                   {permintaan.STATUS === "PENDING" && (
                                     <>
-                                      <Link
+                                      {/* <Link
                                         href={
                                           "/permintaan/edit/" +
                                           permintaan.ID_PERMINTAAN
@@ -267,7 +252,7 @@ export default function Permintaan() {
                                         className="px-2 py-2 grid place-items-center bg-green-950 text-white rounded-md"
                                       >
                                         <PencilIcon className="w-4 h-4 text-white" />
-                                      </Link>
+                                      </Link> */}
                                       <Button
                                         variants="ERROR"
                                         onClick={() =>

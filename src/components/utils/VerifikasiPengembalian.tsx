@@ -110,9 +110,9 @@ export default function VerifikasiPengembalian({
     const { checked, value } = event.target;
 
     if (permintaan) {
-      const detailAlat = permintaan.detail_permintaan.map(
-        (detail) => detail.detail_alat
-      );
+      const detailAlat = permintaan.detail_permintaan
+        .filter((detail) => detail.detail_alat)
+        .map((detail) => detail.detail_alat);
       const brokenDetailAlat = detailAlat.find(
         (detail) => detail.KODE_ALAT === value
       );
@@ -228,14 +228,16 @@ export default function VerifikasiPengembalian({
           <>
             <div className="w-full flex flex-col gap-2">
               <label htmlFor="alatRusak">Silahkan pilih alat yang rusak</label>
-              {permintaan.detail_permintaan.map((detail) => (
-                <div
-                  key={detail.ID_DETAIL_PERMINTAAN}
-                  className="w-full flex flex-col gap-4"
-                >
-                  {renderAlatRusakInput(detail.detail_alat)}
-                </div>
-              ))}
+              {permintaan.detail_permintaan
+                .filter((detail) => detail.detail_alat)
+                .map((detail) => (
+                  <div
+                    key={detail.ID_DETAIL_PERMINTAAN}
+                    className="w-full flex flex-col gap-4"
+                  >
+                    {renderAlatRusakInput(detail.detail_alat)}
+                  </div>
+                ))}
             </div>
           </>
         )}
