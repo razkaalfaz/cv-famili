@@ -142,8 +142,8 @@ export default function ListConditionalAlat({ dataAlat }: ComponentProps) {
                     {listOptions === "rusak" && (
                       <>
                         <td className={tdStyles}>
-                          {detail.perbaikan
-                            ? detail.perbaikan.ID_PERBAIKAN
+                          {detail.detail_perbaikan
+                            ? detail.detail_perbaikan.ID_PERBAIKAN
                             : "-"}
                         </td>
                         {detail.STATUS === "RUSAK" ? (
@@ -166,8 +166,12 @@ export default function ListConditionalAlat({ dataAlat }: ComponentProps) {
                     {(listOptions === "pengajuan" ||
                       listOptions === "digunakan") && (
                       <td className={tdStyles}>
-                        {detail.detail_permintaan
-                          ? detail.detail_permintaan.map((x) => x.ID_PERMINTAAN)
+                        {detail.detail_permintaan &&
+                        (detail.STATUS === "PENGAJUAN" ||
+                          detail.STATUS === "DIGUNAKAN")
+                          ? detail.detail_permintaan
+                              .slice(detail.detail_permintaan.length - 1)
+                              .map((x) => x.ID_PERMINTAAN)
                           : "-"}
                       </td>
                     )}
@@ -176,15 +180,17 @@ export default function ListConditionalAlat({ dataAlat }: ComponentProps) {
                       <>
                         <td className={tdStyles}>
                           {detail.detail_permintaan &&
+                          (detail.STATUS === "PENGAJUAN" ||
+                            detail.STATUS === "DIGUNAKAN") &&
                           detail.detail_permintaan.length > 0
-                            ? detail.detail_permintaan.map(
-                                (x) => x.ID_PERMINTAAN
-                              )
+                            ? detail.detail_permintaan
+                                .slice(detail.detail_permintaan.length - 1)
+                                .map((x) => x.ID_PERMINTAAN)
                             : "-"}
                         </td>
                         <td className={tdStyles}>
-                          {detail.perbaikan
-                            ? detail.perbaikan.ID_PERBAIKAN
+                          {detail.detail_perbaikan
+                            ? detail.detail_perbaikan.ID_PERBAIKAN
                             : "-"}
                         </td>
                         {detail.STATUS === "RUSAK" ? (
