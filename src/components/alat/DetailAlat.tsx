@@ -100,7 +100,7 @@ export default function DetailAlatComponent({ dataAlat }: ComponentProps) {
 
             {condition === "all" && (
               <>
-                <td className={tdStyles}>ID Permintaan</td>
+                <td className={tdStyles}>ID Permintaan Terbaru</td>
                 <td className={tdStyles}>ID Perbaikan</td>
                 <td className={tdStyles}>Detail Kerusakan</td>
               </>
@@ -125,7 +125,9 @@ export default function DetailAlatComponent({ dataAlat }: ComponentProps) {
                   {condition === "rusak" && (
                     <>
                       <td className={tdStyles}>
-                        {detail.perbaikan ? detail.perbaikan.ID_PERBAIKAN : "-"}
+                        {detail.detail_perbaikan
+                          ? detail.detail_perbaikan.ID_PERBAIKAN
+                          : "-"}
                       </td>
                       {detail.STATUS === "RUSAK" ? (
                         <td className={tdStyles + " text-center"}>
@@ -147,7 +149,9 @@ export default function DetailAlatComponent({ dataAlat }: ComponentProps) {
                   {(condition === "pengajuan" || condition === "digunakan") && (
                     <td className={tdStyles}>
                       {detail.detail_permintaan
-                        ? detail.detail_permintaan.map((x) => x.ID_PERMINTAAN)
+                        ? detail.detail_permintaan
+                            .slice(detail.detail_permintaan.length - 1)
+                            .map((x) => x.ID_PERMINTAAN)
                         : "-"}
                     </td>
                   )}
@@ -161,7 +165,9 @@ export default function DetailAlatComponent({ dataAlat }: ComponentProps) {
                           : "-"}
                       </td>
                       <td className={tdStyles}>
-                        {detail.perbaikan ? detail.perbaikan.ID_PERBAIKAN : "-"}
+                        {detail.detail_perbaikan
+                          ? detail.detail_perbaikan.ID_PERBAIKAN
+                          : "-"}
                       </td>
                       {detail.STATUS === "RUSAK" ? (
                         <td className={tdStyles + " text-center"}>

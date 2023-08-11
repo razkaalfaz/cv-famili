@@ -11,6 +11,7 @@ async function handler(request: NextRequest) {
           detail_perbaikan: {
             include: {
               detail_alat: true,
+              perbaikan: true,
             },
           },
           alat: true,

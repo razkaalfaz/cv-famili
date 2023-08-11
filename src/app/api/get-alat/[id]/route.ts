@@ -20,11 +20,7 @@ async function handler(
             },
           },
           alat: true,
-          detail_perbaikan: {
-            select: {
-              ID_PERBAIKAN: true,
-            },
-          },
+          detail_perbaikan: true,
         },
       },
     },
