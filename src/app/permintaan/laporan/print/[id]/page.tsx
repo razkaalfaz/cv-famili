@@ -161,8 +161,7 @@ export default function Print({ params }: { params: { id: string } }) {
                       <td className="px-2 py-2 border border-gray-300 text-center">
                         {barang.JUMLAH_BARANG === 0
                           ? "-"
-                          : barang.JUMLAH_BARANG}{" "}
-                        {barang.UNIT_BARANG}
+                          : `${barang.JUMLAH_BARANG} ${barang.UNIT_BARANG}`}
                       </td>
                     </tr>
                   )
