@@ -31,9 +31,33 @@ async function handler(request: NextRequest) {
         },
       },
     },
+    include: {
+      detail_permintaan: {
+        select: {
+          detail_alat: {
+            select: {
+              KODE_ALAT: true,
+            },
+          },
+        },
+      },
+    },
   });
 
   if (updatePermintaan) {
+    for (const detail of updatePermintaan.detail_permintaan) {
+      if (detail && detail.detail_alat) {
+        await db.detail_alat.update({
+          where: {
+            KODE_ALAT: detail.detail_alat.KODE_ALAT,
+          },
+          data: {
+            STATUS: "DIGUNAKAN",
+          },
+        });
+      }
+    }
+
     return NextResponse.json({
       ok: true,
       message: "Berhasil menerima permintaan.",
