@@ -149,9 +149,9 @@ export default function DetailAlatComponent({ dataAlat }: ComponentProps) {
                   {(condition === "pengajuan" || condition === "digunakan") && (
                     <td className={tdStyles}>
                       {detail.detail_permintaan
-                        ? detail.detail_permintaan
-                            .slice(detail.detail_permintaan.length - 1)
-                            .map((x) => x.ID_PERMINTAAN)
+                        ? detail.detail_permintaan[
+                            detail.detail_permintaan.length - 1
+                          ].ID_PERMINTAAN
                         : "-"}
                     </td>
                   )}
@@ -161,7 +161,9 @@ export default function DetailAlatComponent({ dataAlat }: ComponentProps) {
                       <td className={tdStyles}>
                         {detail.detail_permintaan &&
                         detail.detail_permintaan.length > 0
-                          ? detail.detail_permintaan.map((x) => x.ID_PERMINTAAN)
+                          ? detail.detail_permintaan[
+                              detail.detail_permintaan.length - 1
+                            ].ID_PERMINTAAN
                           : "-"}
                       </td>
                       <td className={tdStyles}>
